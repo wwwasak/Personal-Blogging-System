@@ -9,13 +9,17 @@
  */
 
 /* User table created and 4 rows data filled ---- yji413 */
-drop table if exists test;
+drop table if exists user;
 
-create table test (
+create table user (
     id integer not null primary key,
-    stuff text  
+    account text,
+    password text,
+    token text  
 );
 
-insert into test (stuff) values
-    ('Things'),
-    ('More things')
+insert into user(id,account,password) values
+    (1,'Sean','123456'),
+    (2,'Demo','456234'),
+    (3,'Clarke','abcdefg'),
+    (4,'Admin','1wde356fg')
