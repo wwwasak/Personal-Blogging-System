@@ -8,6 +8,7 @@
  * However this script will serve as documentation / backup for how your database is designed
  */
 
+/* User table created and 4 rows data filled ---- yji413 */
 drop table if exists test;
 
 create table test (
@@ -17,4 +18,4 @@ create table test (
 
 insert into test (stuff) values
     ('Things'),
-    ('More things');
+    ('More things')
