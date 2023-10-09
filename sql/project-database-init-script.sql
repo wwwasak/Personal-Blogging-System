@@ -19,10 +19,24 @@ CREATE TABLE userlike (
     FOREIGN KEY (article_id) REFERENCES article(id),
     UNIQUE(user_id, article_id)
 );
-
 INSERT INTO userlike (user_id, article_id) VALUES (1, 1);
 INSERT INTO userlike (user_id, article_id) VALUES (2, 3);
 INSERT INTO userlike (user_id, article_id) VALUES (3, 2);
 INSERT INTO userlike (user_id, article_id) VALUES (1, 2);
 
+insert into test (stuff) values
+    ('Things'),
+    ('More things')
 
+create table category (
+
+ id integer NOT NULL PRIMARY KEY,
+
+ name varchar(50) NOT NULL,
+
+ description varchar(1000) NOT NULL,
+
+ FOREIGN KEY (user_id) REFERENCES user (id)
+);
+
+insert into category (id, name, description) values (1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones');
