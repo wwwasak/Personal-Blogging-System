@@ -32,9 +32,9 @@ CREATE TABLE comments (
     FOREIGN KEY (user_id) REFERENCES users(id), 
     FOREIGN KEY (article_id) REFERENCES articles(id) 
 );
-INSERT INTO comments (user_id, timeDate, parentComment, article_id)
+INSERT INTO comments (user_id, timeDate,content,parentComment, article_id)
 VALUES
-    (1, '2023-10-01 14:30:00', NULL, 1),
-    (2, '2023-10-02 15:15:00', NULL, 2),
-    (3, '2023-10-03 16:00:00', 1, 1), 
-    (4, '2023-10-04 16:45:00', 2, 2); 
+    (1, '2023-10-01 14:30:00','This is the first comment.', NULL, 1),
+    (2, '2023-10-02 15:15:00','Here is the second comment.', NULL, 2),
+    (3, '2023-10-03 16:00:00','A reply to the first comment.', 1, 1), 
+    (4, '2023-10-04 16:45:00','A reply to the second comment.',3, 1); 
