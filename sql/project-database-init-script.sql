@@ -19,3 +19,22 @@ create table test (
 insert into test (stuff) values
     ('Things'),
     ('More things')
+
+/* comments table created and 4 rows data filled ---- txu470 */
+DROP TABLE if exists comments;
+CREATE TABLE comments (
+    id integer not null PRIMARY KEY,
+    user_id integer,
+    timeDate TIMESTAMP,
+    content TEXT, 
+    parentComment integer,
+    article_id integer,
+    FOREIGN KEY (user_id) REFERENCES users(id), 
+    FOREIGN KEY (article_id) REFERENCES articles(id) 
+);
+INSERT INTO comments (user_id, timeDate, parentComment, article_id)
+VALUES
+    (1, '2023-10-01 14:30:00', NULL, 1),
+    (2, '2023-10-02 15:15:00', NULL, 2),
+    (3, '2023-10-03 16:00:00', 1, 1), 
+    (4, '2023-10-04 16:45:00', 2, 2); 

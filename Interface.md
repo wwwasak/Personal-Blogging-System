@@ -4,7 +4,7 @@ blog-database.db
 user {id-Integer,account-Text,password-Text,token-Text} 
 article 
 userlike  
-comment 
+comment {id-Integer,user_id-Integer,content-TEXT,timeDate-TIMESTAMP,parentComment-Integer, article_id-Integer}
 category 
 
 ## Frontend
