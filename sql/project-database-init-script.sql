@@ -68,8 +68,27 @@ create table artical (
     foreign key userid references user(id),
     foreign key account references user(account)
 );
-
 insert into artical(id, title, content,imagelocation, postdate, userid, account, userid, account)values
     (0, 'Love', '<strong>I love you!</strong>', , '2023-10-9', 3, 'Zipei Liu')
     (1, 'Boy', '<em>I am a boy!</em>','/images/boy.jpeg' , '2023-10-16', 5, 'Guanzhuo Li')
-    (2, 'Game', 'I love play game', ,,'2023-10-8',1,'Clarke' )  
+    (2, 'Game', 'I love play game', ,,'2023-10-8',1,'Clarke' ) 
+
+
+/* comments table created and 4 rows data filled ---- txu470 */
+DROP TABLE if exists comments;
+CREATE TABLE comments (
+    id integer not null PRIMARY KEY,
+    user_id integer,
+    timeDate TIMESTAMP,
+    content TEXT, 
+    parentComment integer,
+    article_id integer,
+    FOREIGN KEY (user_id) REFERENCES users(id), 
+    FOREIGN KEY (article_id) REFERENCES articles(id) 
+);
+INSERT INTO comments (user_id, timeDate,content,parentComment, article_id)
+VALUES
+    (1, '2023-10-01 14:30:00','This is the first comment.', NULL, 1),
+    (2, '2023-10-02 15:15:00','Here is the second comment.', NULL, 2),
+    (3, '2023-10-03 16:00:00','A reply to the first comment.', 1, 1), 
+    (4, '2023-10-04 16:45:00','A reply to the second comment.',3, 1); 
