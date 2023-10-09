@@ -8,7 +8,23 @@
  * However this script will serve as documentation / backup for how your database is designed
  */
 
-/* User table created and 4 rows data filled ---- Ricky */
+/* User table created and 4 rows data filled ---- yji413 */
+drop table if exists user;
+
+create table user (
+    id integer not null primary key,
+    account text,
+    password text,
+    token text  
+  
+insert into user(id,account,password) values
+    (1,'Sean','123456'),
+    (2,'Demo','456234'),
+    (3,'Clarke','abcdefg'),
+    (4,'Admin','1wde356fg')
+  
+ 
+ /* User table created and 4 rows data filled ---- Ricky */
 DROP TABLE if exists userlike;
 
 CREATE TABLE userlike (
@@ -17,17 +33,17 @@ CREATE TABLE userlike (
     article_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (article_id) REFERENCES article(id),
-    UNIQUE(user_id, article_id)
-);
+    UNIQUE(user_id, article_id) 
+ );
 INSERT INTO userlike (user_id, article_id) VALUES (1, 1);
 INSERT INTO userlike (user_id, article_id) VALUES (2, 3);
 INSERT INTO userlike (user_id, article_id) VALUES (3, 2);
 INSERT INTO userlike (user_id, article_id) VALUES (1, 2);
 
-insert into test (stuff) values
-    ('Things'),
-    ('More things')
-
+  
+/* create table named category ---- gli300 */
+DROP TABLE if exists category;
+  
 create table category (
 
  id integer NOT NULL PRIMARY KEY,
@@ -39,4 +55,4 @@ create table category (
  FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
-insert into category (id, name, description) values (1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones');
+insert into category (id, name, description) values (1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones');  
