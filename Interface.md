@@ -3,7 +3,7 @@
 blog-database.db
 user {id-Integer,account-Text,password-Text,token-Text} 
 article 
-userlike  
+userlike  {user_id, article_id}
 comment 
 category 
 
