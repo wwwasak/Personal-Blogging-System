@@ -8,13 +8,21 @@
  * However this script will serve as documentation / backup for how your database is designed
  */
 
-/* User table created and 4 rows data filled ---- yji413 */
-drop table if exists test;
+/* User table created and 4 rows data filled ---- Ricky */
+DROP TABLE if exists userlike;
 
-create table test (
-    id integer not null primary key,
-    stuff text  
+CREATE TABLE userlike (
+    id INTEGER NOT NULL PRIMARY KEY,
+    user_id INTEGER,
+    article_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (article_id) REFERENCES article(id),
+    UNIQUE(user_id, article_id)
 );
+INSERT INTO userlike (user_id, article_id) VALUES (1, 1);
+INSERT INTO userlike (user_id, article_id) VALUES (2, 3);
+INSERT INTO userlike (user_id, article_id) VALUES (3, 2);
+INSERT INTO userlike (user_id, article_id) VALUES (1, 2);
 
 insert into test (stuff) values
     ('Things'),
