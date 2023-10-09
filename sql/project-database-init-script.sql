@@ -54,5 +54,22 @@ create table category (
 
  FOREIGN KEY (user_id) REFERENCES user (id)
 );
-
 insert into category (id, name, description) values (1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones');  
+  
+/*table article: More info in interface.md; by zipei liu*/
+create table artical (
+    id integer not null primary key,
+    title text not null,
+    content text not null,
+    imagelocation text like '/images/%',  
+    postdate date not null like'_____-__-__',
+    userid integer,
+    account text,
+    foreign key userid references user(id),
+    foreign key account references user(account)
+);
+
+insert into artical(id, title, content,imagelocation, postdate, userid, account, userid, account)values
+    (0, 'Love', '<strong>I love you!</strong>', , '2023-10-9', 3, 'Zipei Liu')
+    (1, 'Boy', '<em>I am a boy!</em>','/images/boy.jpeg' , '2023-10-16', 5, 'Guanzhuo Li')
+    (2, 'Game', 'I love play game', ,,'2023-10-8',1,'Clarke' )  
