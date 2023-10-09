@@ -1,12 +1,14 @@
 ## Database
 
 blog-database.db
-user {id-Integer,account-Text,password-Text,token-Text}
+user {id-Integer,account-Text,password-Text,token-Text} 
 article 
-comment
-category
+userlike  
+comment 
+category 
 
 ## Frontend
+
 
 
 ## Backend
