@@ -19,3 +19,16 @@ create table test (
 insert into test (stuff) values
     ('Things'),
     ('More things')
+
+create table category (
+
+ id integer NOT NULL PRIMARY KEY,
+
+ name varchar(50) NOT NULL,
+
+ description varchar(1000) NOT NULL,
+
+ FOREIGN KEY (user_id) REFERENCES user (id)
+);
+
+insert into category (id, name, description) values (1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones');
