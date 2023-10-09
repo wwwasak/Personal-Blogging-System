@@ -16,7 +16,9 @@ insert into user (id,account,password,birthday,description) values
     (2,'Demo','456234','1990/05/27','This is the second user'),
     (3,'Clarke','abcdefg','1995/04/23','This is the third user'),
     (4,'Admin','1wde356fg','1993/02/23','This is the fourth user');
-	
+
+
+
 /* create table named category ---- gli300 */
 DROP TABLE if exists category;
   
@@ -30,13 +32,14 @@ create table category (
  
  userid integer not null,
  
- FOREIGN KEY userid REFERENCES user (id)
+ FOREIGN KEY (userid) REFERENCES user(id)
 );
-insert into category (id, name, description,userid) values (1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones',1);  
+insert into category (id, name, description,userid) values 
+(1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones',1);  
   
- 
- /*table article: More info in interface.md; by zipei liu*/
 
+
+ /*table article: More info in interface.md; by zipei liu*/
 drop table if exists article;
 
 create table article(
@@ -46,13 +49,15 @@ create table article(
     postdate integer,
     userid integer,
     categoryid integer,
-    foreign key userid references user(id),
-    foreign key categoryid references category(id)
+    foreign key (userid) references user(id),
+    foreign key (categoryid) references category(id)
 );
-insert into artical (id, title, content, userid,categoryid) values
-    (1, 'Love', '<strong>I love you!</strong>' , 3,1)
-    (2, 'Boy', '<em>I am a boy!</em>' , 2,1)
-    (3, 'Game', 'I love play game',1,1 ) 
+insert into article (id, title, content, userid,categoryid) values
+    (1, 'Love', '<strong>I love you!</strong>' , 3,1),
+    (2, 'Boy', '<em>I am a boy!</em>' , 2,1),
+    (3, 'Game', 'I love play game',1,1 );
+
+
 
  /* User table created and 4 rows data filled ---- Ricky */
 DROP TABLE if exists userlike;
@@ -70,9 +75,6 @@ INSERT INTO userlike (user_id, article_id) VALUES (1, 1);
 INSERT INTO userlike (user_id, article_id) VALUES (2, 3);
 INSERT INTO userlike (user_id, article_id) VALUES (3, 2);
 INSERT INTO userlike (user_id, article_id) VALUES (1, 2);
-
-  
-
 
 
 
