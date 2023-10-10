@@ -1,13 +1,27 @@
 const express = require('express');
 const router = express.Router();
 
-const testDao = require('../models/test-dao.js');
+const blogDao = require('../models/blog-dao.js');
 
-router.get('/', async function (req, res) {
-    res.locals.title = 'My route title!';
-    res.locals.allTestData = await testDao.retrieveAllTestData();
+const userid = 1;
+router.post('/user', async function (req, res) {
+    let {account,password} = req.body;
+    let userDetails = await blogDao.searchUsersByAccount(account, password)
+    console.log(userDetails)
+    if (userDetails.length > 0) {
+        res.send({
+            code: 200,
+            msg: "Login successful",
+            data: userDetails[0]
+        })
+    } else {
+        res.send({
+            code: 500,
+            msg: "Login failed"
+        })
 
-    res.render('home');
+    }
 });
+
 
 module.exports = router;
