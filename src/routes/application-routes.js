@@ -28,7 +28,7 @@ router.post('/user', async function (req, res) {
 router.post('/addarticle', async function (req, res) {
     let {title,content,categoryid} = req.body;
     try{
-        let addArticle = await blogDao.addArticle(title, content, userid, categoryid);
+        await blogDao.addArticle(title, content, userid, categoryid);
         res.send({
             code: 204,
             msg: "Add Article successful",
