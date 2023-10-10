@@ -6,7 +6,7 @@ const blogDao = require('../models/blog-dao.js');
 
 const userid = 1;
 
-// user router created ----- yji413
+// user router created, register, delete ----- yji413
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
@@ -62,6 +62,7 @@ router.delete('/userDelete',async function(req,res){
         })
     }
  });
+
 
 // This is a router to get the request of update article from users
 router.put('/updatearticle', async function(req, res) {
@@ -164,6 +165,7 @@ router.delete('/article/:id/comment/:commentid', async function (req, res) {
             msg: "Delete failed"
         })
     }
+});
   router.get('/search', async (req, res) => {
     try {
         const keyword = req.query.keyword;
@@ -191,6 +193,7 @@ router.post('/addarticle', async function (req, res) {
     }
 });
 
+
 //route post.comment create by zliu442
 router.post('/addcomment', async function (req, res) {
     let {content,timeDate, articleid, commentid} = req.body;
@@ -216,7 +219,6 @@ router.post('/addcomment', async function (req, res) {
     }
 });
 
-=======
 router.get('/user/search', async (req, res) => {
     try {
         if (!req.session.userid) {
@@ -233,5 +235,3 @@ router.get('/user/search', async (req, res) => {
 
 
 module.exports = router;
-
-
