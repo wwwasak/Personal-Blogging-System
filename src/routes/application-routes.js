@@ -24,10 +24,10 @@ router.post('/user', async function (req, res) {
 });
 
 // This is a router to get the request of update article from users
-router.put('/update-article/:userid', async function(req, res) {
+router.put('/updatearticle', async function(req, res) {
     try {
-        const { userid } = req.params;
         const { title, content, categoryid } = req.body;
+        console.log(req.body);
 
         // Call updateArticle() to undate articel details
         const result = await blogDao.updateArticle(userid, title, content, categoryid);
