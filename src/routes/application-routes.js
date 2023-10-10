@@ -23,5 +23,31 @@ router.post('/user', async function (req, res) {
     }
 });
 
+router.get('/search', async (req, res) => {
+    try {
+        const keyword = req.query.keyword;
+        const articles = await blogDao.searchArticlesByKeyword(keyword);
+        res.json({ articles });
+    } catch (error) {
+        console.error(error);
+        res.status(200).json({ msg: "Error" }); 
+    }
+});
+
+router.get('/user/search', async (req, res) => {
+    try {
+        if (!req.session.userid) {
+            return res.status(403).json({ msg: "User not logged in" });
+        }
+        const keyword = req.query.keyword;
+        const articles = await blogDao.searchUserArticlesByKeyword(req.session.userid, keyword);
+        res.json({ articles });
+    } catch (error) {
+        console.error(error);
+        res.status(200).json({ msg: "Error" }); 
+    }
+});
+
+
 
 module.exports = router;
