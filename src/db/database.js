@@ -11,4 +11,5 @@ const dbPromise = sqlite.open({
 
 module.exports = {
     dbPromise
-};
+ };
+
