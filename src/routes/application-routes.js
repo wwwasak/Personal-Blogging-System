@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { dbPromise } = require('../db/database.js');
+
 
 const blogDao = require('../models/blog-dao.js');
 
@@ -22,6 +24,8 @@ router.post('/user', async function (req, res) {
 
     }
 });
+
+
 
 router.get('/search', async (req, res) => {
     try {
