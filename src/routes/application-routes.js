@@ -25,15 +25,15 @@ router.post('/user', async function (req, res) {
 });
 
 //route post.article create by zliu442
-router.post('/article', async function (req, res) {
+router.post('/addarticle', async function (req, res) {
     let {title,content,categoryid} = req.body;
-    let addArticle = await blogDao.addArticle(title, content, userid, categoryid);
-    if (addArticle.length > 0) {
+    try{
+        let addArticle = await blogDao.addArticle(title, content, userid, categoryid);
         res.send({
             code: 204,
             msg: "Add Article successful",
         })
-    } else {
+    }catch(error){
         res.send({
             code: 401,
             msg: "Add Article failed"
@@ -42,17 +42,23 @@ router.post('/article', async function (req, res) {
 });
 
 //route post.comment create by zliu442
-router.post('/comment', async function (req, res) {
-    let addComment;
+router.post('/addcomment', async function (req, res) {
     let {content,timeDate, articleid, commentid} = req.body;
-    if (articleid * commentid == null)
-    {addComment = await blogDao.addComment(userid, timeDate, content, articleid, commentid );}
-    if (addComment.length > 0) {
-        res.send({
-            code: 204,
-            msg: "Add Comment successful",
-        })
-    } else {
+    try{
+        if ((articleid == null || commentid == null)&&(articleid + commentid > 0)){
+            await blogDao.addComment(userid, timeDate, content, articleid, commentid );
+            res.send({
+                code: 204,
+                msg: "Add Comment successful",
+            })
+        }
+        else{
+            res.send({
+                code: 402,
+                msg: "id conflict"
+            })
+        }
+    }catch(error){
         res.send({
             code: 401,
             msg: "Add Comment failed"

@@ -10,20 +10,16 @@ async function searchUsersByAccount(userName,password){
 //function addArticle by zliu442
 async function addArticle(title, content, userid, categoryid){
     const db = await dbPromise;
-    const result = await db.run(`insert into article (title, content, userid, categoryid) values
+    const result = await db.run(SQL`insert into article (title, content, userid, categoryid) values
     (${title}, ${content}, ${userid}, ${categoryid})`);
-    console.log(`Article with title "${title}" was inserted`);
-    console.log(`Newly added article has id ${result.lastID}`);
     return result;
 }
 
 //function addComment by zliu442
 async function addComment(userid, timeDate, content, articleid, commentid){
     const db = await dbPromise;
-    const result = await db.run(`insert into article (user_id, timeDate, content, parentComment, article_id) values
+    const result = await db.run(SQL`insert into comments (user_id, timeDate, content, parentComment, article_id) values
     (${userid}, ${timeDate}, ${content}, ${commentid}, ${articleid})`);
-    console.log(`Comment with content "${content}" was inserted`);
-    console.log(`Newly added comment has id ${result.lastID}`);
     return result;
 }
 
