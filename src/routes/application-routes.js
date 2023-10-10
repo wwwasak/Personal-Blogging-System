@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { dbPromise } = require('../db/database.js');
+
 
 const blogDao = require('../models/blog-dao.js');
 
@@ -69,8 +71,7 @@ router.put('/updatearticle', async function(req, res) {
         console.log(req.body);
         // Call updateArticle() to undate articel details
         const result = await blogDao.updateArticle(userid, title, content, categoryid);
-
-        // return successful response
+ // return successful response
         res.json({ message: 'Article updated successfully', result });
     } catch (error) {
         // deal error message
@@ -164,7 +165,31 @@ router.delete('/article/:id/comment/:commentid', async function (req, res) {
             msg: "Delete failed"
         })
     }
-  
+  router.get('/search', async (req, res) => {
+    try {
+        const keyword = req.query.keyword;
+        const articles = await blogDao.searchArticlesByKeyword(keyword);
+        res.json({ articles });
+    } catch (error) {
+        console.error(error);
+        res.status(200).json({ msg: "Error" }); 
+    }
+});
+
+router.get('/user/search', async (req, res) => {
+    try {
+        if (!req.session.userid) {
+            return res.status(403).json({ msg: "User not logged in" });
+        }
+        const keyword = req.query.keyword;
+        const articles = await blogDao.searchUserArticlesByKeyword(req.session.userid, keyword);
+        res.json({ articles });
+    } catch (error) {
+        console.error(error);
+        res.status(200).json({ msg: "Error" }); 
+    }
+});
+
 module.exports = router;
 
 
