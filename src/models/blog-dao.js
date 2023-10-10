@@ -7,7 +7,15 @@ async function searchUsersByAccount(userName,password){
     return result;
 }
 
+//
+async function updateArticle(userid, title, content, categoryid){
+    const db = await dbPromise;
+    const result = await db.run(SQL`update article set title = ${title}, content = ${content},categoryid = ${categoryid} where userid = ${userid}`);
+    return result;
+}
+
 // Export functions.
 module.exports = {
-    searchUsersByAccount
+    searchUsersByAccount,
+    updateArticle
 };
