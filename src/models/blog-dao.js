@@ -6,7 +6,6 @@ async function searchUsersByAccount(userName, password) {
     const result = await db.all(SQL`select * from user where account = ${userName} AND password = ${password}`);
     return result;
 }
-
 async function registerUser(account,password,birthday,description){
     const db = await dbPromise;
     const result = await db.run(SQL`INSERT INTO user (account,password,birthday,description) values (${account},${password},${birthday},${description});`);
@@ -61,7 +60,24 @@ async function searchUserArticlesByKeyword(userid, keyword) {
     `);
   }
 
+//function addArticle by zliu442
+async function addArticle(title, content, userid, categoryid){
+    const db = await dbPromise;
+    const result = await db.run(SQL`insert into article (title, content, userid, categoryid) values
+    (${title}, ${content}, ${userid}, ${categoryid})`);
+    return result;
+}
 
+//function addComment by zliu442
+async function addComment(userid, timeDate, content, articleid, commentid){
+    const db = await dbPromise;
+    const result = await db.run(SQL`insert into comments (user_id, timeDate, content, parentComment, article_id) values
+    (${userid}, ${timeDate}, ${content}, ${commentid}, ${articleid})`);
+    return result;
+}
+
+
+  
 module.exports = {
     searchUsersByAccount, searchArticlesByKeyword,
     searchUserArticlesByKeyword,
@@ -71,7 +87,9 @@ module.exports = {
   deleteArticleById,
     searchArticleById,
     deleteCommentById,
-    searchCommentById
+    searchCommentById,
+    addArticle,
+    addComment
 
 };
 
