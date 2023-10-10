@@ -4,7 +4,6 @@ const router = express.Router();
 const blogDao = require('../models/blog-dao.js');
 
 const userid = 1;
-
 // user router created ----- yji413
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
@@ -62,6 +61,7 @@ router.delete('/userDelete',async function(req,res){
         })
     }
 })
+
 
 module.exports = router;
 
