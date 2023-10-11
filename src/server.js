@@ -38,6 +38,12 @@ async function startExpress() {
     );
     app.set('view engine', 'handlebars');
 
+    // Render Handlebars (update) --gli300
+    app.get("/updatearticle", function (req, res) {
+
+        res.render("updatearticle");
+    });
+
     // Setup body-parser
     app.use(express.urlencoded({ extended: false }));
     // Enable JSON requests
