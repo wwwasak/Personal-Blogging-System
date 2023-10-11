@@ -12,10 +12,14 @@ const path = require('path');
 const fs = require('fs');
 const { cookieToaster } = require('./middleware/toaster-middleware');
 
+const blogDao = require('../src/models/blog-dao');
+
 const PORT = 3000;
 
 async function startExpress() {
     const app = express();
+
+
 
     /**
      * Adding handlers to express app
@@ -38,10 +42,26 @@ async function startExpress() {
     );
     app.set('view engine', 'handlebars');
 
+    app.get("/", (req,res) => {
+        res.render("home");
+    });
+
+    //router for get test create by zliu442 ,please keep all feature here when you merge
+    app.get("/addarticle",async (req,res) => {
+        const category = await blogDao.checkCategory();
+        res.locals.category = category;
+        res.render("addarticle");
+    });
+    app.get("/addcomment",(req,res) => {
+        res.render("addcomment");
+    });
+
     // Setup body-parser
     app.use(express.urlencoded({ extended: false }));
     // Enable JSON requests
     app.use(express.json());
+
+
 
     // Setup cookie-parser
     const cookieParser = require('cookie-parser');

@@ -35,8 +35,11 @@ create table category (
  FOREIGN KEY (userid) REFERENCES user(id)
 );
 insert into category (id, name, description,userid) values 
-(1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones',1);  
-  
+(1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones',1); 
+(2, 'Science', 'Science',1);
+(3, 'Sports', 'Sports',1);
+(4, 'Financial', 'Financial',1);
+
 
 
  /*table article: More info in interface.md; by zipei liu*/
