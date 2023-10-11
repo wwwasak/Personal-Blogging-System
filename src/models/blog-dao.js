@@ -54,12 +54,22 @@ async function searchArticlesByKeyword(keyword) {
     `);
   }
 
-async function searchUserArticlesByKeyword(userid, keyword) {
+  async function searchArticlesByUserAccount(userAccount) {
     const db = await dbPromise;
-    return db.all(SQL`
-      SELECT * FROM article WHERE user_id = ${userid} AND LOWER(title) LIKE ${'%' + keyword.toLowerCase() + '%'}
-    `);
-  }
+    const result = await db.all(SQL`SELECT * FROM article WHERE userid = ${userAccount}`);
+    return result;
+}
+async function searchArticlesByCategoryName(categoryName) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`
+      SELECT article.* 
+      FROM article 
+      JOIN category ON article.categoryid = category.id 
+      WHERE category.name = ${categoryName}
+  `);
+  return result;
+}
+
 
 //function addArticle by zliu442
 async function addArticle(title, content, userid, categoryid){
@@ -80,15 +90,17 @@ async function addComment(userid, timeDate, content, articleid, commentid){
 
   
 module.exports = {
-    searchUsersByAccount, searchArticlesByKeyword,
-    searchUserArticlesByKeyword,
-  registerUser,
+    searchUsersByAccount, 
+    searchArticlesByKeyword,
+    registerUser,
     deleteUser,
   updateArticle,
   deleteArticleById,
     searchArticleById,
     deleteCommentById,
     searchCommentById,
+    searchArticlesByUserAccount,
+    searchArticlesByCategoryName,
     addArticle,
     addComment
 

@@ -55,6 +55,9 @@ create table article(
 insert into article (id, title, content, userid,categoryid) values
     (1, 'Love', '<strong>I love you!</strong>' , 3,1),
     (2, 'Boy', '<em>I am a boy!</em>' , 2,1),
+     (4, 'Love', '<strong>I love you!</strong>' , 3,1),
+      (5, 'Love', '<strong>I love you!</strong>' , 3,1),
+       (6, 'Love', '<strong>I love you!</strong>' , 3,1),
     (3, 'Game', 'I love play game',1,1 );
 
 
