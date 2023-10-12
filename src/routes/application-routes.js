@@ -7,6 +7,16 @@ const blogDao = require('../models/blog-dao.js');
 const userid = 1;
 
 // user router created, register, delete ----- yji413
+
+router.get("/", function (req, res) {
+    res.render("login");
+});
+router.get("/toRegister", function (req, res) {
+    res.render("register");
+});
+router.get("/toDelete", function (req, res) {
+    res.render("deleteuser");
+});
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
@@ -47,8 +57,8 @@ router.post('/userRegister', async function (req, res) {
         })
     }
 });
-router.delete('/userDelete', async function (req, res) {
-    let id = req.query.id;
+router.get('/userDelete',async function(req,res){
+    let id = req.query.userid;
     try {
         await blogDao.deleteUser(id)
         res.send({
