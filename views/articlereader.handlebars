@@ -45,7 +45,7 @@
             <legend>Comment Content</legend>
             <input type="hidden" name="parentComment" id="parentComment" value= {{this.id}}>
             <p>
-              <label for="name_id" class="addcontent">Reply to {{this.author.account}}</label><br />
+              <label for="name_id" class="addcontent" data-COMMENTID={{this.id}}="">Reply to {{this.author.account}}</label><br />
               <input type="text" size="250" name="content" id="content_id"/>
             </p>
 
@@ -61,7 +61,7 @@
             <li>
          {{!-- reserve for css --}}
             <div class ="secondtiercomment">
-              <p>{{this.author.account}} reply to {{this.replyee}}</p>
+              <p>{{this.author.account}} reply to {{this.replyee.account}}</p>
               <p>Post date and time: {{this.timeDate}}</p>
               <p>Comment content: <strong>{{this.content}}</strong> </p>
             </div>

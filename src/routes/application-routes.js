@@ -251,23 +251,32 @@ router.get('/articlereader/:id', async(req,res) => {
         category : categoryInfo.name,
         content : articleInfo.content
     }
+    const processedComments = await processComments(article,articleid);  
+    res.locals.comment = processedComments;
+    res.render('articlereader',{article:article});
+});
+
+//function processComments use for print comment list by zliu442
+async function processComments(article,articleid) {
     const comment = await blogDao.searchCommentByArticleID(articleid);
-    comment.forEach(async item => {
+    
+    for (let item of comment) {
         item.author = await blogDao.searchUserById(item.user_id);
         item.timeDate = formatTimestamp(item.timeDate);
         item.replyee = article.author;
-        item.subcomment = await blogDao.searchSubCommentByCommentID(item.id)
-        // item.subcomment = item.subcomment.forEach(async subitem => {
-        //     subitem.author = await blogDao.searchUserById(subitem.user_id);
-        //     subitem.timeDate = formatTimestamp(subitem.timeDate);
-        //     subitem.replyee = subitem.author;
-        // });
-    });
-    res.locals.comment = comment;
-    res.render('articlereader',{article:article});
+        const subcommentInfo = await blogDao.searchSubCommentByCommentID(item.id);
+        const processedSubcomments = await Promise.all(subcommentInfo.map(async subitem => {
+            subitem.author = await blogDao.searchUserById(subitem.user_id);
+            subitem.timeDate = formatTimestamp(subitem.timeDate);
+            subitem.replyee = item.author;
+            return subitem; 
+        }));
+        item.subcomment = processedSubcomments;
+    }
+    return comment;
+}
 
 
-});
 
 
 router.get('/user/search', async (req, res) => {
