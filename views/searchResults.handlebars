@@ -1,6 +1,17 @@
 {{#each articles}}
-<div>
-    <h2><a href="/article/{{id}}">{{title}}</a></h2>
-    <p>{{content}}</p>
-</div>
+    <div>
+        <h2><a href='/article/{{id}}'>{{title}}</a></h2><button
+            class='deleteArticle'
+            data-article-id={{id}}
+        >X</button>
+        <p>{{content}}</p>
+    </div>
 {{/each}}
+{{! add button to delete a article-----txu470 }}
+<script>
+    const deleteArticleButtons = document.querySelectorAll('.deleteArticle');
+    deleteArticleButtons.forEach(button => { button.addEventListener('click',
+    async (e) => { const articleId =button.getAttribute('data-article-id');
+    const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
+    const data = await response.json(); console.log(data); }); });
+</script>

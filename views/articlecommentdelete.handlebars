@@ -1,0 +1,14 @@
+{{! //wait for article route to be implemented---txu470 }}
+<button
+    class='deleteComment'
+    data-article-id={{articleId}}
+    data-comment-id={{commentid}}
+>X</button>
+<script>
+    const deleteCommentButtons = document.querySelectorAll('.deleteComment');
+    deleteCommentButtons.forEach(button => { button.addEventListener('click',
+    async (e) => { const commentId = button.getAttribute('data-comment-id');
+    const articleId = button.getAttribute('data-article-id'); const response =
+    await fetch(`/article/${articleId}/comment/${commentId}`, { method: 'DELETE'
+    }); const data = await response.json(); console.log(data); }); });
+</script>
