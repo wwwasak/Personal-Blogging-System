@@ -28,7 +28,7 @@ create table category (
 
  name varchar(50) NOT NULL,
 
- description varchar(1000) NOT NULL,
+ description varchar(1000) NOT NULL
  
 );
 insert into category (id, name, description) values 

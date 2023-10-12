@@ -1,27 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Article</title>
-</head>
-<body>
-    <h1>Edit Article</h1>
-    <p>
-        {{userid}}
-        {{title}}
-        {{content}}
-        {{categoryid}}
-    </p>
-    <form id="edit-article-form" method="get" action="/updateArticleRoutes">
-        <input type="hidden" name="userid" >
-        <input type="text" name="title" placeholder="Title" >
-        <textarea name="content" placeholder="Content">{{content}}</textarea>
-        <input type="category" name="categoryid" placeholder="category" >
-        {{!-- <select name="categoryid">
-            {{#each categories}}
-                <option value="{{this.id}}" {{#if (eq this.id ../selectedCategory)}}selected{{/if}}>{{this.name}}</option>
-            {{/each}}
-        </select> --}}
-        <button type="submit">Update Article</button>
-    </form>
-</body>
-</html>
+<h1>Edit Article</h1>
+<form id="edit-article-form" method="get" action="/updateArticleRoutes">
+    <input type="hidden" name="userid">
+    <input type="text" name="title" placeholder="Title">
+    <textarea name="content" placeholder="Content">{{content}}</textarea>
+    <input type="category" name="categoryid" placeholder="category">
+    <button type="submit">Update Article</button>
+</form>
