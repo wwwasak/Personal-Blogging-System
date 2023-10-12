@@ -45,7 +45,7 @@ async function startExpress() {
     app.get("/updatearticle", function (req, res) {
 
         res.render("updatearticle");
-
+    })
        app.get("/", (req,res) => {
         res.render("home");
     });
@@ -90,8 +90,8 @@ async function startExpress() {
 
     // Start listening on PORT
     app.listen(PORT, console.log(`Server listening on port ${PORT}`));
-}
 
+}
 module.exports = {
     startExpress,
     PORT,

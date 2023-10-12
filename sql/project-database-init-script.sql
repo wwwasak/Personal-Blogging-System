@@ -30,15 +30,12 @@ create table category (
 
  description varchar(1000) NOT NULL,
  
- userid integer not null,
- 
- FOREIGN KEY (userid) REFERENCES user(id)
 );
-insert into category (id, name, description,userid) values 
-(1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones',1); 
-(2, 'Science', 'Science',1);
-(3, 'Sports', 'Sports',1);
-(4, 'Financial', 'Financial',1);
+insert into category (id, name, description) values 
+(1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones'), 
+(2, 'Science', 'Science'),
+(3, 'Sports', 'Sports'),
+(4, 'Financial', 'Financial');
 
 
 
