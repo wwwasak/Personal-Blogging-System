@@ -1,0 +1,47 @@
+{{!-- handlebar addarticle create by zliu442 --}}
+
+<div class="container">
+  <p>Add your artical here!</p>
+
+  <form action="/addarticle" method="POST">
+
+    <fieldset>
+      <legend>Article Title</legend>
+
+      <p>
+        <label for="name_id" class="addtitle">Title</label><br />
+        <input type="text" size="100" name="title" id="title_id"/>
+      </p>
+
+    </fieldset>
+
+    <fieldset>
+      <legend>Category</legend>
+      <p class="question">What is the category of the article:</p>
+      <p>
+        {{#each category}}
+          <input type="radio" name="categoryid" id="{{this.name}}" value= {{this.id}} />
+          <label for="{{this.id}}">{{this.name}}</label>
+        {{/each}}
+      </p>
+    </fieldset>
+
+    
+    <fieldset>
+      <legend>Content</legend>
+
+      <p>
+        <label for="name_id" class="addcontent">Content</label><br />
+        <input type="text" size="10000" name="content" id="content_id"/>
+      </p>
+
+    </fieldset>
+
+      
+    <p>
+      <input type="submit" name="submit_button" id="submit_id" value="Done!" />
+      <input type="reset" name="reset_button" id="reset_id" value="Clear" />
+    </p>
+  </form>
+
+</div>

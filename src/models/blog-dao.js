@@ -20,7 +20,7 @@ async function deleteUser(id){
 
 async function updateArticle(userid, title, content, categoryid){
     const db = await dbPromise;
-    const result = await db.run(SQL`update article set title = ${title}, content = ${content},categoryid = ${categoryid} where userid = ${userid}`);
+    const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid} where userid = ${userid}`);
     return result;
 }
 
@@ -87,22 +87,32 @@ async function addComment(userid, timeDate, content, articleid, commentid){
     return result;
 }
 
+//function checkCategory by zliu442 - use for handlebar of add article 2023/10/11
+async function checkCategory() {
+    const db = await dbPromise;
+    return db.all(SQL`
+      SELECT id, name FROM category
+    `);
+  }
+
 
   
 module.exports = {
-    searchUsersByAccount, 
+  searchUsersByAccount, 
     searchArticlesByKeyword,
+  searchUsersByAccount, searchArticlesByKeyword,
+    searchUserArticlesByKeyword,
     registerUser,
     deleteUser,
-  updateArticle,
-  deleteArticleById,
+    updateArticle,
+    deleteArticleById,
     searchArticleById,
     deleteCommentById,
     searchCommentById,
     searchArticlesByUserAccount,
     searchArticlesByCategoryName,
     addArticle,
-    addComment
-
+    addComment,
+    checkCategory
 };
 

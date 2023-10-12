@@ -1,10 +1,6 @@
-<h1>My stuff:</h1>
-<ul>
-    {{#each allTestData}}
-        <li>{{this.stuff}}</li>
-    {{/each}}
-</ul>
-
+{{! add a input and a button to delete a article by router'/article/:id' }}
+<input type='text' id='articleId' placeholder='Article Id' />
+<button class='deleteArticle'>Delete Article</button>
 <h1>A dragon:</h1>
 <img src='/images/Dragonite.png' />
 
@@ -13,3 +9,22 @@
     <input type="text" name="keyword" placeholder="Search for articles...">
     <button type="submit">Search</button>
 </form>
+=======
+{{! add a input and a button to delete a comment-----txu470 }}
+<input type='text' id='commentId' placeholder='Comment Id' />
+<button class='deleteComment'>Delete Comment</button>
+
+<script>
+    const deleteArticleButtons = document.querySelectorAll('.deleteArticle');
+    const deleteCommentButtons = document.querySelectorAll('.deleteComment');
+    deleteArticleButtons.forEach(button => { button.addEventListener('click',
+    async (e) => { const articleId = document.querySelector('#articleId').value;
+    const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
+    const data = await response.json(); console.log(data); }); });
+    deleteCommentButtons.forEach(button => { button.addEventListener('click',
+    async (e) => { const commentId = document.querySelector('#commentId').value;
+    const articleId = document.querySelector('#articleId').value; const
+    response= await fetch(`/article/${articleId}/comment/${commentId}`, {
+    method: 'DELETE' }); const data = await response.json(); console.log(data);
+    }); });
+</script>
