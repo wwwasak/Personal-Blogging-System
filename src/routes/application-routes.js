@@ -5,6 +5,9 @@ const { dbPromise } = require('../db/database.js');
 const blogDao = require('../models/blog-dao.js');
 
 const userid = 1;
+router.get('/', (req, res) => {
+    res.render('home');
+});
 
 // user router created, register, delete ----- yji413
 
@@ -159,7 +162,7 @@ router.get('/search', async (req, res) => {
     try {
         const keyword = req.query.keyword;
         const articles = await blogDao.searchArticlesByKeyword(keyword);
-        res.json({ articles });
+        res.render('searchResults', { articles });
     } catch (error) {
         console.error(error);
         res.status(200).json({ msg: "Error" });
