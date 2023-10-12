@@ -160,7 +160,7 @@ router.get('/search', async (req, res) => {
         res.status(200).json({ msg: "Error" });
     }
 });
-//route post.article create by zliu442
+//route post.article create by zliu442, modified 2023/10/11 for category check
 router.post('/addarticle', async function (req, res) {
     let { title, content, categoryid } = req.body;
     try {
@@ -202,6 +202,8 @@ router.post('/addcomment', async function (req, res) {
         })
     }
 });
+
+
 
 router.get('/user/search', async (req, res) => {
     try {
