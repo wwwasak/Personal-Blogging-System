@@ -75,14 +75,19 @@ router.get('/userDelete',async function(req,res){
 
 
 // This is a router to get the request of update article from users
-router.put('/updatearticle', async function (req, res) {
+router.get('/updateArticleRoutes', async function(req, res) {
     try {
-        const { title, content, categoryid } = req.body;
-        console.log(req.body);
+        const { title, content, categoryid } = req.query;
+        // const title = req.query.title;
+        // const content = req.query.content;
+        // const categoryid = req.query.categoryid;
+        // console.log(title);
+        // console.log(content);
+        // console.log(categoryid);
         // Call updateArticle() to undate articel details
         const result = await blogDao.updateArticle(userid, title, content, categoryid);
-        // return successful response
-        res.json({ message: 'Article updated successfully', result });
+       // return successful response
+        res.send({ message: 'Article updated successfully', result });
     } catch (error) {
         // deal error message
         console.error(error);

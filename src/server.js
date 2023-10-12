@@ -41,8 +41,12 @@ async function startExpress() {
         })
     );
     app.set('view engine', 'handlebars');
+// Render Handlebars (update) --gli300
+    app.get("/updatearticle", function (req, res) {
 
-    app.get("/", (req,res) => {
+        res.render("updatearticle");
+
+       app.get("/", (req,res) => {
         res.render("home");
     });
 

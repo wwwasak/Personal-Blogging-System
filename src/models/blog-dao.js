@@ -20,7 +20,7 @@ async function deleteUser(id){
 
 async function updateArticle(userid, title, content, categoryid){
     const db = await dbPromise;
-    const result = await db.run(SQL`update article set title = ${title}, content = ${content},categoryid = ${categoryid} where userid = ${userid}`);
+    const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid} where userid = ${userid}`);
     return result;
 }
 
