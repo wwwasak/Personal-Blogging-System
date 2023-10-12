@@ -56,9 +56,7 @@ async function startExpress() {
         res.locals.category = category;
         res.render("addarticle");
     });
-    app.get("/addcomment",(req,res) => {
-        res.render("addcomment");
-    });
+
 
     // Setup body-parser
     app.use(express.urlencoded({ extended: false }));

@@ -1,0 +1,81 @@
+{{!-- handlebar addcomment create by zliu442 --}}
+
+<div class="container">
+  <h1>This is an article reader!</h1>
+  
+  {{#if article}}
+    <h2>Title: {{article.title}}</h2>
+    <p>Category: {{article.category}}</p>
+    <p>Author: {{article.author}}</p>
+    <p>Post date and time: {{article.dateTime}}</p>
+    {{!-- reserve for css --}}
+    <div class ="articlecontent">
+      <p>Content: {{{article.content}}}</p>
+    </div>
+  {{/if}}
+
+  <form action="/addcomment" method="POST">
+    <fieldset>
+      <legend>Comment Content</legend>
+      <input type="hidden" name="articleid" id="articleid" value= {{article.id}}>
+      <p>
+        <label for="name_id" class="addcontent">Reply to {{article.author}}</label><br />
+        <input type="text" size="250" name="content" id="content_id"/>
+      </p>
+
+    </fieldset>   
+    <p>
+      <input type="submit" name="submit_button" id="submit_id" value="Done!" />
+      <input type="reset" name="reset_button" id="reset_id" value="Clear" />
+    </p>
+  </form>
+
+
+    {{#if comment}}
+      <ul>
+      {{#each comment}}
+        <li>
+         {{!-- reserve for css --}}
+         <div class ="firsttiercomment">
+          <p>{{this.author.account}} reply to {{this.replyee}}</p>
+          <p>Post date and time: {{this.timeDate}}</p>
+          <p>Comment content: <strong>{{this.content}}</strong> </p>
+          <form action="/addsubcomment" method="POST">
+            <fieldset>
+            <legend>Comment Content</legend>
+            <input type="hidden" name="parentComment" id="parentComment" value= {{this.id}}>
+            <p>
+              <label for="name_id" class="addcontent">Reply to {{this.author.account}}</label><br />
+              <input type="text" size="250" name="content" id="content_id"/>
+            </p>
+
+            </fieldset>   
+            <p>
+              <input type="submit" name="submit_button" id="submit_id" value="Done!" />
+              <input type="reset" name="reset_button" id="reset_id" value="Clear" />
+            </p>
+            </form>
+          {{#if this.subcomment}}
+          <ul>
+            {{#each this.subcomment}}
+            <li>
+         {{!-- reserve for css --}}
+            <div class ="secondtiercomment">
+              <p>{{this.author.account}} reply to {{this.replyee}}</p>
+              <p>Post date and time: {{this.timeDate}}</p>
+              <p>Comment content: <strong>{{this.content}}</strong> </p>
+            </div>
+            </li>
+            {{/each}}
+          </ul>
+          {{/if}}
+        </li>
+      {{/each}}
+    </ul>
+    {{else}}
+      <p>There is no comment yet. Please add one now!</p>
+    {{/if}}
+
+
+
+</div>
