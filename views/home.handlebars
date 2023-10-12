@@ -1,15 +1,15 @@
-<h1>My stuff:</h1>
-<ul>
-    {{#each allTestData}}
-        <li>{{this.stuff}}</li>
-    {{/each}}
-</ul>
 
-<h1>A dragon:</h1>
-<img src='/images/Dragonite.png' />
 
 
 <form action="/search" method="get">
     <input type="text" name="keyword" placeholder="Search for articles...">
     <button type="submit">Search</button>
 </form>
+
+<h2>All Articles:</h2>
+{{#each articles}}
+<div>
+    <h2><a href="/article/{{id}}">{{title}}</a></h2>
+    <p>{{content}}</p>
+</div>
+{{/each}}
