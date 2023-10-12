@@ -77,20 +77,28 @@ async function addComment(userid, timeDate, content, articleid, commentid){
     return result;
 }
 
+//function checkCategory by zliu442 - use for handlebar of add article 2023/10/11
+async function checkCategory() {
+    const db = await dbPromise;
+    return db.all(SQL`
+      SELECT id, name FROM category
+    `);
+  }
+
 
   
 module.exports = {
     searchUsersByAccount, searchArticlesByKeyword,
     searchUserArticlesByKeyword,
-  registerUser,
+    registerUser,
     deleteUser,
-  updateArticle,
-  deleteArticleById,
+    updateArticle,
+    deleteArticleById,
     searchArticleById,
     deleteCommentById,
     searchCommentById,
     addArticle,
-    addComment
-
+    addComment,
+    checkCategory
 };
 
