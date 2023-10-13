@@ -234,11 +234,19 @@ router.post('/addarticle', async function (req, res) {
     let { title, content, categoryid } = req.body;
     const timeStamp = generateTimestamp();
     try {
-        await blogDao.addArticle(title, content, timeStamp, userid, categoryid);
-        res.send({
-            code: 204,
-            msg: "Add Article successful",
-        })
+        if ((userid != null )) {
+            await blogDao.addArticle(title, content, timeStamp, userid, categoryid);
+            res.send({
+                code: 204,
+                msg: "Add Article successful",
+            })
+        }
+        else {
+            res.send({
+                code: 402,
+                msg: "no user id"
+            })
+        }
     } catch (error) {
         res.send({
             code: 401,
@@ -253,14 +261,20 @@ router.post('/addcomment', async function (req, res) {
     let {content, articleid} = req.body;
     const timeStamp = generateTimestamp();
     try {
-        if ((articleid != null )) {
+        if ((articleid != null && userid != null )) {
             await blogDao.addComment(userid, timeStamp, content, articleid);
-            res.redirect(`/articlereader/${articleid}`);
+            res.redirect(`/article/${articleid}`);
+        }
+        else if (userid == null){
+            res.send({
+                code: 408,
+                msg: "no or user id"
+            })
         }
         else {
             res.send({
                 code: 402,
-                msg: "no article id"
+                msg: "no article id" 
             })
         }
         
@@ -278,14 +292,20 @@ router.post('/addsubcomment', async function (req, res) {
     const articleid = (await blogDao.searchArticleByCommentid(parentComment)).article_id;
     const timeStamp = generateTimestamp();
     try {
-        if ((parentComment != null )) {
+        if ((parentComment != null && userid != null)) {
             await blogDao.addSubComment(userid, timeStamp, content, parentComment);
-            res.redirect(`/articlereader/${articleid}`);
+            res.redirect(`/article/${articleid}`);
+        }
+        else if (userid == null){
+            res.send({
+                code: 408,
+                msg: "no user id"
+            })
         }
         else {
             res.send({
                 code: 402,
-                msg: "no comment id"
+                msg: "no father comment id"
             })
         }
         
@@ -298,7 +318,7 @@ router.post('/addsubcomment', async function (req, res) {
 });
 
 //add read article feature and add comments here by zliu442 2023/10/13
-router.get('/articlereader/:id', async(req,res) => {
+router.get('/article/:id', async(req,res) => {
     const articleid = req.params.id;
     const articleInfo = await blogDao.searchArticleById(articleid);
     const articleTime = formatTimestamp(articleInfo.postdate);
