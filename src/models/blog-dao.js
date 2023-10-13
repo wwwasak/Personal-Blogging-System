@@ -17,6 +17,16 @@ async function deleteUser(id) {
   const result = await db.run(SQL`DELETE FROM user WHERE id = ${id};`);
   return result;
 }
+async function updateToken(id,token){
+  const db = await dbPromise;
+  const result = await db.run(SQL`UPDATE user SET token = ${token} WHERE id = ${id};`);
+  return result;
+}
+async function userAuthenticatorToken(token) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`SELECT * FROM user WHERE token = ${token};`);
+  return result;
+}
 
 async function updateArticle(userid, title, content, categoryid) {
   const db = await dbPromise;
@@ -103,6 +113,8 @@ module.exports = {
   searchUsersByAccount,
   registerUser,
   deleteUser,
+  updateToken,
+  userAuthenticatorToken,
   updateArticle,
   deleteArticleById,
   searchArticleById,

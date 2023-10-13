@@ -16,9 +16,9 @@ const blogDao = require('../src/models/blog-dao');
 
 const PORT = 3000;
 
+
 async function startExpress() {
     const app = express();
-
 
 
     /**
@@ -41,22 +41,21 @@ async function startExpress() {
         })
     );
     app.set('view engine', 'handlebars');
-// Render Handlebars (update) --gli300
+
+
+    // Render Handlebars (update) --gli300
     app.get("/updatearticle", function (req, res) {
 
         res.render("updatearticle");
     })
-       app.get("/", (req,res) => {
-        res.render("home");
-    });
 
     //router for get test create by zliu442 ,please keep all feature here when you merge
-    app.get("/addarticle",async (req,res) => {
+    app.get("/addarticle", async (req, res) => {
         const category = await blogDao.checkCategory();
         res.locals.category = category;
         res.render("addarticle");
     });
-    app.get("/addcomment",(req,res) => {
+    app.get("/addcomment", (req, res) => {
         res.render("addcomment");
     });
 
@@ -76,7 +75,8 @@ async function startExpress() {
 
     // Use the toaster middleware
     app.use(cookieToaster);
-
+    const { addUserToLocals } = require("./middleware/authorToken");
+    app.use(addUserToLocals);
     // Setup routes
     app.use(require('./routes/application-routes.js'));
 
@@ -87,6 +87,8 @@ async function startExpress() {
     } else {
         app.use(express.static(publicFolder));
     }
+
+
 
     // Start listening on PORT
     app.listen(PORT, console.log(`Server listening on port ${PORT}`));
