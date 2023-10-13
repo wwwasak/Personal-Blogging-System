@@ -1,22 +1,40 @@
 const express = require('express');
 const router = express.Router();
 const { dbPromise } = require('../db/database.js');
-
+const { v4: uuidv4 } = require("uuid");
+const { verifyAuthenticated } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
 
-const userid = 1;
-router.get('/', (req, res) => {
-    res.render('home');
+let userid;
+
+
+  router.use(express.static('public'));
+
+router.get('/', async (req, res) => {
+    try {
+        const categories = await blogDao.getAllCategories();
+        const articles = await blogDao.getAllArticles();
+        articles.forEach(article => {
+            article.content = article.content.substring(0, 50) + '...';
+        });
+        res.render('home', { categories , articles });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
 });
+
 
 // user router created, register, delete ----- yji413
 
-router.get("/", function (req, res) {
-    res.render("login");
+router.get("/login", function (req, res) {
+    res.render("userLogin");
 });
+
 router.get("/toRegister", function (req, res) {
     res.render("register");
 });
+
 router.get("/toDelete", function (req, res) {
     res.render("deleteuser");
 });
@@ -24,17 +42,18 @@ router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
         let userDetails = await blogDao.searchUsersByAccount(account, password)
+        console.log(userDetails)
         if (userDetails.length > 0) {
-            res.send({
-                code: 200,
-                msg: "Login successful",
-                data: userDetails[0]
-            })
+            let loginToken = uuidv4();
+            await blogDao.updateToken(userDetails[0].id, loginToken)
+            userid = userDetails[0].id
+            res.cookie("authToken", loginToken)
+            res.locals.user = userDetails;
+            res.redirect("/toDashboard")
         } else {
-            res.send({
-                code: 500,
-                msg: "Login failed"
-            })
+            res.locals.user = null;
+            res.setToastMessage("Authentication failed!");
+            res.redirect("/login");
 
         }
     } catch (error) {
@@ -43,6 +62,16 @@ router.post('/userLogin', async function (req, res) {
             msg: "Login failed"
         })
     }
+});
+
+router.get("/logout", function (req, res) {
+    res.clearCookie("authToken");
+    res.setToastMessage("Successfully logged out!");
+    res.redirect("/login");
+});
+router.get("/toDashboard", verifyAuthenticated, function (req, res) {
+
+    res.render("dashboard");
 });
 
 router.post('/userRegister', async function (req, res) {
@@ -60,7 +89,7 @@ router.post('/userRegister', async function (req, res) {
         })
     }
 });
-router.get('/userDelete',async function(req,res){
+router.get('/userDelete', async function (req, res) {
     let id = req.query.userid;
     try {
         await blogDao.deleteUser(id)
@@ -78,18 +107,13 @@ router.get('/userDelete',async function(req,res){
 
 
 // This is a router to get the request of update article from users
-router.get('/updateArticleRoutes', async function(req, res) {
+router.get('/updateArticleRoutes', async function (req, res) {
     try {
-        const { title, content, categoryid } = req.query;
-        // const title = req.query.title;
-        // const content = req.query.content;
-        // const categoryid = req.query.categoryid;
-        // console.log(title);
-        // console.log(content);
-        // console.log(categoryid);
-        // Call updateArticle() to undate articel details
-        const result = await blogDao.updateArticle(userid, title, content, categoryid);
+       const { articleId ,title, content, categoryid } = req.query;
+        const result = await blogDao.updateArticle(userid, articleId, title, content, categoryid);
        // return successful response
+
+
         res.send({ message: 'Article updated successfully', result });
     } catch (error) {
         // deal error message
@@ -162,17 +186,40 @@ router.get('/search', async (req, res) => {
     try {
         const keyword = req.query.keyword;
         const articles = await blogDao.searchArticlesByKeyword(keyword);
+        articles.forEach(article => {
+            article.content = article.content.substring(0, 50) + '...';
+        });
         res.render('searchResults', { articles });
     } catch (error) {
         console.error(error);
         res.status(200).json({ msg: "Error" });
     }
 });
-//route post.article create by zliu442, modified 2023/10/11 for category check
+
+router.get('/category/:categoryName', async (req, res) => {
+    try {
+        const categoryName = req.params.categoryName;
+        const articles = await blogDao.searchArticlesByCategoryName(categoryName);
+        
+      
+        articles.forEach(article => {
+            article.content = article.content.substring(0, 50) + '...';
+        });
+
+        res.render('categoryPage', { articles, categoryName }); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+//route post.article create by zliu442
+
 router.post('/addarticle', async function (req, res) {
     let { title, content, categoryid } = req.body;
+    const timeStamp = generateTimestamp();
     try {
-        await blogDao.addArticle(title, content, userid, categoryid);
+        await blogDao.addArticle(title, content, timeStamp, userid, categoryid);
         res.send({
             code: 204,
             msg: "Add Article successful",
@@ -188,21 +235,20 @@ router.post('/addarticle', async function (req, res) {
 
 //route post.comment create by zliu442
 router.post('/addcomment', async function (req, res) {
-    let { content, timeDate, articleid, commentid } = req.body;
+    let {content, articleid} = req.body;
+    const timeStamp = generateTimestamp();
     try {
-        if ((articleid == null || commentid == null) && (articleid + commentid > 0)) {
-            await blogDao.addComment(userid, timeDate, content, articleid, commentid);
-            res.send({
-                code: 204,
-                msg: "Add Comment successful",
-            })
+        if ((articleid != null )) {
+            await blogDao.addComment(userid, timeStamp, content, articleid);
+            res.redirect(`/articlereader/${articleid}`);
         }
         else {
             res.send({
                 code: 402,
-                msg: "id conflict"
+                msg: "no article id"
             })
         }
+        
     } catch (error) {
         res.send({
             code: 401,
@@ -211,23 +257,105 @@ router.post('/addcomment', async function (req, res) {
     }
 });
 
-
-
-router.get('/user/search', async (req, res) => {
+//route post.subcomment create by zliu442 2023/10/13
+router.post('/addsubcomment', async function (req, res) {
+    let {content, parentComment} = req.body;
+    const articleid = (await blogDao.searchArticleByCommentid(parentComment)).article_id;
+    const timeStamp = generateTimestamp();
     try {
-        if (!req.session.userid) {
-            return res.status(403).json({ msg: "User not logged in" });
+        if ((parentComment != null )) {
+            await blogDao.addSubComment(userid, timeStamp, content, parentComment);
+            res.redirect(`/articlereader/${articleid}`);
         }
-        const keyword = req.query.keyword;
-        const articles = await blogDao.searchUserArticlesByKeyword(req.session.userid, keyword);
-        res.json({ articles });
+        else {
+            res.send({
+                code: 402,
+                msg: "no comment id"
+            })
+        }
+        
     } catch (error) {
-        console.error(error);
-        res.status(200).json({ msg: "Error" });
+        res.send({
+            code: 401,
+            msg: "Add Comment failed"
+        })
     }
 });
-router.get('/', async (req, res) => {
+
+//add read article feature and add comments here by zliu442 2023/10/13
+router.get('/articlereader/:id', async(req,res) => {
+    const articleid = req.params.id;
+    const articleInfo = await blogDao.searchArticleById(articleid);
+    const articleTime = formatTimestamp(articleInfo.postdate);
+    const authorInfo = await blogDao.searchUserById(articleInfo.userid);
+    const categoryInfo = await blogDao.searchCategoryById(articleInfo.categoryid);
+    const article = {
+        id : articleid,
+        title : articleInfo.title,
+        author : authorInfo.account, 
+        dateTime : articleTime,
+        category : categoryInfo.name,
+        content : articleInfo.content
+    }
+    const processedComments = await processComments(article,articleid);  
+    res.locals.comment = processedComments;
+    res.render('articlereader',{article:article});
+});
+
+//function processComments use for print comment list by zliu442
+async function processComments(article,articleid) {
+    const comment = await blogDao.searchCommentByArticleID(articleid);
+    
+    for (let item of comment) {
+        item.author = await blogDao.searchUserById(item.user_id);
+        item.timeDate = formatTimestamp(item.timeDate);
+        item.replyee = article.author;
+        const subcommentInfo = await blogDao.searchSubCommentByCommentID(item.id);
+        const processedSubcomments = await Promise.all(subcommentInfo.map(async subitem => {
+            subitem.author = await blogDao.searchUserById(subitem.user_id);
+            subitem.timeDate = formatTimestamp(subitem.timeDate);
+            subitem.replyee = item.author;
+            return subitem; 
+        }));
+        item.subcomment = processedSubcomments;
+    }
+    return comment;
+}
+
+
+
+  router.get('/article/:id', async (req, res) => {
+    try {
+        const articleId = req.params.id;
+        const article = await blogDao.getArticleById(articleId);
+        res.render('articlePage', { article }); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+
+    }
+});
+router.get('/_token', async (req, res) => {
     res.render('home');
 });
+
+// return time create by zliu442
+function generateTimestamp() {
+    return Date.now();
+}
+
+//format time create by zliu442
+function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+  
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+  
+    return `${year}/${month}/${day} ${hours}:${minutes}`;
+  }
 
 module.exports = router;
