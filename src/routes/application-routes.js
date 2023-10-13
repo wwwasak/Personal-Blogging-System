@@ -214,10 +214,12 @@ router.get('/category/:categoryName', async (req, res) => {
 });
 
 //route post.article create by zliu442
+
 router.post('/addarticle', async function (req, res) {
     let { title, content, categoryid } = req.body;
+    const timeStamp = generateTimestamp();
     try {
-        await blogDao.addArticle(title, content, userid, categoryid);
+        await blogDao.addArticle(title, content, timeStamp, userid, categoryid);
         res.send({
             code: 204,
             msg: "Add Article successful",
@@ -233,21 +235,20 @@ router.post('/addarticle', async function (req, res) {
 
 //route post.comment create by zliu442
 router.post('/addcomment', async function (req, res) {
-    let { content, timeDate, articleid, commentid } = req.body;
+    let {content, articleid} = req.body;
+    const timeStamp = generateTimestamp();
     try {
-        if ((articleid == null || commentid == null) && (articleid + commentid > 0)) {
-            await blogDao.addComment(userid, timeDate, content, articleid, commentid);
-            res.send({
-                code: 204,
-                msg: "Add Comment successful",
-            })
+        if ((articleid != null )) {
+            await blogDao.addComment(userid, timeStamp, content, articleid);
+            res.redirect(`/articlereader/${articleid}`);
         }
         else {
             res.send({
                 code: 402,
-                msg: "id conflict"
+                msg: "no article id"
             })
         }
+        
     } catch (error) {
         res.send({
             code: 401,
@@ -255,6 +256,72 @@ router.post('/addcomment', async function (req, res) {
         })
     }
 });
+
+//route post.subcomment create by zliu442 2023/10/13
+router.post('/addsubcomment', async function (req, res) {
+    let {content, parentComment} = req.body;
+    const articleid = (await blogDao.searchArticleByCommentid(parentComment)).article_id;
+    const timeStamp = generateTimestamp();
+    try {
+        if ((parentComment != null )) {
+            await blogDao.addSubComment(userid, timeStamp, content, parentComment);
+            res.redirect(`/articlereader/${articleid}`);
+        }
+        else {
+            res.send({
+                code: 402,
+                msg: "no comment id"
+            })
+        }
+        
+    } catch (error) {
+        res.send({
+            code: 401,
+            msg: "Add Comment failed"
+        })
+    }
+});
+
+//add read article feature and add comments here by zliu442 2023/10/13
+router.get('/articlereader/:id', async(req,res) => {
+    const articleid = req.params.id;
+    const articleInfo = await blogDao.searchArticleById(articleid);
+    const articleTime = formatTimestamp(articleInfo.postdate);
+    const authorInfo = await blogDao.searchUserById(articleInfo.userid);
+    const categoryInfo = await blogDao.searchCategoryById(articleInfo.categoryid);
+    const article = {
+        id : articleid,
+        title : articleInfo.title,
+        author : authorInfo.account, 
+        dateTime : articleTime,
+        category : categoryInfo.name,
+        content : articleInfo.content
+    }
+    const processedComments = await processComments(article,articleid);  
+    res.locals.comment = processedComments;
+    res.render('articlereader',{article:article});
+});
+
+//function processComments use for print comment list by zliu442
+async function processComments(article,articleid) {
+    const comment = await blogDao.searchCommentByArticleID(articleid);
+    
+    for (let item of comment) {
+        item.author = await blogDao.searchUserById(item.user_id);
+        item.timeDate = formatTimestamp(item.timeDate);
+        item.replyee = article.author;
+        const subcommentInfo = await blogDao.searchSubCommentByCommentID(item.id);
+        const processedSubcomments = await Promise.all(subcommentInfo.map(async subitem => {
+            subitem.author = await blogDao.searchUserById(subitem.user_id);
+            subitem.timeDate = formatTimestamp(subitem.timeDate);
+            subitem.replyee = item.author;
+            return subitem; 
+        }));
+        item.subcomment = processedSubcomments;
+    }
+    return comment;
+}
+
 
 
   router.get('/article/:id', async (req, res) => {
@@ -271,5 +338,24 @@ router.post('/addcomment', async function (req, res) {
 router.get('/_token', async (req, res) => {
     res.render('home');
 });
+
+// return time create by zliu442
+function generateTimestamp() {
+    return Date.now();
+}
+
+//format time create by zliu442
+function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+  
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+  
+    return `${year}/${month}/${day} ${hours}:${minutes}`;
+  }
 
 module.exports = router;

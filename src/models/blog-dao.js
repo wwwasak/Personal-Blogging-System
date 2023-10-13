@@ -40,20 +40,11 @@ async function deleteArticleById(id) {
   const result = await db.run(SQL`delete from article where id = ${id}`);
   return result;
 }
-async function searchArticleById(id) {
-  const db = await dbPromise;
-  const result = await db.all(SQL`select * from article where id = ${id}`);
-  return result;
-}
+
 // delete comment by id  ------txu470
 async function deleteCommentById(id) {
   const db = await dbPromise;
   const result = await db.run(SQL`delete from comments where id = ${id}`);
-  return result;
-}
-async function searchCommentById(id) {
-  const db = await dbPromise;
-  const result = await db.all(SQL`select * from comments where id = ${id}`);
   return result;
 }
 
@@ -100,18 +91,68 @@ async function getAllCategories() {
 
 
 //function addArticle by zliu442
-async function addArticle(title, content, userid, categoryid) {
+async function addArticle(title, content, timedate, userid, categoryid) {
   const db = await dbPromise;
-  const result = await db.run(SQL`insert into article (title, content, userid, categoryid) values
-    (${title}, ${content}, ${userid}, ${categoryid})`);
+  const result = await db.run(SQL`insert into article (title, content, postdate, userid, categoryid) values
+    (${title}, ${content}, ${timedate}, ${userid}, ${categoryid})`);
   return result;
 }
 
 //function addComment by zliu442
-async function addComment(userid, timeDate, content, articleid, commentid) {
+async function addComment(userid, timeDate, content, articleid) {
   const db = await dbPromise;
-  const result = await db.run(SQL`insert into comments (user_id, timeDate, content, parentComment, article_id) values
-    (${userid}, ${timeDate}, ${content}, ${commentid}, ${articleid})`);
+  const result = await db.run(SQL`insert into comments (user_id, timeDate, content, article_id) values
+    (${userid}, ${timeDate}, ${content}, ${articleid})`);
+  return result;
+}
+
+async function addSubComment(userid, timeDate, content, parentComment) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`insert into comments (user_id, timeDate, content, parentComment) values
+    (${userid}, ${timeDate}, ${content}, ${parentComment})`);
+  return result;
+}
+
+//function checkarticlebyid, userbyid and categorybyid by zliu442 - use for handlebar of articlereader 2023/10/12
+async function searchArticleById(id) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT * FROM article WHERE id = ${id}`);
+  return result;
+}
+
+async function searchCommentById(id) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT * FROM comments WHERE id = ${id}`);
+  return result;
+}
+
+async function searchUserById(id) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT * FROM user WHERE id = ${id}`);
+  return result;
+}
+
+async function searchCategoryById(id) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT * FROM category WHERE id = ${id}`);
+  return result;
+}
+
+async function searchCommentByArticleID(articleid){
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT * FROM comments WHERE article_id = ${articleid}`);
+  return result;
+}
+
+async function searchSubCommentByCommentID(commentid){
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT * FROM comments WHERE parentComment = ${commentid}`);
+  return result;
+}
+
+async function searchArticleByCommentid(commentid){
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT article_id FROM comments WHERE id = ${commentid}`);
   return result;
 }
 
@@ -124,7 +165,6 @@ async function checkCategory() {
 }
 
 
-
 module.exports = {
   searchUsersByAccount,
   searchArticlesByKeyword,
@@ -135,22 +175,30 @@ module.exports = {
   userAuthenticatorToken,
   updateArticle,
   deleteArticleById,
-  searchArticleById,
-    deleteCommentById,
-    searchCommentById,
-    getArticleById,
-    searchArticlesByCategoryName,
-    addArticle,
-    addComment,
-    getAllCategories,
-    getAllArticles,
-
-
-
+  deleteCommentById,
   searchArticlesByUserAccount,
+  searchArticlesByCategoryName,
+  addArticle,
+  addComment,
+  checkCategory,
+  searchArticleById,
+  searchCommentById,
+  searchUserById,
+  searchCategoryById,
+  searchCommentByArticleID,
+  searchSubCommentByCommentID,
+  addSubComment,
+  searchArticleByCommentid,
 
 
-  checkCategory
+
+    getArticleById,
+    getAllCategories,
+    getAllArticles
+
+
+
+
 
 };
 
