@@ -8,7 +8,7 @@ const blogDao = require('../models/blog-dao.js');
 let userid;
 
 
-  router.use(express.static('public'));
+router.use(express.static('public'));
 
 router.get('/', async (req, res) => {
     try {
@@ -37,6 +37,17 @@ router.get("/toRegister", function (req, res) {
 
 router.get("/toDelete", function (req, res) {
     res.render("deleteuser");
+});
+router.get("/toAdd",async function(req,res){
+    let categories = await blogDao.getAllCategories()
+    res.locals.category = categories;
+    res.render("addarticle")
+});
+router.get("/toProfile",async function(req,res){
+    let userAccount = await blogDao.searchUserById(userid);
+    console.log(userAccount)
+    res.locals.user = userAccount;
+    res.render("profile")
 });
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
@@ -69,8 +80,12 @@ router.get("/logout", function (req, res) {
     res.setToastMessage("Successfully logged out!");
     res.redirect("/login");
 });
-router.get("/toDashboard", verifyAuthenticated, function (req, res) {
-
+router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
+    let userInfo = await blogDao.searchUserById(userid);
+    let userName = userInfo.account;
+    res.locals.name = userName;
+    let userArticles = await blogDao.searchArticlesByUserAccount(userid)
+    res.locals.articles = userArticles; 
     res.render("dashboard");
 });
 
@@ -335,9 +350,7 @@ async function processComments(article,articleid) {
 
     }
 });
-router.get('/_token', async (req, res) => {
-    res.render('home');
-});
+
 
 // return time create by zliu442
 function generateTimestamp() {

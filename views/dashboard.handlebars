@@ -1,3 +1,16 @@
 <div>
-    Dashboard after login
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/toProfile">Profile</a>
+        <a href="/toAdd">Add your article</a>
+    </nav>
+    <h2>Hello {{name}}</h2><a href="/logout">Log out</a>
+    <h2>Your Articles:</h2>
+    {{#each articles}}
+    <div>
+        <h2><a href="/article/{{id}}">{{title}}</a></h2>
+        <p>{{content}}</p>
+    </div>
+    {{/each}}
 </div>

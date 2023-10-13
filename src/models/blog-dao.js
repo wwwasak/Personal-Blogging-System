@@ -7,6 +7,7 @@ async function searchUsersByAccount(userName, password) {
   const result = await db.all(SQL`select * from user where account = ${userName} AND password = ${password}`);
   return result;
 }
+
 async function registerUser(account, password, birthday, description) {
   const db = await dbPromise;
   const result = await db.run(SQL`INSERT INTO user (account,password,birthday,description) values (${account},${password},${birthday},${description});`);
