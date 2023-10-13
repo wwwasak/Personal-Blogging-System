@@ -63,6 +63,17 @@ async function searchArticlesByKeyword(keyword) {
       SELECT * FROM article WHERE LOWER(title) LIKE ${'%' + keyword.toLowerCase() + '%'}
     `);
 }
+  const getArticleById = async (articleId) => {
+    const db = await dbPromise;
+    const article = await db.get(SQL`SELECT * FROM article WHERE id = ${articleId}`);
+    return article;
+};
+
+const getAllArticles = async () => {
+  const db = await dbPromise;
+  const articles = await db.all(SQL`SELECT * FROM article`); 
+  return articles;
+};
 
 async function searchArticlesByUserAccount(userAccount) {
   const db = await dbPromise;
@@ -79,6 +90,13 @@ async function searchArticlesByCategoryName(categoryName) {
   `);
   return result;
 }
+
+async function getAllCategories() {
+  const db = await dbPromise;
+  const result = await db.all(`SELECT * FROM category`);
+  return result;
+}
+
 
 
 //function addArticle by zliu442
@@ -118,12 +136,21 @@ module.exports = {
   updateArticle,
   deleteArticleById,
   searchArticleById,
-  deleteCommentById,
-  searchCommentById,
+    deleteCommentById,
+    searchCommentById,
+    getArticleById,
+    searchArticlesByCategoryName,
+    addArticle,
+    addComment,
+    getAllCategories,
+    getAllArticles,
+
+
+
   searchArticlesByUserAccount,
-  searchArticlesByCategoryName,
-  addArticle,
-  addComment,
+
+
   checkCategory
+
 };
 

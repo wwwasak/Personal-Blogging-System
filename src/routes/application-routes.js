@@ -6,9 +6,24 @@ const { verifyAuthenticated } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
 
 let userid;
-router.get('/', (req, res) => {
-    res.render('home');
+
+
+  router.use(express.static('public'));
+
+router.get('/', async (req, res) => {
+    try {
+        const categories = await blogDao.getAllCategories();
+        const articles = await blogDao.getAllArticles();
+        articles.forEach(article => {
+            article.content = article.content.substring(0, 50) + '...';
+        });
+        res.render('home', { categories , articles });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
 });
+
 
 // user router created, register, delete ----- yji413
 
@@ -176,13 +191,34 @@ router.get('/search', async (req, res) => {
     try {
         const keyword = req.query.keyword;
         const articles = await blogDao.searchArticlesByKeyword(keyword);
+        articles.forEach(article => {
+            article.content = article.content.substring(0, 50) + '...';
+        });
         res.render('searchResults', { articles });
     } catch (error) {
         console.error(error);
         res.status(200).json({ msg: "Error" });
     }
 });
-//route post.article create by zliu442, modified 2023/10/11 for category check
+
+router.get('/category/:categoryName', async (req, res) => {
+    try {
+        const categoryName = req.params.categoryName;
+        const articles = await blogDao.searchArticlesByCategoryName(categoryName);
+        
+      
+        articles.forEach(article => {
+            article.content = article.content.substring(0, 50) + '...';
+        });
+
+        res.render('categoryPage', { articles, categoryName }); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+//route post.article create by zliu442
 router.post('/addarticle', async function (req, res) {
     let { title, content, categoryid } = req.body;
     try {
@@ -226,18 +262,15 @@ router.post('/addcomment', async function (req, res) {
 });
 
 
-
-router.get('/user/search', async (req, res) => {
+  router.get('/article/:id', async (req, res) => {
     try {
-        if (!req.session.userid) {
-            return res.status(403).json({ msg: "User not logged in" });
-        }
-        const keyword = req.query.keyword;
-        const articles = await blogDao.searchUserArticlesByKeyword(req.session.userid, keyword);
-        res.json({ articles });
+        const articleId = req.params.id;
+        const article = await blogDao.getArticleById(articleId);
+        res.render('articlePage', { article }); 
     } catch (error) {
         console.error(error);
-        res.status(200).json({ msg: "Error" });
+        res.status(500).send('Server Error');
+
     }
 });
 router.get('/_token', async (req, res) => {
