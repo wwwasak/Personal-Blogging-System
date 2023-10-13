@@ -92,6 +92,7 @@ CREATE TABLE comments (
     article_id integer,
     FOREIGN KEY (user_id) REFERENCES user(id), 
     FOREIGN KEY (article_id) REFERENCES article(id)
+    FOREIGN KEY (parentComment) REFERENCES comments(id)
 );
 INSERT INTO comments (user_id,content,parentComment, article_id)
 VALUES

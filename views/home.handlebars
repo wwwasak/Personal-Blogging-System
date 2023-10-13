@@ -3,7 +3,10 @@
 <a href="./login">Login here please! </a><br>
 <input type='text' id='articleId' placeholder='Article Id' />
 <button class='deleteArticle'>Delete Article</button>
-
+<form action='/search' method='get'>
+    <input type='text' name='keyword' placeholder='Search for articles...' />
+    <button type='submit'>Search</button>
+</form>
 <form action="/search" method="get">
     <input type="text" name="keyword" placeholder="Search for articles...">
     <button type="submit">Search</button>
@@ -15,6 +18,7 @@
     <p>{{content}}</p>
 </div>
 {{/each}}
+
 {{! add a input and a button to delete a comment-----txu470 }}
 <input type='text' id='commentId' placeholder='Comment Id' />
 <button class='deleteComment'>Delete Comment</button>
@@ -32,5 +36,5 @@
     response= await fetch(`/article/${articleId}/comment/${commentId}`, {
     method: 'DELETE' }); const data = await response.json(); console.log(data);
     }); });
-</script>
 
+</script>
