@@ -3,57 +3,66 @@ const { dbPromise } = require('../db/database.js');
 
 // user search, register and delete -------yji413
 async function searchUsersByAccount(userName, password) {
-    const db = await dbPromise;
-    const result = await db.all(SQL`select * from user where account = ${userName} AND password = ${password}`);
-    return result;
+  const db = await dbPromise;
+  const result = await db.all(SQL`select * from user where account = ${userName} AND password = ${password}`);
+  return result;
 }
-async function registerUser(account,password,birthday,description){
-    const db = await dbPromise;
-    const result = await db.run(SQL`INSERT INTO user (account,password,birthday,description) values (${account},${password},${birthday},${description});`);
-    return result;
+async function registerUser(account, password, birthday, description) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`INSERT INTO user (account,password,birthday,description) values (${account},${password},${birthday},${description});`);
+  return result;
 }
-async function deleteUser(id){
-    const db = await dbPromise;
-    const result = await db.run(SQL`DELETE FROM user WHERE id = ${id};`);
-    return result;
+async function deleteUser(id) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`DELETE FROM user WHERE id = ${id};`);
+  return result;
+}
+async function updateToken(id,token){
+  const db = await dbPromise;
+  const result = await db.run(SQL`UPDATE user SET token = ${token} WHERE id = ${id};`);
+  return result;
+}
+async function userAuthenticatorToken(token) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`SELECT * FROM user WHERE token = ${token};`);
+  return result;
 }
 
-async function updateArticle(userid, title, content, categoryid){
-    const db = await dbPromise;
-    const result = await db.run(SQL`update article set title = ${title}, content = ${content},categoryid = ${categoryid} where userid = ${userid}`);
-    return result;
+async function updateArticle(userid, title, content, categoryid) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid} where userid = ${userid}`);
+  return result;
 }
 
 // delete article by id  ------txu470
 async function deleteArticleById(id) {
-    const db = await dbPromise;
-    const result = await db.run(SQL`delete from article where id = ${id}`);
-    return result;
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from article where id = ${id}`);
+  return result;
 }
 async function searchArticleById(id) {
-    const db = await dbPromise;
-    const result = await db.all(SQL`select * from article where id = ${id}`);
-    return result;
+  const db = await dbPromise;
+  const result = await db.all(SQL`select * from article where id = ${id}`);
+  return result;
 }
 // delete comment by id  ------txu470
 async function deleteCommentById(id) {
-    const db = await dbPromise;
-    const result = await db.run(SQL`delete from comments where id = ${id}`);
-    return result;
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from comments where id = ${id}`);
+  return result;
 }
 async function searchCommentById(id) {
-    const db = await dbPromise;
-    const result = await db.all(SQL`select * from comments where id = ${id}`);
-    return result;
+  const db = await dbPromise;
+  const result = await db.all(SQL`select * from comments where id = ${id}`);
+  return result;
 }
 
 async function searchArticlesByKeyword(keyword) {
-    const db = await dbPromise;
-    return db.all(SQL`
+  const db = await dbPromise;
+  return db.all(SQL`
       SELECT * FROM article WHERE LOWER(title) LIKE ${'%' + keyword.toLowerCase() + '%'}
     `);
-  }
-
+}
   const getArticleById = async (articleId) => {
     const db = await dbPromise;
     const article = await db.get(SQL`SELECT * FROM article WHERE id = ${articleId}`);
@@ -65,6 +74,12 @@ const getAllArticles = async () => {
   const articles = await db.all(SQL`SELECT * FROM article`); 
   return articles;
 };
+
+async function searchArticlesByUserAccount(userAccount) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT * FROM article WHERE userid = ${userAccount}`);
+  return result;
+}
 async function searchArticlesByCategoryName(categoryName) {
   const db = await dbPromise;
   const result = await db.all(SQL`
@@ -85,31 +100,42 @@ async function getAllCategories() {
 
 
 //function addArticle by zliu442
-async function addArticle(title, content, userid, categoryid){
-    const db = await dbPromise;
-    const result = await db.run(SQL`insert into article (title, content, userid, categoryid) values
+async function addArticle(title, content, userid, categoryid) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`insert into article (title, content, userid, categoryid) values
     (${title}, ${content}, ${userid}, ${categoryid})`);
-    return result;
+  return result;
 }
 
 //function addComment by zliu442
-async function addComment(userid, timeDate, content, articleid, commentid){
-    const db = await dbPromise;
-    const result = await db.run(SQL`insert into comments (user_id, timeDate, content, parentComment, article_id) values
+async function addComment(userid, timeDate, content, articleid, commentid) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`insert into comments (user_id, timeDate, content, parentComment, article_id) values
     (${userid}, ${timeDate}, ${content}, ${commentid}, ${articleid})`);
-    return result;
+  return result;
+}
+
+//function checkCategory by zliu442 - use for handlebar of add article 2023/10/11
+async function checkCategory() {
+  const db = await dbPromise;
+  return db.all(SQL`
+      SELECT id, name FROM category
+    `);
 }
 
 
-  
+
 module.exports = {
-    searchUsersByAccount, 
-    searchArticlesByKeyword,
-    registerUser,
-    deleteUser,
+  searchUsersByAccount,
+  searchArticlesByKeyword,
+  searchUsersByAccount,
+  registerUser,
+  deleteUser,
+  updateToken,
+  userAuthenticatorToken,
   updateArticle,
   deleteArticleById,
-    searchArticleById,
+  searchArticleById,
     deleteCommentById,
     searchCommentById,
     getArticleById,
@@ -117,7 +143,14 @@ module.exports = {
     addArticle,
     addComment,
     getAllCategories,
-    getAllArticles
+    getAllArticles,
+
+
+
+  searchArticlesByUserAccount,
+
+
+  checkCategory
 
 };
 

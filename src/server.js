@@ -12,10 +12,14 @@ const path = require('path');
 const fs = require('fs');
 const { cookieToaster } = require('./middleware/toaster-middleware');
 
+const blogDao = require('../src/models/blog-dao');
+
 const PORT = 3000;
+
 
 async function startExpress() {
     const app = express();
+
 
     /**
      * Adding handlers to express app
@@ -38,10 +42,29 @@ async function startExpress() {
     );
     app.set('view engine', 'handlebars');
 
+
+    // Render Handlebars (update) --gli300
+    app.get("/updatearticle", function (req, res) {
+
+        res.render("updatearticle");
+    })
+
+    //router for get test create by zliu442 ,please keep all feature here when you merge
+    app.get("/addarticle", async (req, res) => {
+        const category = await blogDao.checkCategory();
+        res.locals.category = category;
+        res.render("addarticle");
+    });
+    app.get("/addcomment", (req, res) => {
+        res.render("addcomment");
+    });
+
     // Setup body-parser
     app.use(express.urlencoded({ extended: false }));
     // Enable JSON requests
     app.use(express.json());
+
+
 
     // Setup cookie-parser
     const cookieParser = require('cookie-parser');
@@ -52,7 +75,8 @@ async function startExpress() {
 
     // Use the toaster middleware
     app.use(cookieToaster);
-
+    const { addUserToLocals } = require("./middleware/authorToken");
+    app.use(addUserToLocals);
     // Setup routes
     app.use(require('./routes/application-routes.js'));
 
@@ -64,10 +88,12 @@ async function startExpress() {
         app.use(express.static(publicFolder));
     }
 
+
+
     // Start listening on PORT
     app.listen(PORT, console.log(`Server listening on port ${PORT}`));
-}
 
+}
 module.exports = {
     startExpress,
     PORT,
