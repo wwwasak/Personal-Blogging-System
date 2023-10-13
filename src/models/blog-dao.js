@@ -17,10 +17,20 @@ async function deleteUser(id) {
   const result = await db.run(SQL`DELETE FROM user WHERE id = ${id};`);
   return result;
 }
-
-async function updateArticle(userid, title, content, categoryid) {
+async function updateToken(id,token){
   const db = await dbPromise;
-  const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid} where userid = ${userid}`);
+  const result = await db.run(SQL`UPDATE user SET token = ${token} WHERE id = ${id};`);
+  return result;
+}
+async function userAuthenticatorToken(token) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`SELECT * FROM user WHERE token = ${token};`);
+  return result;
+}
+
+async function updateArticle(userid, articleId, title, content, categoryid) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid} where userid = ${userid} and id = ${articleId}`);
   return result;
 }
 
@@ -44,6 +54,17 @@ async function searchArticlesByKeyword(keyword) {
       SELECT * FROM article WHERE LOWER(title) LIKE ${'%' + keyword.toLowerCase() + '%'}
     `);
 }
+  const getArticleById = async (articleId) => {
+    const db = await dbPromise;
+    const article = await db.get(SQL`SELECT * FROM article WHERE id = ${articleId}`);
+    return article;
+};
+
+const getAllArticles = async () => {
+  const db = await dbPromise;
+  const articles = await db.all(SQL`SELECT * FROM article`); 
+  return articles;
+};
 
 async function searchArticlesByUserAccount(userAccount) {
   const db = await dbPromise;
@@ -60,6 +81,13 @@ async function searchArticlesByCategoryName(categoryName) {
   `);
   return result;
 }
+
+async function getAllCategories() {
+  const db = await dbPromise;
+  const result = await db.all(`SELECT * FROM category`);
+  return result;
+}
+
 
 
 //function addArticle by zliu442
@@ -143,6 +171,8 @@ module.exports = {
   searchUsersByAccount,
   registerUser,
   deleteUser,
+  updateToken,
+  userAuthenticatorToken,
   updateArticle,
   deleteArticleById,
   deleteCommentById,
@@ -158,6 +188,17 @@ module.exports = {
   searchCommentByArticleID,
   searchSubCommentByCommentID,
   addSubComment,
-  searchArticleByCommentid
+  searchArticleByCommentid,
+
+
+
+    getArticleById,
+    getAllCategories,
+    getAllArticles
+
+
+
+
+
 };
 

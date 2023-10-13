@@ -1,8 +1,23 @@
 <h1>Edit Article</h1>
 <form id="edit-article-form" method="get" action="/updateArticleRoutes">
     <input type="hidden" name="userid">
+    <input type="hidden" name="articleId" id="articleId">
     <input type="text" name="title" placeholder="Title">
     <textarea name="content" placeholder="Content">{{content}}</textarea>
     <input type="category" name="categoryid" placeholder="category">
-    <button type="submit">Update Article</button>
+    <button type="submit">Submit</button>
 </form>
+
+<script>
+    // 获取查询参数部分，例如 "?articleId=123"
+const queryString = window.location.search;
+
+// 使用 URLSearchParams 对象解析查询参数
+const urlParams = new URLSearchParams(queryString);
+
+// 通过参数名获取 articleId 的值
+const articleId = urlParams.get('articleId');
+
+document.getElementById('articleId').value = articleId;
+
+</script>

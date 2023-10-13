@@ -1,14 +1,20 @@
+
 {{! add a input and a button to delete a article by router'/article/:id' }}
+<a href="./login">Login here please! </a><br>
 <input type='text' id='articleId' placeholder='Article Id' />
 <button class='deleteArticle'>Delete Article</button>
-
 
 <form action="/search" method="get">
     <input type="text" name="keyword" placeholder="Search for articles...">
     <button type="submit">Search</button>
 </form>
-
-
+<h2>All Articles:</h2>
+{{#each articles}}
+<div>
+    <h2><a href="/article/{{id}}">{{title}}</a></h2>
+    <p>{{content}}</p>
+</div>
+{{/each}}
 {{! add a input and a button to delete a comment-----txu470 }}
 <input type='text' id='commentId' placeholder='Comment Id' />
 <button class='deleteComment'>Delete Comment</button>
@@ -27,3 +33,4 @@
     method: 'DELETE' }); const data = await response.json(); console.log(data);
     }); });
 </script>
+
