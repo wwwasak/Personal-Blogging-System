@@ -1,22 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const { dbPromise } = require('../db/database.js');
-
+const { v4: uuidv4 } = require("uuid");
+const { verifyAuthenticated } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
 
-const userid = 1;
+let userid;
 router.get('/', (req, res) => {
     res.render('home');
 });
 
 // user router created, register, delete ----- yji413
 
-router.get("/", function (req, res) {
-    res.render("login");
+router.get("/login", function (req, res) {
+    res.render("userLogin");
 });
+
 router.get("/toRegister", function (req, res) {
     res.render("register");
 });
+
 router.get("/toDelete", function (req, res) {
     res.render("deleteuser");
 });
@@ -24,17 +27,18 @@ router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
         let userDetails = await blogDao.searchUsersByAccount(account, password)
+        console.log(userDetails)
         if (userDetails.length > 0) {
-            res.send({
-                code: 200,
-                msg: "Login successful",
-                data: userDetails[0]
-            })
+            let loginToken = uuidv4();
+            await blogDao.updateToken(userDetails[0].id, loginToken)
+            userid = userDetails[0].id
+            res.cookie("authToken", loginToken)
+            res.locals.user = userDetails;
+            res.redirect("/toDashboard")
         } else {
-            res.send({
-                code: 500,
-                msg: "Login failed"
-            })
+            res.locals.user = null;
+            res.setToastMessage("Authentication failed!");
+            res.redirect("/login");
 
         }
     } catch (error) {
@@ -43,6 +47,16 @@ router.post('/userLogin', async function (req, res) {
             msg: "Login failed"
         })
     }
+});
+
+router.get("/logout", function (req, res) {
+    res.clearCookie("authToken");
+    res.setToastMessage("Successfully logged out!");
+    res.redirect("/login");
+});
+router.get("/toDashboard", verifyAuthenticated, function (req, res) {
+
+    res.render("dashboard");
 });
 
 router.post('/userRegister', async function (req, res) {
@@ -60,7 +74,7 @@ router.post('/userRegister', async function (req, res) {
         })
     }
 });
-router.get('/userDelete',async function(req,res){
+router.get('/userDelete', async function (req, res) {
     let id = req.query.userid;
     try {
         await blogDao.deleteUser(id)
@@ -78,7 +92,7 @@ router.get('/userDelete',async function(req,res){
 
 
 // This is a router to get the request of update article from users
-router.get('/updateArticleRoutes', async function(req, res) {
+router.get('/updateArticleRoutes', async function (req, res) {
     try {
         const { title, content, categoryid } = req.query;
         // const title = req.query.title;
@@ -89,7 +103,7 @@ router.get('/updateArticleRoutes', async function(req, res) {
         // console.log(categoryid);
         // Call updateArticle() to undate articel details
         const result = await blogDao.updateArticle(userid, title, content, categoryid);
-       // return successful response
+        // return successful response
         res.send({ message: 'Article updated successfully', result });
     } catch (error) {
         // deal error message
@@ -226,7 +240,7 @@ router.get('/user/search', async (req, res) => {
         res.status(200).json({ msg: "Error" });
     }
 });
-router.get('/', async (req, res) => {
+router.get('/_token', async (req, res) => {
     res.render('home');
 });
 
