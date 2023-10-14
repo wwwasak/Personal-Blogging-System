@@ -43,22 +43,6 @@ async function startExpress() {
     app.set('view engine', 'handlebars');
 
 
-    // Render Handlebars (update) --gli300
-    app.get("/updatearticle", function (req, res) {
-
-        res.render("updatearticle");
-    })
-
-    //router for get test create by zliu442 ,please keep all feature here when you merge
-    app.get("/addarticle", async (req, res) => {
-        const category = await blogDao.checkCategory();
-        res.locals.category = category;
-        res.render("addarticle");
-    });
-
-    app.get("/addcomment", (req, res) => {
-        res.render("addcomment");
-    });
     // Setup body-parser
     app.use(express.urlencoded({ extended: false }));
     // Enable JSON requests

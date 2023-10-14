@@ -100,3 +100,24 @@ VALUES
     (2,'Here is the second comment.', NULL, 2),
     (3,'A reply to the first comment.', 1, NULL), 
     (4,'A reply to the second comment.',3, NULL); 
+
+-- subscribe table create and test data filled--zliu442
+DROP TABLE if exists subscribes;
+CREATE TABLE subscribes(
+    id integer not null PRIMARY KEY,
+    subscribe_by_userid integer,
+    subscribe_to_userid integer,
+    FOREIGN KEY (subscribe_by_userid) REFERENCES user(id), 
+    FOREIGN KEY (subscribe_to_userid) REFERENCES user(id)
+);
+
+INSERT INTO subscribes (id, subscribe_by_userid, subscribe_to_userid) 
+VALUES
+    (7,1,5)
+    (1,1,2),
+    (2,1,3),
+    (3,1,4),
+    (4,2,1),
+    (5,3,1),
+    (6,4,1)
+

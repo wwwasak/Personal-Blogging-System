@@ -157,6 +157,19 @@ async function searchArticleByCommentid(commentid){
   return result;
 }
 
+//create subscribebylist and subscribetolist function by zliu442
+async function subscribebyList(userid){
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT user.id, user.account FROM subscribes JOIN user ON subscribes.subscribe_by_userid = user.id WHERE subscribe_to_userid = ${userid}`);
+  return result;
+}
+
+async function subscribetoList(userid){
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT user.id, user.account FROM subscribes JOIN user ON subscribes.subscribe_to_userid = user.id WHERE subscribe_by_userid = ${userid}`);
+  return result;
+}
+
 //function checkCategory by zliu442 - use for handlebar of add article 2023/10/11
 async function checkCategory() {
   const db = await dbPromise;
@@ -190,16 +203,10 @@ module.exports = {
   searchSubCommentByCommentID,
   addSubComment,
   searchArticleByCommentid,
-
-
-
-    getArticleById,
-    getAllCategories,
-    getAllArticles
-
-
-
-
-
+  getArticleById,
+  getAllCategories,
+  getAllArticles,
+  subscribebyList,
+  subscribetoList
 };
 

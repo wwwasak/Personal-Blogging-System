@@ -83,6 +83,7 @@ router.get("/logout", function (req, res) {
 router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
     let userInfo = await blogDao.searchUserById(userid);
     let userName = userInfo.account;
+    res.locals.userid = userInfo.id;
     res.locals.name = userName;
     let userArticles = await blogDao.searchArticlesByUserAccount(userid)
     res.locals.articles = userArticles; 
@@ -288,6 +289,14 @@ router.post('/addcomment', async function (req, res) {
 
 //route post.subcomment create by zliu442 2023/10/13
 router.post('/addsubcomment', async function (req, res) {
+    try {
+        const articleId = req.params.id;
+        const article = await blogDao.getArticleById(articleId);
+        res.render('articlePage', { article }); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
     let {content, parentComment} = req.body;
     const articleid = (await blogDao.searchArticleByCommentid(parentComment)).article_id;
     const timeStamp = generateTimestamp();
@@ -319,22 +328,27 @@ router.post('/addsubcomment', async function (req, res) {
 
 //add read article feature and add comments here by zliu442 2023/10/13
 router.get('/article/:id', async(req,res) => {
-    const articleid = req.params.id;
-    const articleInfo = await blogDao.searchArticleById(articleid);
-    const articleTime = formatTimestamp(articleInfo.postdate);
-    const authorInfo = await blogDao.searchUserById(articleInfo.userid);
-    const categoryInfo = await blogDao.searchCategoryById(articleInfo.categoryid);
-    const article = {
-        id : articleid,
-        title : articleInfo.title,
-        author : authorInfo.account, 
-        dateTime : articleTime,
-        category : categoryInfo.name,
-        content : articleInfo.content
+    try {
+        const articleid = req.params.id;
+        const articleInfo = await blogDao.searchArticleById(articleid);
+        const articleTime = formatTimestamp(articleInfo.postdate);
+        const authorInfo = await blogDao.searchUserById(articleInfo.userid);
+        const categoryInfo = await blogDao.searchCategoryById(articleInfo.categoryid);
+        const article = {
+            id : articleid,
+            title : articleInfo.title,
+            author : authorInfo.account, 
+            dateTime : articleTime,
+            category : categoryInfo.name,
+            content : articleInfo.content
+        }
+        const processedComments = await processComments(article,articleid);  
+        res.locals.comment = processedComments;
+        res.render('articlereader',{article:article});
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
     }
-    const processedComments = await processComments(article,articleid);  
-    res.locals.comment = processedComments;
-    res.render('articlereader',{article:article});
 });
 
 //function processComments use for print comment list by zliu442
@@ -358,18 +372,24 @@ async function processComments(article,articleid) {
 }
 
 
-
-  router.get('/article/:id', async (req, res) => {
+//subscribelist route create by zliu442
+router.get('/subscribelist/:userid', async(req,res) => {  
     try {
-        const articleId = req.params.id;
-        const article = await blogDao.getArticleById(articleId);
-        res.render('articlePage', { article }); 
+        const userId = req.params.userid;
+        const subscriber = await blogDao.subscribetoList(userId);
+        const follower = await blogDao.subscribebyList(userId);
+     
+        res.locals.subscriber = subscriber;
+        res.locals.follower = follower;
+        res.locals.user = await blogDao.searchUserById(userId);
+        res.render('subscribelist'); 
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
-
     }
 });
+
+
 
 
 // return time create by zliu442
