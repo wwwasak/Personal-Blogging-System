@@ -337,7 +337,7 @@ router.post('/addcomment', async function (req, res) {
         else if (userid == null) {
             res.send({
                 code: 408,
-                msg: "no or user id"
+                msg: "no user id"
             })
         }
         else {
@@ -408,15 +408,28 @@ router.get('/article/:id', async (req, res) => {
         const articleTime = formatTimestamp(articleInfo.postdate);
         const authorInfo = await blogDao.searchUserById(articleInfo.userid);
         const categoryInfo = await blogDao.searchCategoryById(articleInfo.categoryid);
+        const hasLiked = await blogDao.hasUserLikedArticle(userid, articleid);
+        const likeCount = await blogDao.countLikesForArticle(articleid);
+        const likeUsers = await blogDao.getUsersWhoLikedArticle(articleid);
+
         const article = {
+
             id: articleid,
             title: articleInfo.title,
             author: authorInfo.account,
             authorid: authorInfo.id,
             dateTime: articleTime,
             category: categoryInfo.name,
-            content: articleInfo.content
+            content: articleInfo.content,
+            hasLiked: hasLiked,
+            likeColor: hasLiked ? 'red' : 'black',
+            likeCount: likeCount,
+            usersLiked: likeUsers,
+            currentUser: {
+                id: userid
+            }
         }
+
         const processedComments = await processComments(article, articleid);
 
         //check if subscribed
@@ -431,40 +444,6 @@ router.get('/article/:id', async (req, res) => {
         console.error(error);
         res.status(500).send('Server Error');
     }
-
-    const articleid = req.params.id;
-    const articleInfo = await blogDao.searchArticleById(articleid);
-    const articleTime = formatTimestamp(articleInfo.postdate);
-    const authorInfo = await blogDao.searchUserById(articleInfo.userid);
-    const categoryInfo = await blogDao.searchCategoryById(articleInfo.categoryid);
-
-    const hasLiked = await blogDao.hasUserLikedArticle(userid, articleid);
-
-
-    const likeCount = await blogDao.countLikesForArticle(articleid);
-
-
-    const likeUsers = await blogDao.getUsersWhoLikedArticle(articleid);
-
-    const article = {
-
-        id: articleid,
-        title: articleInfo.title,
-        author: authorInfo.account,
-        dateTime: articleTime,
-        category: categoryInfo.name,
-        content: articleInfo.content,
-        hasLiked: hasLiked,
-        likeColor: hasLiked ? 'red' : 'black',
-        likeCount: likeCount,
-        usersLiked: likeUsers,
-        currentUser: {
-            id: userid
-        }
-    }
-    const processedComments = await processComments(article, articleid);
-    res.locals.comment = processedComments;
-    res.render('articlereader', { article: article })
 });
 
 //function processComments use for print comment list by zliu442
