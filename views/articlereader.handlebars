@@ -114,3 +114,21 @@
 
 
 </div>
+
+
+<button id="like-button" data-article-id="{{article.id}}" data-user-id="{{currentUser.id}}">
+    <span id="like-icon" style="color: black;">❤️</span>
+</button>
+<p id="like-count">{{likesCount}} likes</p>
+
+
+<h2>Users who liked this article:</h2>
+<ul id="users-liked-list">
+    {{#each usersLiked}}
+        <li><a href="/user/{{this.id}}">{{this.account}}</a></li>
+    {{/each}}
+</ul>
+<script src="/likeFunctionality.js"></script>
+
+
+
