@@ -49,6 +49,8 @@ async function deleteCommentById(id) {
   return result;
 }
 
+
+//search by keywords -----zli178
 async function searchArticlesByKeyword(keyword) {
   const db = await dbPromise;
   return db.all(SQL`
@@ -88,6 +90,58 @@ async function getAllCategories() {
   const result = await db.all(`SELECT * FROM category`);
   return result;
 }
+
+
+async function hasUserLikedArticle(userId, articleId) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT * FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
+  return result ? true : false;
+}
+
+
+async function likeArticle(userId, articleId) {
+  const db = await dbPromise;
+  // 检查是否已经存在相同的喜欢记录
+  const existingLike = await db.get(SQL`SELECT * FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
+  if (existingLike) {
+      return; // 如果已经存在喜欢记录，不执行插入操作
+  }
+  const result = await db.run(SQL`INSERT INTO userlike (user_id, article_id) VALUES (${userId}, ${articleId})`);
+  return result;
+}
+
+async function unlikeArticle(userId, articleId) {
+  const db = await dbPromise;
+  // 删除喜欢记录
+  const result = await db.run(SQL`DELETE FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
+  return result;
+}
+
+
+async function countLikesForArticle(articleId) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT COUNT(*) as likesCount FROM userlike WHERE article_id = ${articleId}`);
+  return result.likesCount;
+}
+
+
+async function getArticlesLikedByUser(userId) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT article.* FROM article INNER JOIN userlike ON article.id = userlike.article_id WHERE userlike.user_id = ${userId}`);
+  return result;
+}
+async function getUsersWhoLikedArticle(articleId) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`
+      SELECT user.id, user.account FROM user 
+      JOIN userlike ON user.id = userlike.user_id 
+      WHERE userlike.article_id = ${articleId}
+  `);
+  return result;
+}
+
+
+
 
 
 
@@ -157,6 +211,42 @@ async function searchArticleByCommentid(commentid){
   return result;
 }
 
+//create subscribebylist and subscribetolist function by zliu442
+async function subscribebyList(userid){
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT user.id, user.account FROM subscribes JOIN user ON subscribes.subscribe_by_userid = user.id WHERE subscribe_to_userid = ${userid}`);
+  return result;
+}
+
+async function subscribetoList(userid){
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT user.id, user.account FROM subscribes JOIN user ON subscribes.subscribe_to_userid = user.id WHERE subscribe_by_userid = ${userid}`);
+  return result;
+}
+
+//create add, delete and check subscribe relationship functions by zliu442
+async function addSubscribe(subscribe_by_userid, subscribe_to_userid) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`insert into subscribes (subscribe_by_userid, subscribe_to_userid) values
+    (${subscribe_by_userid}, ${subscribe_to_userid})`);
+  return result;
+}
+
+async function deleteSubscribe(subscribe_by_userid, subscribe_to_userid) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from subscribes where subscribe_by_userid = ${subscribe_by_userid} and subscribe_to_userid = ${subscribe_to_userid} `);
+  return result;
+}
+
+async function checkSubscribe(subscribe_by_userid, subscribe_to_userid) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`
+  SELECT COUNT(*) as count 
+  FROM subscribes 
+  WHERE subscribe_by_userid = ${subscribe_by_userid} AND subscribe_to_userid = ${subscribe_to_userid}`);
+return result.count > 0;
+}
+
 //function checkCategory by zliu442 - use for handlebar of add article 2023/10/11
 async function checkCategory() {
   const db = await dbPromise;
@@ -164,6 +254,8 @@ async function checkCategory() {
       SELECT id, name FROM category
     `);
 }
+
+
 
 
 module.exports = {
@@ -190,16 +282,20 @@ module.exports = {
   searchSubCommentByCommentID,
   addSubComment,
   searchArticleByCommentid,
-
-
-
-    getArticleById,
-    getAllCategories,
-    getAllArticles
-
-
-
-
+  getArticleById,
+  getAllCategories,
+  getAllArticles,
+  subscribebyList,
+  subscribetoList,
+  addSubscribe,
+  deleteSubscribe,
+  checkSubscribe,
+   hasUserLikedArticle,
+  likeArticle,
+  unlikeArticle,
+  countLikesForArticle,
+  getArticlesLikedByUser,
+  getUsersWhoLikedArticle
 
 };
 
