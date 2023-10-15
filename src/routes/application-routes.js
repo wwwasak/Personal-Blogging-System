@@ -83,6 +83,7 @@ router.get("/logout", function (req, res) {
 router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
     let userInfo = await blogDao.searchUserById(userid);
     let userName = userInfo.account;
+    res.locals.userid = userInfo.id;
     res.locals.name = userName;
     let userArticles = await blogDao.searchArticlesByUserAccount(userid)
     res.locals.articles = userArticles;
@@ -197,6 +198,9 @@ router.delete('/article/:id/comment/:commentid', async function (req, res) {
         })
     }
 });
+
+
+//search by zli178
 router.get('/search', async (req, res) => {
     try {
         const keyword = req.query.keyword;
@@ -227,6 +231,59 @@ router.get('/category/:categoryName', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+
+
+
+router.get('/hasUserLikedArticle', async (req, res) => {
+    const { userId, articleId } = req.query;
+    const hasLiked = await blogDao.hasUserLikedArticle(userId, articleId); 
+    res.json({ hasLiked });
+});
+
+
+router.post('/likeArticle', verifyAuthenticated, async (req, res) => {
+    const { userId, articleId } = req.body;
+
+    try {
+        
+        await blogDao.likeArticle(userId, articleId);
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+router.post('/unlikeArticle', verifyAuthenticated, async (req, res) => {
+    const { userId, articleId } = req.body;
+
+    try {
+        
+        await blogDao.unlikeArticle(userId, articleId);
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.get('/countLikesForArticle', async (req, res) => {
+    const { articleId } = req.query;
+    const count = await blogDao.countLikesForArticle(articleId); 
+    res.json({ count });
+});
+
+router.get('/whoLikedArticle', async (req, res) => {
+    const { articleId } = req.query;
+    const users = await blogDao.getUsersWhoLikedArticle(articleId); 
+    res.json(users);
+});
+
+
+
 
 //route post.article create by zliu442
 //when add new article, will notify subscribers---txu470
@@ -299,7 +356,19 @@ router.post('/addcomment', async function (req, res) {
 
 //route post.subcomment create by zliu442 2023/10/13
 router.post('/addsubcomment', async function (req, res) {
+
     let { content, parentComment } = req.body;
+
+    try {
+        const articleId = req.params.id;
+        const article = await blogDao.getArticleById(articleId);
+        res.render('articlePage', { article }); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+    let {content, parentComment} = req.body;
+
     const articleid = (await blogDao.searchArticleByCommentid(parentComment)).article_id;
     const timeStamp = generateTimestamp();
     try {
@@ -329,13 +398,55 @@ router.post('/addsubcomment', async function (req, res) {
 });
 
 //add read article feature and add comments here by zliu442 2023/10/13
-router.get('/article/:id', async (req, res) => {
+
+router.get('/article/:id', async(req,res) => {
+
+    try {
+        const articleid = req.params.id;
+        const articleInfo = await blogDao.searchArticleById(articleid);
+        const articleTime = formatTimestamp(articleInfo.postdate);
+        const authorInfo = await blogDao.searchUserById(articleInfo.userid);
+        const categoryInfo = await blogDao.searchCategoryById(articleInfo.categoryid);
+        const article = {
+            id : articleid,
+            title : articleInfo.title,
+            author : authorInfo.account, 
+            authorid : authorInfo.id,
+            dateTime : articleTime,
+            category : categoryInfo.name,
+            content : articleInfo.content
+        }
+        const processedComments = await processComments(article,articleid);  
+
+        //check if subscribed
+        res.locals.isSubscribed = await ifSubscribed(userid, article.authorid);
+
+        res.locals.userid = userid;
+        res.locals.comment = processedComments;
+        res.render('articlereader',{article:article});
+
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+
     const articleid = req.params.id;
     const articleInfo = await blogDao.searchArticleById(articleid);
     const articleTime = formatTimestamp(articleInfo.postdate);
     const authorInfo = await blogDao.searchUserById(articleInfo.userid);
     const categoryInfo = await blogDao.searchCategoryById(articleInfo.categoryid);
+
+const hasLiked = await blogDao.hasUserLikedArticle(userid, articleid);
+
+
+const likeCount = await blogDao.countLikesForArticle(articleid);
+
+
+const likeUsers = await blogDao.getUsersWhoLikedArticle(articleid);
+
     const article = {
+
         id: articleid,
         title: articleInfo.title,
         author: authorInfo.account,
@@ -346,6 +457,28 @@ router.get('/article/:id', async (req, res) => {
     const processedComments = await processComments(article, articleid);
     res.locals.comment = processedComments;
     res.render('articlereader', { article: article });
+
+        id : articleid,
+        title : articleInfo.title,
+        author : authorInfo.account, 
+        dateTime : articleTime,
+        category : categoryInfo.name,
+        content : articleInfo.content,
+        hasLiked: hasLiked, 
+        likeColor: hasLiked ? 'red' : 'black',
+    likeCount: likeCount, 
+    usersLiked: likeUsers,
+    currentUser: {
+        id: userid 
+    }
+    }
+
+    
+    const processedComments = await processComments(article,articleid);  
+    res.locals.comment = processedComments;
+    res.render('articlereader',{article:article});
+
+
 });
 
 //function processComments use for print comment list by zliu442
@@ -356,6 +489,7 @@ async function processComments(article, articleid) {
         item.author = await blogDao.searchUserById(item.user_id);
         item.timeDate = formatTimestamp(item.timeDate);
         item.replyee = article.author;
+        item.replyeeid = article.authorid;
         const subcommentInfo = await blogDao.searchSubCommentByCommentID(item.id);
         const processedSubcomments = await Promise.all(subcommentInfo.map(async subitem => {
             subitem.author = await blogDao.searchUserById(subitem.user_id);
@@ -369,19 +503,89 @@ async function processComments(article, articleid) {
 }
 
 
-
+//subscribelist route create by zliu442
+router.get('/subscribelist/:userid', async(req,res) => {  
+    try {
+        const userId = req.params.userid;
+        const subscriber = await blogDao.subscribetoList(userId);
+        const follower = await blogDao.subscribebyList(userId);
+        res.locals.subscriber = subscriber;
+        res.locals.follower = follower;
+        res.locals.user = await blogDao.searchUserById(userId); 
+        let articleList = [];
+        for(let item of subscriber){
+            Array.prototype.push.apply(articleList, await blogDao.searchArticlesByUserAccount(item.id));
+        }
+        //sort the articlelist in the order of time reverse
+        articleList.sort((a, b) => b.postdate - a.postdate);
+        for (let item of articleList){
+            item.postdate = formatTimestamp(item.postdate);
+            item.author = await blogDao.searchUserById(item.userid);
+        }
+        res.locals.subscribeArticle = articleList;
+        res.render('subscribelist');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
 router.get('/article/:id', async (req, res) => {
     try {
         const articleId = req.params.id;
         const article = await blogDao.getArticleById(articleId);
         res.render('articlePage', { article });
+
+//to otherprofile router create by zliu442
+router.get('/othersProfile/:otheruserid', async(req,res) => {  
+    try {
+        const otherUserId = req.params.otheruserid;
+        const otherUser = await blogDao.searchUserById(otherUserId);
+        res.locals.isSubscribed = await ifSubscribed(userid,otherUserId);
+        res.locals.userid = userid;
+        res.locals.otheruser = otherUser;
+        const articleList = await blogDao.searchArticlesByUserAccount(otherUserId);
+        res.locals.articles = articleList;
+        res.render('othersProfile');
+
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
-
     }
 });
 
+//subscribe route create by zliu442
+router.get('/subscribe', async(req,res) => {
+    try {
+        const userid = req.query.userid;
+        const otheruserid = req.query.otheruserid;
+        await blogDao.addSubscribe(userid,otheruserid);
+        res.redirect(`othersProfile/${otheruserid}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('add subscribe error');
+    }
+});
+
+router.get('/unsubscribe', async(req,res) => {
+    try {
+        const userid = req.query.userid;
+        const otheruserid = req.query.otheruserid;
+        await blogDao.deleteSubscribe(userid,otheruserid);
+        res.redirect(`othersProfile/${otheruserid}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('delete subscribe error');
+    }
+});
+//check if subscribe by zliu442
+async function ifSubscribed(userid, otherUserId){
+    //check if subscribed
+    if(userid != null){
+        const isSubscribed = await blogDao.checkSubscribe(userid, otherUserId);
+        return isSubscribed;
+    }
+
+}
 
 // return time create by zliu442
 function generateTimestamp() {

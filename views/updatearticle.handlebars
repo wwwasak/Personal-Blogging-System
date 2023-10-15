@@ -9,13 +9,13 @@
 </form>
 
 <script>
-    // 获取查询参数部分，例如 "?articleId=123"
+    
 const queryString = window.location.search;
 
-// 使用 URLSearchParams 对象解析查询参数
+
 const urlParams = new URLSearchParams(queryString);
 
-// 通过参数名获取 articleId 的值
+
 const articleId = urlParams.get('articleId');
 
 document.getElementById('articleId').value = articleId;

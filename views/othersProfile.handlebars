@@ -1,0 +1,58 @@
+<div>
+    <h2>Profile</h2>
+
+    <h4>Id : {{user.id}}</h4>
+    <h4>Name : {{user.account}}</h4>
+    <h4>birthday : {{user.birthday}}</h4>
+    <h4>Description : {{user.description}}</h4>
+    <a href="/toDashboard">Return</a>
+    {{#each articles}}
+    <div>
+        <h2><a href="/article/{{id}}">{{title}}</a></h2>
+    </div>
+    {{/each}}
+
+    <h4>Id : {{otheruser.id}}</h4>
+    <h4>Name : {{otheruser.account}}</h4>
+    <a href="/subscribelist/{{otheruser.id}}">{{otheruser.account}}'s subscribe list</p>
+
+    {{!-- check userid and show the botton --}}
+    {{#if userid}}
+        {{#if_eq userid otheruser.id}}
+            <p>Cannot subscribe to yourself</p>
+        {{else}}
+            {{#if isSubscribed}}
+                <form id="unsubscribeform" method="get" action="/unsubscribe">
+                    <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                    <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
+                    <button type="submit">Unsubscribe</button>
+                </form>
+            {{else}}
+                <form id="subscribeform" method="get" action="/subscribe">
+                    <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                    <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
+                    <button type="submit">Subscribe</button>
+                </form>
+            {{/if}}
+        {{/if_eq}}
+    {{else}}
+        <a href="/login">Please Login to subscribe to others</a>
+    {{/if}}
+    <h4>birthday : {{otheruser.birthday}}</h4>
+    <h4>Description : {{otheruser.description}}</h4>
+    <a href="/toDashboard">Return</a>
+    <h3>{{otheruser.account}}'s Article List</h3>
+    {{#if articles}}
+    <ul>
+        {{#each articles}}
+        <div>
+            <h2><a href="/article/{{this.id}}">{{this.title}}</a></h2>
+        </div>
+        {{/each}}
+    </ul>
+    {{else}}
+        <p>{{otheruser.account}} not post any article yet.</p>
+    {{/if}}
+
+
+</div>
