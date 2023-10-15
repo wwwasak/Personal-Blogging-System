@@ -100,3 +100,17 @@ VALUES
     (2,'Here is the second comment.', NULL, 2),
     (3,'A reply to the first comment.', 1, NULL), 
     (4,'A reply to the second comment.',3, NULL); 
+-- add Notification related database----txu470
+DROP TABLE if exists notifications;
+CREATE TABLE notifications (
+    id INT NOT NULL PRIMARY KEY,
+    recipient_id INT, 
+    notification_type ENUM('newBlog', 'newComment', 'newLike','newSubscriber'),
+    related_object_id INT, 
+    sender_id INT, 
+    content TEXT,
+    read_status BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    FOREIGN KEY (recipient_id) REFERENCES user(id),
+    FOREIGN KEY (sender_id) REFERENCES user(id)
+);
