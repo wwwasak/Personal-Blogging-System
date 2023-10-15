@@ -49,6 +49,8 @@ async function deleteCommentById(id) {
   return result;
 }
 
+
+//search by keywords -----zli178
 async function searchArticlesByKeyword(keyword) {
   const db = await dbPromise;
   return db.all(SQL`
@@ -88,6 +90,58 @@ async function getAllCategories() {
   const result = await db.all(`SELECT * FROM category`);
   return result;
 }
+
+
+async function hasUserLikedArticle(userId, articleId) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT * FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
+  return result ? true : false;
+}
+
+
+async function likeArticle(userId, articleId) {
+  const db = await dbPromise;
+  // 检查是否已经存在相同的喜欢记录
+  const existingLike = await db.get(SQL`SELECT * FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
+  if (existingLike) {
+      return; // 如果已经存在喜欢记录，不执行插入操作
+  }
+  const result = await db.run(SQL`INSERT INTO userlike (user_id, article_id) VALUES (${userId}, ${articleId})`);
+  return result;
+}
+
+async function unlikeArticle(userId, articleId) {
+  const db = await dbPromise;
+  // 删除喜欢记录
+  const result = await db.run(SQL`DELETE FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
+  return result;
+}
+
+
+async function countLikesForArticle(articleId) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT COUNT(*) as likesCount FROM userlike WHERE article_id = ${articleId}`);
+  return result.likesCount;
+}
+
+
+async function getArticlesLikedByUser(userId) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT article.* FROM article INNER JOIN userlike ON article.id = userlike.article_id WHERE userlike.user_id = ${userId}`);
+  return result;
+}
+async function getUsersWhoLikedArticle(articleId) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`
+      SELECT user.id, user.account FROM user 
+      JOIN userlike ON user.id = userlike.user_id 
+      WHERE userlike.article_id = ${articleId}
+  `);
+  return result;
+}
+
+
+
 
 
 
@@ -166,6 +220,8 @@ async function checkCategory() {
 }
 
 
+
+
 module.exports = {
   searchUsersByAccount,
   searchArticlesByKeyword,
@@ -190,6 +246,12 @@ module.exports = {
   searchSubCommentByCommentID,
   addSubComment,
   searchArticleByCommentid,
+  hasUserLikedArticle,
+  likeArticle,
+  unlikeArticle,
+  countLikesForArticle,
+  getArticlesLikedByUser,
+  getUsersWhoLikedArticle,
 
 
 
