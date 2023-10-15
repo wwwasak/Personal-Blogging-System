@@ -1,35 +1,69 @@
 {{!-- handlebar addcomment create by zliu442 --}}
-
+<head>
+  <link rel="stylesheet" href="/public/css/articlereader.css">
+  <script src="/public/frontend javascripts/articlereader.js"></script>
+</head>
 <div class="container">
   <h1>This is an article reader!</h1>
   
   {{#if article}}
     <h2>Title: {{article.title}}</h2>
     <p>Category: {{article.category}}</p>
-    <p>Author: {{article.author}}</p>
+    <p>Author: </p><a href = "/othersProfile/{{article.authorid}}">{{article.author}}</a>
+    
+    {{!-- check userid and show the botton --}}
+    {{#if userid}}
+        {{#if_eq userid article.authorid}}
+            <p>Cannot subscribe to yourself</p>
+        {{else}}
+            {{#if isSubscribed}}
+                <form id="unsubscribeform" method="get" action="/unsubscribe">
+                    <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                    <input type="hidden" name="otheruserid" id="otheruserid" value={{article.authorid}}>
+                    <button type="submit">Unsubscribe</button>
+                </form>
+            {{else}}
+                <form id="subscribeform" method="get" action="/subscribe">
+                    <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                    <input type="hidden" name="otheruserid" id="otheruserid" value={{article.authorid}}>
+                    <button type="submit">Subscribe</button>
+                </form>
+            {{/if}}
+        {{/if_eq}}
+    {{else}}
+        <a href="/login">Please Login to subscribe to others</a>
+    {{/if}}
     <p>Post date and time: {{article.dateTime}}</p>
     {{!-- reserve for css --}}
     <div class ="articlecontent">
       <p>Content: {{{article.content}}}</p>
     </div>
+    <button id="openModalBtn">Comment</button>
   {{/if}}
 
-
-  <form action="/addcomment" method="POST">
-    <fieldset>
-      <legend>Comment Content</legend>
-      <input type="hidden" name="articleid" id="articleid" value= {{article.id}}>
+  {{!-- Modal --}}
+  <div id="commentModal" class="modal">
+    <div class="modal-content">
+      <form action="/addcomment" method="POST">
+      <fieldset>
+        <legend>Comment Content</legend>
+        <input type="hidden" name="articleid" id="articleid" value= {{article.id}}>
+        <p>
+          <label for="name_id" class="addcontent">Reply to {{article.author}}</label><br />
+          <input type="text" size="250" name="content" id="content_id"/>
+        </p>
+      </fieldset>   
       <p>
-        <label for="name_id" class="addcontent">Reply to {{article.author}}</label><br />
-        <input type="text" size="250" name="content" id="content_id"/>
+        <input type="submit" name="submit_button" id="submit_id" value="Done!" />
+        <input type="reset" name="reset_button" id="reset_id" value="Clear" />
       </p>
+      </form>
+      <span id="closeModalBtn" style="cursor:pointer;">Close</span>
+    </div>
+  </div>
 
-    </fieldset>   
-    <p>
-      <input type="submit" name="submit_button" id="submit_id" value="Done!" />
-      <input type="reset" name="reset_button" id="reset_id" value="Clear" />
-    </p>
-  </form>
+
+
 
 
     {{#if comment}}
@@ -38,7 +72,7 @@
         <li>
          {{!-- reserve for css --}}
          <div class ="firsttiercomment">
-          <p>{{this.author.account}} reply to {{this.replyee}}</p>
+          <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> reply to <a href="/othersProfile/{{this.replyeeid}}">{{this.replyee}}</a></p>
           <p>Post date and time: {{this.timeDate}}</p>
           <p>Comment content: <strong>{{this.content}}</strong> </p>
           <form action="/addsubcomment" method="POST">
@@ -62,7 +96,7 @@
             <li>
          {{!-- reserve for css --}}
             <div class ="secondtiercomment">
-              <p>{{this.author.account}} reply to {{this.replyee.account}}</p>
+              <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a>reply to <a href="/othersProfile/{{this.replyee.id}}">{{this.replyee.account}}</a></p>
               <p>Post date and time: {{this.timeDate}}</p>
               <p>Comment content: <strong>{{this.content}}</strong> </p>
             </div>

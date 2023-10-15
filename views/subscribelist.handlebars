@@ -1,0 +1,48 @@
+{{!-- handlebar subscribe list create by zliu442 --}}
+
+<div class="container">
+    <h1>{{user.account}}'s subscribe relation list</h1>
+
+    <h3>Subscribe to </h3>
+    {{#if subscriber}}
+    <ul>
+        {{#each subscriber}}
+        <li>
+            {{!-- reserve the link to add profile reader --}}
+            <a href = "/othersProfile/{{this.id}}">{{this.account}}</a>
+        </li>
+        {{/each}}
+    </ul>
+    {{else}}
+        <p>You have don't subscribe to anyone one. Try to add one.</p>
+    {{/if}}
+
+    <h3>Followed by </h3>
+    {{#if follower}}
+    <ul>
+        {{#each follower}}
+        <li>
+            {{!-- reserve the link to add profile reader --}}
+            <a href = "/othersProfile/{{this.id}}">{{this.account}}</a>
+        </li>
+        {{/each}}
+    </ul>
+    {{else}}
+        <p>Opps! You are not followed by anyone now.</p>
+    {{/if}}
+
+    <h3>Subscribe Users' Article</h3>
+    {{#if subscribeArticle}}
+    <ul>
+        {{#each subscribeArticle}}
+        <li>
+            {{!-- reserve the link to add profile reader --}}
+            <a href = "/article/{{this.id}}">{{this.title}}</a> <p>Posted by {{this.author.account}} in {{this.postdate}}</p>
+        </li>
+        {{/each}}
+    </ul>
+    {{else}}
+        <p>Your subscribers' have not posted any article yet.</p>
+    {{/if}}
+
+</div>
