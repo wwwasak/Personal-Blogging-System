@@ -338,13 +338,21 @@ router.get('/article/:id', async(req,res) => {
             id : articleid,
             title : articleInfo.title,
             author : authorInfo.account, 
+            authorid : authorInfo.id,
             dateTime : articleTime,
             category : categoryInfo.name,
             content : articleInfo.content
         }
         const processedComments = await processComments(article,articleid);  
+
+        //check if subscribed
+        res.locals.isSubscribed = await ifSubscribed(userid, article.authorid);
+
+        res.locals.userid = userid;
         res.locals.comment = processedComments;
         res.render('articlereader',{article:article});
+
+
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -359,6 +367,7 @@ async function processComments(article,articleid) {
         item.author = await blogDao.searchUserById(item.user_id);
         item.timeDate = formatTimestamp(item.timeDate);
         item.replyee = article.author;
+        item.replyeeid = article.authorid;
         const subcommentInfo = await blogDao.searchSubCommentByCommentID(item.id);
         const processedSubcomments = await Promise.all(subcommentInfo.map(async subitem => {
             subitem.author = await blogDao.searchUserById(subitem.user_id);
@@ -378,19 +387,77 @@ router.get('/subscribelist/:userid', async(req,res) => {
         const userId = req.params.userid;
         const subscriber = await blogDao.subscribetoList(userId);
         const follower = await blogDao.subscribebyList(userId);
-     
         res.locals.subscriber = subscriber;
         res.locals.follower = follower;
-        res.locals.user = await blogDao.searchUserById(userId);
-        res.render('subscribelist'); 
+        res.locals.user = await blogDao.searchUserById(userId); 
+        let articleList = [];
+        for(let item of subscriber){
+            Array.prototype.push.apply(articleList, await blogDao.searchArticlesByUserAccount(item.id));
+        }
+        //sort the articlelist in the order of time reverse
+        articleList.sort((a, b) => b.postdate - a.postdate);
+        for (let item of articleList){
+            item.postdate = formatTimestamp(item.postdate);
+            item.author = await blogDao.searchUserById(item.userid);
+        }
+        res.locals.subscribeArticle = articleList;
+        res.render('subscribelist');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
     }
 });
 
+//to otherprofile router create by zliu442
+router.get('/othersProfile/:otheruserid', async(req,res) => {  
+    try {
+        const otherUserId = req.params.otheruserid;
+        const otherUser = await blogDao.searchUserById(otherUserId);
+        res.locals.isSubscribed = await ifSubscribed(userid,otherUserId);
+        res.locals.userid = userid;
+        res.locals.otheruser = otherUser;
+        const articleList = await blogDao.searchArticlesByUserAccount(otherUserId);
+        res.locals.articles = articleList;
+        res.render('othersProfile');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
 
+//subscribe route create by zliu442
+router.get('/subscribe', async(req,res) => {
+    try {
+        const userid = req.query.userid;
+        const otheruserid = req.query.otheruserid;
+        await blogDao.addSubscribe(userid,otheruserid);
+        res.redirect(`othersProfile/${otheruserid}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('add subscribe error');
+    }
+});
 
+router.get('/unsubscribe', async(req,res) => {
+    try {
+        const userid = req.query.userid;
+        const otheruserid = req.query.otheruserid;
+        await blogDao.deleteSubscribe(userid,otheruserid);
+        res.redirect(`othersProfile/${otheruserid}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('delete subscribe error');
+    }
+});
+//check if subscribe by zliu442
+async function ifSubscribed(userid, otherUserId){
+    //check if subscribed
+    if(userid != null){
+        const isSubscribed = await blogDao.checkSubscribe(userid, otherUserId);
+        return isSubscribed;
+    }
+
+}
 
 // return time create by zliu442
 function generateTimestamp() {

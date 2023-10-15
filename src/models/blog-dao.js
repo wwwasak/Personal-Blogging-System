@@ -170,6 +170,29 @@ async function subscribetoList(userid){
   return result;
 }
 
+//create add, delete and check subscribe relationship functions by zliu442
+async function addSubscribe(subscribe_by_userid, subscribe_to_userid) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`insert into subscribes (subscribe_by_userid, subscribe_to_userid) values
+    (${subscribe_by_userid}, ${subscribe_to_userid})`);
+  return result;
+}
+
+async function deleteSubscribe(subscribe_by_userid, subscribe_to_userid) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from subscribes where subscribe_by_userid = ${subscribe_by_userid} and subscribe_to_userid = ${subscribe_to_userid} `);
+  return result;
+}
+
+async function checkSubscribe(subscribe_by_userid, subscribe_to_userid) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`
+  SELECT COUNT(*) as count 
+  FROM subscribes 
+  WHERE subscribe_by_userid = ${subscribe_by_userid} AND subscribe_to_userid = ${subscribe_to_userid}`);
+return result.count > 0;
+}
+
 //function checkCategory by zliu442 - use for handlebar of add article 2023/10/11
 async function checkCategory() {
   const db = await dbPromise;
@@ -207,6 +230,9 @@ module.exports = {
   getAllCategories,
   getAllArticles,
   subscribebyList,
-  subscribetoList
+  subscribetoList,
+  addSubscribe,
+  deleteSubscribe,
+  checkSubscribe
 };
 

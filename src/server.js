@@ -12,7 +12,6 @@ const path = require('path');
 const fs = require('fs');
 const { cookieToaster } = require('./middleware/toaster-middleware');
 
-const blogDao = require('../src/models/blog-dao');
 
 const PORT = 3000;
 
@@ -33,11 +32,23 @@ async function startExpress() {
      * - Error handling middleware
      */
 
+    // Define zliu442 use important custom helper instance
+    const helpers = {
+        if_eq: function(a, b, opts) {
+            if (a === b) {
+                return opts.fn(this);
+            } else {
+                return opts.inverse(this);
+            }
+        }
+    };
+
     // Setup Handlebars
     app.engine(
         'handlebars',
         handlebars.engine({
             defaultLayout: 'main',
+            helpers: helpers,
         })
     );
     app.set('view engine', 'handlebars');
