@@ -91,7 +91,7 @@ CREATE TABLE comments (
     parentComment integer,
     article_id integer,
     FOREIGN KEY (user_id) REFERENCES user(id), 
-    FOREIGN KEY (article_id) REFERENCES article(id)
+    FOREIGN KEY (article_id) REFERENCES article(id),
     FOREIGN KEY (parentComment) REFERENCES comments(id)
 );
 INSERT INTO comments (user_id,content,parentComment, article_id)
@@ -106,12 +106,12 @@ DROP TABLE if exists notifications;
 CREATE TABLE notifications (
     id INT NOT NULL PRIMARY KEY,
     recipient_id INT, 
-    notification_type ENUM('newBlog', 'newComment', 'newLike','newSubscriber'),
+    notification_type TEXT CHECK (notifications.notification_type IN ('newBlog', 'newComment', 'newLike','newSubscriber')),
     related_object_id INT, 
     sender_id INT, 
     content TEXT,
     read_status BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (recipient_id) REFERENCES user(id),
     FOREIGN KEY (sender_id) REFERENCES user(id)
 );
@@ -129,7 +129,7 @@ CREATE TABLE subscribes(
 
 INSERT INTO subscribes (id, subscribe_by_userid, subscribe_to_userid) 
 VALUES
-    (7,1,5)
+    (7,1,5),
     (1,1,2),
     (2,1,3),
     (3,1,4),

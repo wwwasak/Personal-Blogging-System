@@ -116,7 +116,7 @@
 </div>
 
 
-<button id="like-button" data-article-id="{{article.id}}" data-user-id="{{currentUser.id}}">
+<button id="like-button" data-article-id="{{article.id}}" data-user-id="{{userid}}">
     <span id="like-icon" style="color: black;">❤️</span>
 </button>
 <p id="like-count">{{likesCount}} likes</p>
@@ -124,7 +124,7 @@
 
 <h2>Users who liked this article:</h2>
 <ul id="users-liked-list">
-    {{#each usersLiked}}
+    {{#each article.usersLiked}}
         <li><a href="/user/{{this.id}}">{{this.account}}</a></li>
     {{/each}}
 </ul>
