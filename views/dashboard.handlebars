@@ -11,13 +11,27 @@
     <h2>Your Articles:</h2>
     {{#each articles}}
     <div>
+        <h2><a href="/article/{{id}}">{{title}}</a></h2></h2><button
+            class='deleteArticle'
+            data-article-id={{id}}
+        >X</button>
+
         <h2><a href="/article/{{id}}">{{title}}</a>  <button onclick="updateArticle('{{id}}')">Update</button></h2>
         <p>{{content}}</p>
     </div>
     {{/each}}
 </div>
 
+{{! add button to delete a article-----txu470 }}
 <script>
+    const deleteArticleButtons = document.querySelectorAll('.deleteArticle');
+    deleteArticleButtons.forEach(button => { button.addEventListener('click',
+    async (e) => { const articleId =button.getAttribute('data-article-id');
+    const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
+    const data = await response.json(); console.log(data); }); });
+
+
+
     function updateArticle(articleId) {
 
     // 构建跳转链接，包含 articleId 参数

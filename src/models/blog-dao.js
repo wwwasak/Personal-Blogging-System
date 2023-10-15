@@ -18,7 +18,7 @@ async function deleteUser(id) {
   const result = await db.run(SQL`DELETE FROM user WHERE id = ${id};`);
   return result;
 }
-async function updateToken(id,token){
+async function updateToken(id, token) {
   const db = await dbPromise;
   const result = await db.run(SQL`UPDATE user SET token = ${token} WHERE id = ${id};`);
   return result;
@@ -57,15 +57,15 @@ async function searchArticlesByKeyword(keyword) {
       SELECT * FROM article WHERE LOWER(title) LIKE ${'%' + keyword.toLowerCase() + '%'}
     `);
 }
-  const getArticleById = async (articleId) => {
-    const db = await dbPromise;
-    const article = await db.get(SQL`SELECT * FROM article WHERE id = ${articleId}`);
-    return article;
+const getArticleById = async (articleId) => {
+  const db = await dbPromise;
+  const article = await db.get(SQL`SELECT * FROM article WHERE id = ${articleId}`);
+  return article;
 };
 
 const getAllArticles = async () => {
   const db = await dbPromise;
-  const articles = await db.all(SQL`SELECT * FROM article`); 
+  const articles = await db.all(SQL`SELECT * FROM article`);
   return articles;
 };
 
@@ -193,19 +193,19 @@ async function searchCategoryById(id) {
   return result;
 }
 
-async function searchCommentByArticleID(articleid){
+async function searchCommentByArticleID(articleid) {
   const db = await dbPromise;
   const result = await db.all(SQL`SELECT * FROM comments WHERE article_id = ${articleid}`);
   return result;
 }
 
-async function searchSubCommentByCommentID(commentid){
+async function searchSubCommentByCommentID(commentid) {
   const db = await dbPromise;
   const result = await db.all(SQL`SELECT * FROM comments WHERE parentComment = ${commentid}`);
   return result;
 }
 
-async function searchArticleByCommentid(commentid){
+async function searchArticleByCommentid(commentid) {
   const db = await dbPromise;
   const result = await db.get(SQL`SELECT article_id FROM comments WHERE id = ${commentid}`);
   return result;
@@ -255,8 +255,19 @@ async function checkCategory() {
     `);
 }
 
-
-
+//get subscribers by userid---txu470
+async function getSubscribers(userid) {
+  const db = await dbPromise;
+  return db.all(SQL`
+      SELECT * FROM subscribers WHERE userid = ${userid}
+    `);
+}
+async function addNotification(sender_id, recipient_id, notification_type, related_object_id, content) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`insert into notification (sender_id,recipient_id,notification_type,related_object_id,content) values
+    (${sender_id}, ${recipient_id}, ${notification_type}, ${related_object_id}, ${content})`);
+  return result;
+}
 
 module.exports = {
   searchUsersByAccount,
@@ -282,6 +293,8 @@ module.exports = {
   searchSubCommentByCommentID,
   addSubComment,
   searchArticleByCommentid,
+  getSubscribers,
+  addNotification,
   getArticleById,
   getAllCategories,
   getAllArticles,
@@ -296,6 +309,5 @@ module.exports = {
   countLikesForArticle,
   getArticlesLikedByUser,
   getUsersWhoLikedArticle
-
 };
 
