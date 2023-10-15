@@ -90,7 +90,7 @@
 
 <h2>Users who liked this article:</h2>
 <ul id="users-liked-list">
-    {{#each usersLiked}}
+    {{#each article.usersLiked}}
         <li><a href="/user/{{this.id}}">{{this.account}}</a></li>
     {{/each}}
 </ul>
