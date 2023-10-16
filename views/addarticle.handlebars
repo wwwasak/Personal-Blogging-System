@@ -11,7 +11,7 @@
 
       <p>
         <label for="name_id" class="addtitle">Title</label><br />
-        <input type="text" size="100" name="title" id="title_id"/>
+        <input type="text" size="100" name="title" id="title_id" />
       </p>
 
     </fieldset>
@@ -21,23 +21,19 @@
       <p class="question">What is the category of the article:</p>
       <p>
         {{#each category}}
-          <input type="radio" name="categoryid" id="{{this.name}}" value= {{this.id}} />
-          <label for="{{this.id}}">{{this.name}}</label>
+        <input type="radio" name="categoryid" id="{{this.name}}" value={{this.id}} />
+        <label for="{{this.id}}">{{this.name}}</label>
         {{/each}}
       </p>
     </fieldset>
 
-    
+
     <fieldset>
       <legend>Content</legend>
-      <p>
-        <label for="name_id" class="addcontent">Content</label><br />
-        <textarea name="content" id="content_id" cols="130" rows="10" placeholder="Please add your article here"></textarea>
-      </p>
-
+        <textarea id="mytextarea" name="content">Please enter your content here!</textarea>
     </fieldset>
 
-      
+
     <p>
       <input type="submit" name="submit_button" id="submit_id" value="Done!" />
       <input type="reset" name="reset_button" id="reset_id" value="Clear" />
@@ -45,3 +41,20 @@
   </form>
 
 </div>
+
+<script src="https://cdn.tiny.cloud/1/kindgwy6154gcl4sj7ok1lzziypb6p5k0ilsttw63g7anvj8/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+<script>
+    tinymce.init({
+      selector: 'textarea',
+      plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
+      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+      tinycomments_mode: 'embedded',
+      tinycomments_author: 'Author name',
+      mergetags_list: [
+        { value: 'First.Name', title: 'First Name' },
+        { value: 'Email', title: 'Email' },
+      ],
+      ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant"))
+    });
+</script>
