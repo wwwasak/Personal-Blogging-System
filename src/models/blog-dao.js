@@ -103,7 +103,7 @@ async function likeArticle(userId, articleId) {
   const db = await dbPromise;
   const existingLike = await db.get(SQL`SELECT * FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
   if (existingLike) {
-      return; 
+    return;
   }
   const result = await db.run(SQL`INSERT INTO userlike (user_id, article_id) VALUES (${userId}, ${articleId})`);
   return result;
@@ -235,13 +235,13 @@ async function searchArticleByCommentid(commentid) {
 }
 
 //create subscribebylist and subscribetolist function by zliu442
-async function subscribebyList(userid){
+async function subscribebyList(userid) {
   const db = await dbPromise;
   const result = await db.all(SQL`SELECT user.id, user.account FROM subscribes JOIN user ON subscribes.subscribe_by_userid = user.id WHERE subscribe_to_userid = ${userid}`);
   return result;
 }
 
-async function subscribetoList(userid){
+async function subscribetoList(userid) {
   const db = await dbPromise;
   const result = await db.all(SQL`SELECT user.id, user.account FROM subscribes JOIN user ON subscribes.subscribe_to_userid = user.id WHERE subscribe_by_userid = ${userid}`);
   return result;
@@ -267,7 +267,7 @@ async function checkSubscribe(subscribe_by_userid, subscribe_to_userid) {
   SELECT COUNT(*) as count 
   FROM subscribes 
   WHERE subscribe_by_userid = ${subscribe_by_userid} AND subscribe_to_userid = ${subscribe_to_userid}`);
-return result.count > 0;
+  return result.count > 0;
 }
 
 //function checkCategory by zliu442 - use for handlebar of add article 2023/10/11
@@ -293,19 +293,19 @@ async function addNotification(sender_id, recipient_id, notification_type, relat
 }
 
 //analytic functions create by zliu442
-async function followerNum(userid){
+async function followerNum(userid) {
   const db = await dbPromise;
   const result = await db.get(SQL`SELECT COUNT(*) FROM subscribes WHERE subscribe_to_userid = ${userid}`);
   return result['COUNT(*)'];
 }
 
-async function articleCommentNum(articleid){
+async function articleCommentNum(articleid) {
   const db = await dbPromise;
   const result = await db.get(SQL`SELECT COUNT(*) FROM comments WHERE article_id = ${articleid}`);
   return result['COUNT(*)'];
 }
 
-async function articleLikeNum(articleid){
+async function articleLikeNum(articleid) {
   const db = await dbPromise;
   const result = await db.get(SQL`SELECT COUNT(*) FROM userlike WHERE article_id = ${articleid}`);
   return result['COUNT(*)'];
@@ -319,14 +319,14 @@ async function searchAdminByAccount(userName, password) {
 }
 
 //category admin functions --zliu442
-async function addCategory(name, des){
+async function addCategory(name, des) {
   const db = await dbPromise;
   const result = await db.run(SQL`insert into category (name, description, userid) values
   (${name}, ${des}, 0)`);
   return result;
 }
 
-async function deleteCategory(id){
+async function deleteCategory(id) {
   const db = await dbPromise;
   const result = await db.run(SQL`delete from category where id = ${id} `);
   return result;
@@ -384,9 +384,8 @@ module.exports = {
   unlikeArticle,
   countLikesForArticle,
   getArticlesLikedByUser,
-
   getUsersWhoLikedArticle,
-    getAllUsersWithArticleCount,
+  getAllUsersWithArticleCount,
   deleteUserAndRelatedData,
   followerNum,
   articleCommentNum,
@@ -395,23 +394,6 @@ module.exports = {
   addCategory,
   deleteCategory,
   updateCategory,
-  getAllUsers
-
-
-
-
-
-
-
-    getArticleById,
-    getAllCategories,
-    getAllArticles
-
-
-
-
-
-
-
+  getAllUsers,
 };
 

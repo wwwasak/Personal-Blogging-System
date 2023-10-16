@@ -136,14 +136,14 @@ VALUES
     (3,1,4),
     (4,2,1),
     (5,3,1),
-    (6,4,1)
+    (6,4,1);
 
 --admin sql create by zliu442
 DROP TABLE if exists admins;
 CREATE TABLE admins(
     id integer not null PRIMARY KEY,
     admin_account text,
-    admin_password integer,
+    admin_password integer
 );
 INSERT INTO admins (admin_account,admin_password) 
 VALUES ('admin', 12345678)
