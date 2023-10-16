@@ -1,5 +1,4 @@
 <div>
-
     <nav>
         <a href="/">Home</a>
         <a href="/toProfile">Profile</a>
@@ -17,7 +16,63 @@
         <button class='deleteArticle' data-article-id={{id}}>X</button>
     </div>
     {{/each}}
+{{!-- analytic part create by zliu442 --}}
+    <h1>Analytic dashboard:</h1>
+    <p>Total Number of followers: {{followerNum}}</p>
+    <p>Total Number of Comments for {{name}}'s articles: {{commentNum}}</p>
+    <p>Total Number of Likes for {{name}}'s articles: {{likeNum}}</p>
+
+    <h2>{{name}}'s top popular article</h2>
+    {{#if toparticle}}
+        <ul>
+            {{#each toparticle}}
+            <li>
+                <ul>
+                    <li>{{this.rank}} Ranked</li>
+                    <li><p>Title: </p><a href="/article/{{this.id}}">{{this.title}}</a></li>
+                    <li>Popular index is {{this.popularIndex}}</li>
+                    <li>Comment Number is {{this.commentForTheArticle}}</li>
+                    <li>Like Number is {{this.likeForTheArticle}}</li>
+                    <li>Posted on {{this.postDate}}</li>
+                </ul>
+            </li>
+            {{/each}}
+        </ul>
+    {{else}}
+    <p>You do not post any article now.</p>
+    {{/if}}
+
+    {{!-- add histogram chart --}}
+    <p>This is histogram chart of the number of your articles commented</p>
+    <canvas id="commentHistogram"></canvas>
 </div>
+
+
+
+{{!-- to Create comment analysis histogram --}}
+{{!-- <script>
+    var ctx = document.getElementById('commentHistogram').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar', 
+        data: {
+            labels: {{json labels}}, 
+            datasets: [{
+                label: 'Sample Data',
+                data: {{json data}},  
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script> --}}
 
 {{! add button to delete a article-----txu470 }}
 <script>

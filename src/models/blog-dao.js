@@ -101,10 +101,9 @@ async function hasUserLikedArticle(userId, articleId) {
 
 async function likeArticle(userId, articleId) {
   const db = await dbPromise;
-  // 检查是否已经存在相同的喜欢记录
   const existingLike = await db.get(SQL`SELECT * FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
   if (existingLike) {
-      return; // 如果已经存在喜欢记录，不执行插入操作
+      return; 
   }
   const result = await db.run(SQL`INSERT INTO userlike (user_id, article_id) VALUES (${userId}, ${articleId})`);
   return result;
@@ -112,7 +111,6 @@ async function likeArticle(userId, articleId) {
 
 async function unlikeArticle(userId, articleId) {
   const db = await dbPromise;
-  // 删除喜欢记录
   const result = await db.run(SQL`DELETE FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
   return result;
 }
@@ -269,6 +267,59 @@ async function addNotification(sender_id, recipient_id, notification_type, relat
   return result;
 }
 
+//analytic functions create by zliu442
+async function followerNum(userid){
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT COUNT(*) FROM subscribes WHERE subscribe_to_userid = ${userid}`);
+  return result['COUNT(*)'];
+}
+
+async function articleCommentNum(articleid){
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT COUNT(*) FROM comments WHERE article_id = ${articleid}`);
+  return result['COUNT(*)'];
+}
+
+async function articleLikeNum(articleid){
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT COUNT(*) FROM userlike WHERE article_id = ${articleid}`);
+  return result['COUNT(*)'];
+}
+
+// admin search-------zliu442
+async function searchAdminByAccount(userName, password) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`select * from admins where admin_account = ${userName} AND admin_password = ${password}`);
+  return result;
+}
+
+//category admin functions --zliu442
+async function addCategory(name, des){
+  const db = await dbPromise;
+  const result = await db.run(SQL`insert into category (name, description, userid) values
+  (${name}, ${des}, 0)`);
+  return result;
+}
+
+async function deleteCategory(id){
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from category where id = ${id} `);
+  return result;
+}
+
+async function updateCategory(id, updatename, updatedes) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`update category set name = ${updatename}, description = ${updatedes} where id = ${id} `);
+  return result;
+}
+
+//create by zliu442
+async function getAllUsers() {
+  const db = await dbPromise;
+  const result = await db.all(`SELECT * FROM user`);
+  return result;
+}
+
 module.exports = {
   searchUsersByAccount,
   searchArticlesByKeyword,
@@ -303,11 +354,20 @@ module.exports = {
   addSubscribe,
   deleteSubscribe,
   checkSubscribe,
-   hasUserLikedArticle,
+  hasUserLikedArticle,
   likeArticle,
   unlikeArticle,
   countLikesForArticle,
   getArticlesLikedByUser,
-  getUsersWhoLikedArticle
+  getUsersWhoLikedArticle,
+  followerNum,
+  articleCommentNum,
+  articleLikeNum,
+  searchAdminByAccount,
+  addCategory,
+  deleteCategory,
+  updateCategory,
+  getAllUsers
+
 };
 
