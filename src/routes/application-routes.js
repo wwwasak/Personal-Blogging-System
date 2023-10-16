@@ -571,4 +571,77 @@ function formatTimestamp(timestamp) {
     return `${year}/${month}/${day} ${hours}:${minutes}`;
 }
 
+
+
+
+
+  //api create by zli178
+  router.post('/api/login', async function (req, res) {
+    let { account, password } = req.body;
+
+    try {
+        let userDetails = await blogDao.searchUsersByAccount(account, password);
+
+        if (userDetails.length > 0) {
+            let loginToken = uuidv4();
+            await blogDao.updateToken(userDetails[0].id, loginToken);
+            res.status(204).json({ authToken: loginToken });
+        } else {
+            res.status(401).json({ message: 'Authentication failed!' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Login failed" });
+    }
+});
+
+
+
+router.get("/api/logout", function (req, res) {
+    res.clearCookie("authToken");
+    res.status(204).end();
+});
+
+router.get("/api/users", async function(req, res) {
+    const token = req.cookies.authToken;
+    if (!token) {
+        return res.status(401).json({ message: "Unauthenticated" });
+    }
+
+    const user = await blogDao.userAuthenticatorToken(token);
+    if (!user || !user.isAdmin) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const usersWithArticleCount = await blogDao.getAllUsersWithArticleCount();
+    res.json(usersWithArticleCount);
+});
+
+router.delete('/api/users/:id', async function (req, res) {
+    const token = req.cookies.authToken;
+    const userIdToDelete = req.params.id;
+
+    try {
+        if (!token) {
+            return res.status(401).json({ message: "Unauthenticated" });
+        }
+
+        const user = await blogDao.userAuthenticatorToken(token);
+        if (!user || !user.isAdmin) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        await blogDao.deleteUserAndRelatedData(userIdToDelete);
+
+        res.status(204).end();
+    } catch (error) {
+        res.status(500).json({ message: "Delete failed" });
+    }
+});
+
+
+
+
+
+
+
 module.exports = router;

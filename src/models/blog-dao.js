@@ -101,10 +101,9 @@ async function hasUserLikedArticle(userId, articleId) {
 
 async function likeArticle(userId, articleId) {
   const db = await dbPromise;
-  // 检查是否已经存在相同的喜欢记录
   const existingLike = await db.get(SQL`SELECT * FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
   if (existingLike) {
-      return; // 如果已经存在喜欢记录，不执行插入操作
+      return; 
   }
   const result = await db.run(SQL`INSERT INTO userlike (user_id, article_id) VALUES (${userId}, ${articleId})`);
   return result;
@@ -112,7 +111,6 @@ async function likeArticle(userId, articleId) {
 
 async function unlikeArticle(userId, articleId) {
   const db = await dbPromise;
-  // 删除喜欢记录
   const result = await db.run(SQL`DELETE FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
   return result;
 }
@@ -140,6 +138,31 @@ async function getUsersWhoLikedArticle(articleId) {
   return result;
 }
 
+
+async function getAllUsersWithArticleCount() {
+  const db = await dbPromise;
+  const query = `
+      SELECT user.*, COUNT(article.id) as articleCount 
+      FROM user 
+      LEFT JOIN article ON user.id = article.userid
+      GROUP BY user.id;
+  `;
+  const [users] = await db.execute(query);
+  return users;
+}
+
+async function deleteUserAndRelatedData(userId) {
+  const db = await dbPromise;
+
+
+  await db.execute("DELETE FROM article WHERE userid = ?", [userId]);
+
+
+  await db.execute("DELETE FROM comments WHERE user_id = ?", [userId]);
+
+
+  await db.execute("DELETE FROM user WHERE id = ?", [userId]);
+}
 
 
 
@@ -308,6 +331,21 @@ module.exports = {
   unlikeArticle,
   countLikesForArticle,
   getArticlesLikedByUser,
-  getUsersWhoLikedArticle
+
+  getUsersWhoLikedArticle,
+  getAllUsersWithArticleCount,
+  deleteUserAndRelatedData,
+
+
+
+    getArticleById,
+    getAllCategories,
+    getAllArticles
+
+
+
+
+
+
 };
 
