@@ -53,9 +53,9 @@ async function deleteCommentById(id) {
 //search by keywords -----zli178
 async function searchArticlesByKeyword(keyword) {
   const db = await dbPromise;
-  return db.all(SQL`
-      SELECT * FROM article WHERE LOWER(title) LIKE ${'%' + keyword.toLowerCase() + '%'}
-    `);
+  const result = await db.all(SQL`
+      SELECT * FROM article WHERE LOWER(title) LIKE ${'%' + keyword.toLowerCase() + '%'}`);
+  return result;
 }
 const getArticleById = async (articleId) => {
   const db = await dbPromise;
@@ -138,6 +138,31 @@ async function getUsersWhoLikedArticle(articleId) {
   return result;
 }
 
+
+async function getAllUsersWithArticleCount() {
+  const db = await dbPromise;
+  const query = `
+      SELECT user.*, COUNT(article.id) as articleCount 
+      FROM user 
+      LEFT JOIN article ON user.id = article.userid
+      GROUP BY user.id;
+  `;
+  const [users] = await db.execute(query);
+  return users;
+}
+
+async function deleteUserAndRelatedData(userId) {
+  const db = await dbPromise;
+
+
+  await db.execute("DELETE FROM article WHERE userid = ?", [userId]);
+
+
+  await db.execute("DELETE FROM comments WHERE user_id = ?", [userId]);
+
+
+  await db.execute("DELETE FROM user WHERE id = ?", [userId]);
+}
 
 
 
@@ -359,7 +384,10 @@ module.exports = {
   unlikeArticle,
   countLikesForArticle,
   getArticlesLikedByUser,
+
   getUsersWhoLikedArticle,
+    getAllUsersWithArticleCount,
+  deleteUserAndRelatedData,
   followerNum,
   articleCommentNum,
   articleLikeNum,
@@ -368,6 +396,22 @@ module.exports = {
   deleteCategory,
   updateCategory,
   getAllUsers
+
+
+
+
+
+
+
+    getArticleById,
+    getAllCategories,
+    getAllArticles
+
+
+
+
+
+
 
 };
 

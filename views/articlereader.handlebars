@@ -3,7 +3,7 @@
   <link rel="stylesheet" href="/public/css/articlereader.css">
   <script src="/public/frontend javascripts/articlereader.js"></script>
 </head>
-<div class="container">
+<div>
   <h1>This is an article reader!</h1>
   
   {{#if article}}
@@ -38,29 +38,18 @@
     <div class ="articlecontent">
       <p>Content: {{{article.content}}}</p>
     </div>
-    <button id="openModalBtn">Comment</button>
+    <button id="openModalBtn" onclick="addComment('{{article.id}}')">Comment</button>
   {{/if}}
 
   {{!-- Modal --}}
-  <div id="commentModal" class="modal">
-    <div class="modal-content">
-      <form action="/addcomment" method="POST">
-      <fieldset>
-        <legend>Comment Content</legend>
-        <input type="hidden" name="articleid" id="articleid" value= {{article.id}}>
-        <p>
-          <label for="name_id" class="addcontent">Reply to {{article.author}}</label><br />
-          <input type="text" size="250" name="content" id="content_id"/>
-        </p>
-      </fieldset>   
-      <p>
-        <input type="submit" name="submit_button" id="submit_id" value="Done!" />
-        <input type="reset" name="reset_button" id="reset_id" value="Clear" />
-      </p>
-      </form>
-      <span id="closeModalBtn" style="cursor:pointer;">Close</span>
-    </div>
-  </div>
+  <script>
+
+    function addComment(articleID) {
+        const commentUrl = `/comment/?articleId=${articleID}`;
+        window.location.href = commentUrl;
+    }
+
+</script>
 
 
 
@@ -116,19 +105,19 @@
 </div>
 
 
-<button id="like-button" data-article-id="{{article.id}}" data-user-id="{{userid}}">
+<button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
     <span id="like-icon" style="color: black;">❤️</span>
 </button>
-<p id="like-count">{{likesCount}} likes</p>
+<p id="like-count">{{article.likeCount}} likes</p>
 
 
 <h2>Users who liked this article:</h2>
 <ul id="users-liked-list">
     {{#each article.usersLiked}}
-        <li><a href="/user/{{this.id}}">{{this.account}}</a></li>
+        <li><a href="/othersProfile/{{this.id}}">{{this.account}}</a></li>
     {{/each}}
 </ul>
-<script src="/likeFunctionality.js"></script>
+<script src="../public/frontend javascripts/likeFunctionality.js"></script>
 
 
 

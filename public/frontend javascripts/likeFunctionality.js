@@ -1,16 +1,20 @@
-const likeButton = document.getElementById('like-button');
-const likeIcon = document.getElementById('like-icon');
-const likeCountElement = document.getElementById('like-count');
-const usersLikedList = document.getElementById('users-liked-list');
+const likeButton = document.getElementById("#like-button");
+const likeIcon = document.getElementById("#like-icon");
+const likeCountElement = document.getElementById("#like-count");
+const usersLikedList = document.getElementById("#users-liked-list");
+const blogDao = require('../../src/models/blog-dao.js');
 
-let userHasLiked = false;
-let likesCount = 0;
+
+let userHasLiked = false;;
 let usersLiked = [];
-
+let likesCount = 0;
+let userName = "";
 likeButton.addEventListener('click', async () => {
     const articleId = likeButton.getAttribute('data-article-id');
     const userId = likeButton.getAttribute('data-user-id');
-
+    likesCount = await blogDao.countLikesForArticle(articleId);
+    usersLiked = await blogDao.getUsersWhoLikedArticle(articleId);
+    userName = await blogDao.searchUserById(userId);
     try {
         if (!userHasLiked) {
             const response = await fetch('/likeArticle', {
@@ -25,7 +29,7 @@ likeButton.addEventListener('click', async () => {
                 likeIcon.style.color = 'red';
                 userHasLiked = true;
                 likesCount++;
-                usersLiked.push({ id: userId, account: `User ${userId}` });
+                usersLiked.push({ id: userId, account: userName });
                 updateUI();
             } else {
                 console.error('error');
@@ -52,6 +56,8 @@ likeButton.addEventListener('click', async () => {
     } catch (error) {
         console.error(error);
     }
+
+    
 });
 
 function updateUI() {

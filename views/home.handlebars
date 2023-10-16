@@ -1,8 +1,10 @@
 
 {{! add a input and a button to delete a article by router'/article/:id' }}
+{{#if userid}}
+<a href="./toDashboard">Dashboard </a><br>
+{{else}}
 <a href="./login">Login here please! </a><br>
-<input type='text' id='articleId' placeholder='Article Id' />
-<button class='deleteArticle'>Delete Article</button>
+{{/if}}
 <form action='/search' method='get'>
     <input type='text' name='keyword' placeholder='Search for articles...' />
     <button type='submit'>Search</button>
@@ -12,7 +14,7 @@
 {{#each articles}}
 <div>
     <h2><a href="/article/{{id}}">{{title}}</a></h2>
-    <p>{{content}}</p>
+    <p>{{{content}}}</p>
 </div>
 {{/each}}
 

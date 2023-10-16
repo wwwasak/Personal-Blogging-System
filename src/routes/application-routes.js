@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { dbPromise } = require('../db/database.js');
 const { v4: uuidv4 } = require("uuid");
 const { verifyAuthenticated } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
@@ -16,6 +15,7 @@ router.get('/', async (req, res) => {
         articles.forEach(article => {
             article.content = article.content.substring(0, 50) + '...';
         });
+        res.locals.userid = userid;
         res.render('home', { categories, articles });
     } catch (error) {
         console.error(error);
@@ -48,6 +48,12 @@ router.get("/toProfile", async function (req, res) {
     res.locals.user = userAccount;
     res.render("profile")
 });
+
+router.get('/comment/',async function(req,res){
+    let id = req.params.articleId;
+    console.log(id)
+    res.render("addComment")
+})
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
@@ -59,7 +65,7 @@ router.post('/userLogin', async function (req, res) {
             userid = userDetails[0].id
             res.cookie("authToken", loginToken)
             res.locals.user = userDetails;
-            res.redirect("/toDashboard")
+            res.redirect("/")
         } else {
             res.locals.user = null;
             res.setToastMessage("Authentication failed!");
@@ -220,6 +226,7 @@ router.post('/userRegister', async function (req, res) {
             code: 200,
             msg: "Register successful",
         })
+        res.redirect("/login");
     } catch (error) {
         res.send({
             code: 500,
@@ -235,6 +242,7 @@ router.get('/userDelete', async function (req, res) {
             code: 200,
             msg: "Delete successful",
         })
+        res.redirect("/login");
     } catch (error) {
         res.send({
             code: 500,
@@ -534,7 +542,6 @@ router.get('/article/:id', async (req, res) => {
         const hasLiked = await blogDao.hasUserLikedArticle(userid, articleid);
         const likeCount = await blogDao.countLikesForArticle(articleid);
         const likeUsers = await blogDao.getUsersWhoLikedArticle(articleid);
-
         const article = {
             id: articleid,
             title: articleInfo.title,
@@ -559,7 +566,8 @@ router.get('/article/:id', async (req, res) => {
 
         res.locals.userid = userid;
         res.locals.comment = processedComments;
-        res.render('articlereader', { article: article });
+        res.locals.article = article;
+        res.render('articlereader');
 
 
     } catch (error) {
@@ -692,5 +700,78 @@ function formatTimestamp(timestamp) {
 
     return `${year}/${month}/${day} ${hours}:${minutes}`;
 }
+
+
+
+
+
+  //api create by zli178
+  router.post('/api/login', async function (req, res) {
+    let { account, password } = req.body;
+
+    try {
+        let userDetails = await blogDao.searchUsersByAccount(account, password);
+
+        if (userDetails.length > 0) {
+            let loginToken = uuidv4();
+            await blogDao.updateToken(userDetails[0].id, loginToken);
+            res.status(204).json({ authToken: loginToken });
+        } else {
+            res.status(401).json({ message: 'Authentication failed!' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Login failed" });
+    }
+});
+
+
+
+router.get("/api/logout", function (req, res) {
+    res.clearCookie("authToken");
+    res.status(204).end();
+});
+
+router.get("/api/users", async function(req, res) {
+    const token = req.cookies.authToken;
+    if (!token) {
+        return res.status(401).json({ message: "Unauthenticated" });
+    }
+
+    const user = await blogDao.userAuthenticatorToken(token);
+    if (!user || !user.isAdmin) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const usersWithArticleCount = await blogDao.getAllUsersWithArticleCount();
+    res.json(usersWithArticleCount);
+});
+
+router.delete('/api/users/:id', async function (req, res) {
+    const token = req.cookies.authToken;
+    const userIdToDelete = req.params.id;
+
+    try {
+        if (!token) {
+            return res.status(401).json({ message: "Unauthenticated" });
+        }
+
+        const user = await blogDao.userAuthenticatorToken(token);
+        if (!user || !user.isAdmin) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        await blogDao.deleteUserAndRelatedData(userIdToDelete);
+
+        res.status(204).end();
+    } catch (error) {
+        res.status(500).json({ message: "Delete failed" });
+    }
+});
+
+
+
+
+
+
 
 module.exports = router;

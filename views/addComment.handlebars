@@ -1,0 +1,19 @@
+<div id="commentModal" class="modal">
+    <div class="modal-content">
+      <form action="/addcomment" method="POST">
+      <fieldset>
+        <legend>Comment Content</legend>
+        <input type="hidden" name="articleid" id="articleid" value= {{article.id}}>
+        <p>
+          <label for="name_id" class="addcontent">Reply to {{article.author}}</label><br />
+          <input type="text" size="250" name="content" id="content_id"/>
+        </p>
+      </fieldset>   
+      <p>
+        <input type="submit" name="submit_button" id="submit_id" value="Done!" />
+        <input type="reset" name="reset_button" id="reset_id" value="Clear" />
+      </p>
+      </form>
+      <span id="closeModalBtn" style="cursor:pointer;">Close</span>
+    </div>
+  </div>
