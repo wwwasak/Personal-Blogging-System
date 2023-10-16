@@ -1,9 +1,9 @@
 {{!-- handlebar subscribe list create by zliu442 --}}
 
-<div class="container">
-    <h1>{{user.account}}'s subscribe relation list</h1>
-
-    <h3>Subscribe to </h3>
+<div>
+    <h1>{{user.account}}'s subscribe relation list</h1><br>
+    <a href="/toDashboard">Return</a>   
+    <h3>Subscribe to </h3><br>
     {{#if subscriber}}
     <ul>
         {{#each subscriber}}
@@ -17,7 +17,7 @@
         <p>You have don't subscribe to anyone one. Try to add one.</p>
     {{/if}}
 
-    <h3>Followed by </h3>
+    <h3>Followed by </h3><br>
     {{#if follower}}
     <ul>
         {{#each follower}}
@@ -31,7 +31,7 @@
         <p>Opps! You are not followed by anyone now.</p>
     {{/if}}
 
-    <h3>Subscribe Users' Article</h3>
+    <h3>Subscribe Users' Article</h3><br>
     {{#if subscribeArticle}}
     <ul>
         {{#each subscribeArticle}}

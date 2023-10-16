@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { dbPromise } = require('../db/database.js');
 const { v4: uuidv4 } = require("uuid");
 const { verifyAuthenticated } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
@@ -16,6 +15,7 @@ router.get('/', async (req, res) => {
         articles.forEach(article => {
             article.content = article.content.substring(0, 50) + '...';
         });
+        res.locals.userid = userid;
         res.render('home', { categories, articles });
     } catch (error) {
         console.error(error);
@@ -48,6 +48,12 @@ router.get("/toProfile", async function (req, res) {
     res.locals.user = userAccount;
     res.render("profile")
 });
+
+router.get('/comment/',async function(req,res){
+    let id = req.params.articleId;
+    console.log(id)
+    res.render("addComment")
+})
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
@@ -59,7 +65,7 @@ router.post('/userLogin', async function (req, res) {
             userid = userDetails[0].id
             res.cookie("authToken", loginToken)
             res.locals.user = userDetails;
-            res.redirect("/toDashboard")
+            res.redirect("/")
         } else {
             res.locals.user = null;
             res.setToastMessage("Authentication failed!");
@@ -97,6 +103,7 @@ router.post('/userRegister', async function (req, res) {
             code: 200,
             msg: "Register successful",
         })
+        res.redirect("/login");
     } catch (error) {
         res.send({
             code: 500,
@@ -112,6 +119,7 @@ router.get('/userDelete', async function (req, res) {
             code: 200,
             msg: "Delete successful",
         })
+        res.redirect("/login");
     } catch (error) {
         res.send({
             code: 500,
@@ -411,7 +419,6 @@ router.get('/article/:id', async (req, res) => {
         const hasLiked = await blogDao.hasUserLikedArticle(userid, articleid);
         const likeCount = await blogDao.countLikesForArticle(articleid);
         const likeUsers = await blogDao.getUsersWhoLikedArticle(articleid);
-
         const article = {
 
             id: articleid,
@@ -437,7 +444,8 @@ router.get('/article/:id', async (req, res) => {
 
         res.locals.userid = userid;
         res.locals.comment = processedComments;
-        res.render('articlereader', { article: article });
+        res.locals.article = article;
+        res.render('articlereader');
 
 
     } catch (error) {

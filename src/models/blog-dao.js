@@ -53,9 +53,9 @@ async function deleteCommentById(id) {
 //search by keywords -----zli178
 async function searchArticlesByKeyword(keyword) {
   const db = await dbPromise;
-  return db.all(SQL`
-      SELECT * FROM article WHERE LOWER(title) LIKE ${'%' + keyword.toLowerCase() + '%'}
-    `);
+  const result = await db.all(SQL`
+      SELECT * FROM article WHERE LOWER(title) LIKE ${'%' + keyword.toLowerCase() + '%'}`);
+  return result;
 }
 const getArticleById = async (articleId) => {
   const db = await dbPromise;
