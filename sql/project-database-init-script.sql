@@ -92,7 +92,7 @@ CREATE TABLE comments (
     parentComment integer,
     article_id integer,
     FOREIGN KEY (user_id) REFERENCES user(id), 
-    FOREIGN KEY (article_id) REFERENCES article(id)
+    FOREIGN KEY (article_id) REFERENCES article(id),
     FOREIGN KEY (parentComment) REFERENCES comments(id)
 );
 INSERT INTO comments (user_id,content,parentComment, article_id)
@@ -101,3 +101,41 @@ VALUES
     (2,'Here is the second comment.', NULL, 2),
     (3,'A reply to the first comment.', 1, NULL), 
     (4,'A reply to the second comment.',3, NULL); 
+
+-- add Notification related database----txu470
+DROP TABLE if exists notifications;
+CREATE TABLE notifications (
+    id INT NOT NULL PRIMARY KEY,
+    recipient_id INT, 
+    notification_type TEXT CHECK (notifications.notification_type IN ('newBlog', 'newComment', 'newLike','newSubscriber')),
+    related_object_id INT, 
+    sender_id INT, 
+    content TEXT,
+    read_status BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (recipient_id) REFERENCES user(id),
+    FOREIGN KEY (sender_id) REFERENCES user(id)
+);
+
+
+-- subscribe table create and test data filled--zliu442
+DROP TABLE if exists subscribes;
+CREATE TABLE subscribes(
+    id integer not null PRIMARY KEY,
+    subscribe_by_userid integer,
+    subscribe_to_userid integer,
+    FOREIGN KEY (subscribe_by_userid) REFERENCES user(id), 
+    FOREIGN KEY (subscribe_to_userid) REFERENCES user(id)
+);
+
+INSERT INTO subscribes (id, subscribe_by_userid, subscribe_to_userid) 
+VALUES
+    (7,1,5),
+    (1,1,2),
+    (2,1,3),
+    (3,1,4),
+    (4,2,1),
+    (5,3,1),
+    (6,4,1)
+
+

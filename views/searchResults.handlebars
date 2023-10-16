@@ -15,21 +15,13 @@
     const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
     const data = await response.json(); console.log(data); }); });
 </script>
+
 <div>
     <h2><a href="/article/{{id}}">{{title}}</a></h2>
     <p>{{content}}</p>
     <button onclick="updateArticle('{{id}}')">Update</button>
 </div>
 {{/each}}
-
-{{!-- <script>
-    function updateArticle(articleId) {
-    // 构建跳转链接
-    let updateUrl = '/updatearticle/';
-    // 执行页面跳转
-    window.location.href = updateUrl;
-}
-</script> --}}
 
 <script>
     function updateArticle(articleId) {
