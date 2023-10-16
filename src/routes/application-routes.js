@@ -49,7 +49,7 @@ router.get("/toProfile", async function (req, res) {
     res.render("profile")
 });
 
-router.get('/comment/',async function(req,res){
+router.get('/comment/', async function (req, res) {
     let id = req.params.articleId;
     console.log(id)
     res.render("addComment")
@@ -141,7 +141,7 @@ router.get('/deletecategory', async (req, res) => {
 });
 
 //routers create by zliu442
-router.get('/deletearticle',async(req,res) => {
+router.get('/deletearticle', async (req, res) => {
     try {
         const id = req.query.id;
         await blogDao.deleteArticleById(id);
@@ -192,20 +192,20 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
         likeNumber += likeForTheArticle;
         item.commentForTheArticle = commentForTheArticle;
         item.likeForTheArticle = likeForTheArticle;
-        item.popularIndex = popularindex(commentForTheArticle,likeForTheArticle);
+        item.popularIndex = popularindex(commentForTheArticle, likeForTheArticle);
         item.postDate = formatTimestamp(item.postdate);
     });
     await Promise.all(promises);
     //choose top 3 rank articles
     const sortedArticleArray = userArticles.sort((a, b) => b.popularIndex - a.popularIndex);
     const topThreeArticles = sortedArticleArray.slice(0, 3);
-    topThreeArticles.forEach((item,index) =>{
+    topThreeArticles.forEach((item, index) => {
         item.rank = index + 1;
     });
 
     //for histogram chart
-    
-// send to front end
+
+    // send to front end
     res.locals.toparticle = topThreeArticles;
     res.locals.commentNum = commentNumber;
     res.locals.likeNum = likeNumber;
@@ -213,7 +213,7 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
 });
 
 //define popularity calculator
-function popularindex(commentNum, likeNum){
+function popularindex(commentNum, likeNum) {
     popularNum = commentNum * 1.7 + likeNum;
     return popularNum;
 }
@@ -251,7 +251,7 @@ router.get('/userDelete', async function (req, res) {
     }
 });
 
-router.get('/updatearticle',function(req,res){
+router.get('/updatearticle', function (req, res) {
     res.render("updatearticle")
 })
 // This is a router to get the request of update article from users
@@ -292,8 +292,8 @@ router.delete('/article/:id', async function (req, res) {
 //commenter delete comment by id  ------txu470
 async function isCommentOwner(userid, commentId) {
     let result = await blogDao.searchCommentById(commentId);
-    if (result.length > 0) {
-        if (result[0].user_id == userid) {
+    if (result) {
+        if (result.user_id == userid) {
             return true;
         }
     }
@@ -303,8 +303,8 @@ async function isCommentOwner(userid, commentId) {
 //ArticleOwner delete comment by id  ------txu470
 async function isArticleOwner(userid, articleId) {
     let result = await blogDao.searchArticleById(articleId);
-    if (result.length > 0) {
-        if (result[0].userid == userid) {
+    if (result) {
+        if (result.userid == userid) {
             return true;
         }
     }
@@ -705,8 +705,8 @@ function formatTimestamp(timestamp) {
 
 
 
-  //api create by zli178
-  router.post('/api/login', async function (req, res) {
+//api create by zli178
+router.post('/api/login', async function (req, res) {
     let { account, password } = req.body;
 
     try {
@@ -731,7 +731,7 @@ router.get("/api/logout", function (req, res) {
     res.status(204).end();
 });
 
-router.get("/api/users", async function(req, res) {
+router.get("/api/users", async function (req, res) {
     const token = req.cookies.authToken;
     if (!token) {
         return res.status(401).json({ message: "Unauthenticated" });

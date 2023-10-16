@@ -1,22 +1,25 @@
 <div>
     <nav>
-        <a href="/">Home</a>
-        <a href="/toProfile">Profile</a>
-        <a href="/toAdd">Add your article</a>
-        {{!-- add one line by zliu442 to subscribe list --}}
-        <a href="/subscribelist/{{userid}}">View your subscribe and follow list</a>
+        <a href='/'>Home</a>
+        <a href='/toProfile'>Profile</a>
+        <a href='/toAdd'>Add your article</a>
+        {{! add one line by zliu442 to subscribe list }}
+        <a href='/subscribelist/{{userid}}'>View your subscribe and follow list</a>
     </nav>
-    <h2>Hello {{name}}</h2><a href="/logout">Log out</a>
+    <h2>Hello {{name}}</h2><a href='/logout'>Log out</a>
     <h2>Your Articles:</h2>
     {{#each articles}}
-    <div>
-        <h2><a href="/article/{{id}}">{{title}}</a></h2>
-        <p>{{{content}}}</p>
-        <button onclick="updateArticle('{{id}}')">Update</button>
-        <button class='deleteArticle' data-article-id={{id}}>Delete</button>
-    </div>
+        <div>
+            <h2><a href='/article/{{id}}'>{{title}}</a></h2>
+            <p>{{{content}}}</p>
+            <button onclick="updateArticle('{{id}}')">Update</button>
+            <button
+                class='deleteArticle'
+                data-article-id={{this.id}}
+            >Delete</button>
+        </div>
     {{/each}}
-{{!-- analytic part create by zliu442 --}}
+    {{! analytic part create by zliu442 }}
     <h1>Analytic dashboard:</h1>
     <p>Total Number of followers: {{followerNum}}</p>
     <p>Total Number of Comments for {{name}}'s articles: {{commentNum}}</p>
@@ -26,30 +29,30 @@
     {{#if toparticle}}
         <ul>
             {{#each toparticle}}
-            <li>
-                <ul>
-                    <li>{{this.rank}} Ranked</li>
-                    <li><p>Title: </p><a href="/article/{{this.id}}">{{this.title}}</a></li>
-                    <li>Popular index is {{this.popularIndex}}</li>
-                    <li>Comment Number is {{this.commentForTheArticle}}</li>
-                    <li>Like Number is {{this.likeForTheArticle}}</li>
-                    <li>Posted on {{this.postDate}}</li>
-                </ul>
-            </li>
+                <li>
+                    <ul>
+                        <li>{{this.rank}} Ranked</li>
+                        <li><p>Title: </p><a
+                                href='/article/{{this.id}}'
+                            >{{this.title}}</a></li>
+                        <li>Popular index is {{this.popularIndex}}</li>
+                        <li>Comment Number is {{this.commentForTheArticle}}</li>
+                        <li>Like Number is {{this.likeForTheArticle}}</li>
+                        <li>Posted on {{this.postDate}}</li>
+                    </ul>
+                </li>
             {{/each}}
         </ul>
     {{else}}
-    <p>You do not post any article now.</p>
+        <p>You do not post any article now.</p>
     {{/if}}
 
-    {{!-- add histogram chart --}}
+    {{! add histogram chart }}
     <p>This is histogram chart of the number of your articles commented</p>
-    <canvas id="commentHistogram"></canvas>
+    <canvas id='commentHistogram'></canvas>
 </div>
 
-
-
-{{!-- to Create comment analysis histogram --}}
+{{! to Create comment analysis histogram }}
 {{!-- <script>
     var ctx = document.getElementById('commentHistogram').getContext('2d');
     var chart = new Chart(ctx, {
@@ -75,22 +78,19 @@
 </script> --}}
 
 {{! add button to delete a article-----txu470 }}
-<script>
+{{! <script>
 
     function updateArticle(articleId) {
         const updateUrl = `/updatearticle/?articleId=${articleId}`;
         window.location.href = updateUrl;
     }
 
-</script>
+</script> }}
 <script>
     const deleteArticleButtons = document.querySelectorAll('.deleteArticle');
-    deleteArticleButtons.forEach(button = > {
-        button.addEventListener('click',
-            async(e) = > {
-                const articleId = button.getAttribute('data-article-id');
-                const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
-                const data = await response.json(); console.log(data);
-            });
-    });
+    deleteArticleButtons.forEach(button =>{
+    button.addEventListener('click',async(e) =>{ const articleId =
+    button.getAttribute('data-article-id'); const response = await
+    fetch(`/article/${articleId}`, { method: 'DELETE' }); const data = await
+    response.json(); console.log(data); }); });
 </script>
