@@ -1,4 +1,4 @@
-<div class="container">
+{{!-- <div class="container">
     <h1>Login</h1>
     <form action="./userLogin" method="post">
         <label for="account">Account:</label>
@@ -18,4 +18,23 @@
         <input type="submit" name="submit_button" id="submit_id" value="Submit" />
         <input type="reset" name="reset_button" id="reset_id" value="Clear" />
     </form>
-</div>
+</div> --}}
+
+<head>
+    <link rel="stylesheet" href="css/userLogin.css">
+</head>
+
+
+<form action="./userLogin" method="post" class="login">
+    <p>General user</p>
+    <input type="text" id="account" name="account" placeholder="Account">
+    <input type="password" id="password" name="password" placeholder="Password">
+    <input type="submit" class="btn" value="SUBMIT">
+</form>
+
+<form action="./adminLogin" method="post" class="login">
+    <p>Admin</p>
+    <input type="text" id="admin_account" name="admin_account" placeholder="Account">
+    <input type="admin_password" id="admin_password" name="admin_password" placeholder="Password">
+    <input type="submit" name="submit_button" id="submit_id" class="btn" value="SUBMIT">
+</form>
