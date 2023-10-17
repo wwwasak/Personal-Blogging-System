@@ -544,6 +544,7 @@ router.get('/subsubcomment/',async function(req,res){
     article.author = await blogDao.searchUserById(article.userid);
     let replyTo = req.query.replyto;
     let replyToUser = await blogDao.searchUserById(replyTo);
+    subcomment.content = formatCommentStr(subcomment.content);
     res.locals.article = article;
     res.locals.comment = comment;
     res.locals.replyto = replyToUser;
@@ -626,9 +627,8 @@ router.post('/addsubcomment', async function (req, res) {
 
 router.post('/addsubsubcomment', async function (req, res) {
     let { content, commentid, subcommentid, replytoid, articleid } = req.body;
-    console.log({ content, commentid, subcommentid, replytoid, articleid })
     const parentComment = await blogDao.searchCommentById(subcommentid);
-    const parentCommentContent = parentComment.content;
+    const parentCommentContent = formatCommentStr(parentComment.content);
     const parentCommentAccount = (await blogDao.searchUserById(parentComment.user_id)).account;
     const parentCommentId = (await blogDao.searchUserById(parentComment.user_id)).id;
     content = `<p>Reply to <a href='/othersProfile/${parentCommentId}'>${parentCommentAccount}</a> for "${parentCommentContent}" with <strong>${content}</strong> `
@@ -659,6 +659,16 @@ router.post('/addsubsubcomment', async function (req, res) {
         })
     }
 });
+
+function formatCommentStr(string){
+    let regex = /<strong>(.+?)<\/strong>/;
+    let match = string.match(regex);
+    if (match && match[1]) {
+        return match[1];
+    } else{
+        return string;
+    }
+}
 
 //add read article feature and add comments here by zliu442 2023/10/13
 
@@ -902,11 +912,5 @@ router.delete('/api/users/:id', async function (req, res) {
         res.status(500).json({ message: "Delete failed" });
     }
 });
-
-
-
-
-
-
 
 module.exports = router;
