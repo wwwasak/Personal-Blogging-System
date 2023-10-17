@@ -4,7 +4,7 @@
   <p>Add your artical here!</p>
   <a href="/toDashboard">Return</a>
 
-  <form action="/addarticle" method="POST">
+  <form action="/addarticle" method="POST" enctype="multipart/form-data">
 
     <fieldset>
       <legend>Article Title</legend>
@@ -27,6 +27,12 @@
       </p>
     </fieldset>
 
+{{!-- add image by zliu442 --}}
+    <fieldset>
+      <legend>Image</legend>
+      <label for="inpFile">Upload your image for article here</label>
+      <input id="inpFile" type="file" name="imageFile" accept =".png,.jpeg,.jpg,.bmp">
+    </fieldset>
 
     <fieldset>
       <legend>Content</legend>

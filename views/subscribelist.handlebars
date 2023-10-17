@@ -37,7 +37,13 @@
         {{#each subscribeArticle}}
         <li>
             {{!-- reserve the link to add profile reader --}}
-            <a href = "/article/{{this.id}}">{{this.title}}</a> <p>Posted by {{this.author.account}} in {{this.postdate}}</p>
+            <a href = "/article/{{this.id}}">{{this.title}}</a> 
+            <p>Posted by {{this.author.account}} in {{this.postdate}}</p>
+            {{#if this.imagename}}
+                <img src="{{this.imagename}}" alt="{{this.imagename}}" width="200" height="150">
+            {{else}}
+                <p>The article do not have image</p>
+            {{/if}}
         </li>
         {{/each}}
     </ul>
