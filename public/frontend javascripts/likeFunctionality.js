@@ -1,7 +1,7 @@
-const likeButton = document.getElementById("#like-button");
-const likeIcon = document.getElementById("#like-icon");
-const likeCountElement = document.getElementById("#like-count");
-const usersLikedList = document.getElementById("#users-liked-list");
+const likeButton = document.getElementById("like-button");
+const likeIcon = document.getElementById("like-icon");
+const likeCountElement = document.getElementById("like-count");
+const usersLikedList = document.getElementById("users-liked-list");
 const blogDao = require('../../src/models/blog-dao.js');
 
 
@@ -9,8 +9,9 @@ let userHasLiked = false;;
 let usersLiked = [];
 let likesCount = 0;
 let userName = "";
-likeButton.addEventListener('click', async () => {
+likeButton.addEventListener('click', async (e) => {
     const articleId = likeButton.getAttribute('data-article-id');
+    console.log(articleId)
     const userId = likeButton.getAttribute('data-user-id');
     likesCount = await blogDao.countLikesForArticle(articleId);
     usersLiked = await blogDao.getUsersWhoLikedArticle(articleId);

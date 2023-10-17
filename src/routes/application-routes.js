@@ -3,6 +3,7 @@ const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
 const { verifyAuthenticated } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
+const bcrypt = require('bcryptjs');
 
 let userid;
 
@@ -57,9 +58,9 @@ router.get('/comment/', async function (req, res) {
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
-        let userDetails = await blogDao.searchUsersByAccount(account, password)
-        console.log(userDetails)
-        if (userDetails.length > 0) {
+        let userDetails = await blogDao.searchUsersByAccount(account)
+        let isMatch = await bcrypt.compare(password, userDetails[0].password)
+        if (userDetails.length > 0 && isMatch) {
             let loginToken = uuidv4();
             await blogDao.updateToken(userDetails[0].id, loginToken)
             userid = userDetails[0].id
@@ -221,7 +222,8 @@ function popularindex(commentNum, likeNum) {
 router.post('/userRegister', async function (req, res) {
     let { account, password, birthday, description } = req.body;
     try {
-        await blogDao.registerUser(account, password, birthday, description)
+        let hashedPassword = await bcrypt.hash(password, 8)
+        await blogDao.registerUser(account, hashedPassword, birthday, description)
         res.send({
             code: 200,
             msg: "Register successful",
@@ -654,6 +656,13 @@ router.get('/subscribe', async (req, res) => {
         const userid = req.query.userid;
         const otheruserid = req.query.otheruserid;
         await blogDao.addSubscribe(userid, otheruserid);
+        const user = await blogDao.searchUserById(userid);
+        console.log(user)
+        const otherUser = await blogDao.searchUserById(otheruserid);
+        const userName = user.account;
+        const otherUserName = otherUser.account;
+        const content = "Congratulation!" + otherUserName + "," + userName + " has subscribed to you!";
+        await blogDao.addNotification(userid, otheruserid, "newSubscriber", 0, content)
         res.redirect(`othersProfile/${otheruserid}`);
     } catch (error) {
         console.error(error);
@@ -772,7 +781,17 @@ router.delete('/api/users/:id', async function (req, res) {
 });
 
 
-
+router.get('/notification/:userid', async (req, res) => {
+    try {
+        const userId = req.params.userid;
+        const notifications = await blogDao.searchNotificationsByUserID(userId);
+        res.locals.notifications = notifications;
+        res.render('notification');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
 
 
 
