@@ -283,7 +283,7 @@ router.post('/userRegister', async function (req, res) {
             code: 200,
             msg: "Register successful",
         })
-        res.redirect("/login");
+        res.redirect("/userLogin");
     } catch (error) {
         res.send({
             code: 500,
@@ -299,7 +299,7 @@ router.get('/userDelete', async function (req, res) {
             code: 200,
             msg: "Delete successful",
         })
-        res.redirect("/login");
+        res.redirect("/userLogin");
     } catch (error) {
         res.send({
             code: 500,
