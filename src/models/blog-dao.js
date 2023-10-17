@@ -4,7 +4,7 @@ const { dbPromise } = require('../db/database.js');
 // user search, register and delete -------yji413
 async function searchUsersByAccount(userName, password) {
   const db = await dbPromise;
-  const result = await db.all(SQL`select * from user where account = ${userName} AND password = ${password}`);
+  const result = await db.all(SQL`select * from user where account = ${userName}`);
   return result;
 }
 
@@ -285,7 +285,7 @@ async function getSubscribers(userid) {
 }
 async function addNotification(sender_id, recipient_id, notification_type, related_object_id, content) {
   const db = await dbPromise;
-  const result = await db.run(SQL`insert into notification (sender_id,recipient_id,notification_type,related_object_id,content) values
+  const result = await db.run(SQL`insert into notifications (sender_id,recipient_id,notification_type,related_object_id,content) values
     (${sender_id}, ${recipient_id}, ${notification_type}, ${related_object_id}, ${content})`);
   return result;
 }
@@ -342,6 +342,11 @@ async function getAllUsers() {
   const result = await db.all(`SELECT * FROM user`);
   return result;
 }
+async function searchNotificationsByUserID(userid) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`select * from notifications where recipient_id = ${userid}`);
+  return result;
+}
 
 module.exports = {
   searchUsersByAccount,
@@ -393,5 +398,6 @@ module.exports = {
   deleteCategory,
   updateCategory,
   getAllUsers,
+  searchNotificationsByUserID
 };
 

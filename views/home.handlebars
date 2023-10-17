@@ -37,8 +37,12 @@
         <div class="content">
             <h1>Welcome to blog</h1>
             <div class="buttons">
+                {{#if userid}}
+                <a href="./toDashboard">Dashboard</a>
+                {{else}}
                 <a href="./login">Log in</a>
-                <a href="#">Register</a>
+                <a href="./toRegister">Register</a>
+                {{/if}}
             </div>
         </div>
     </div>
