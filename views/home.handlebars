@@ -149,7 +149,13 @@
 {{#each articles}}
 <div>
     <h2><a href="/article/{{id}}">{{title}}</a></h2>
-    <p>{{{content}}}</p>
+    {{#if imagename}}
+      <img src="{{imagename}}" alt="{{imagename}}" width="200" height="150">
+    {{else}}
+      <p>The article do not have image</p>
+    {{/if}}
+    <p>Post date and time: {{postdate}}</p>
+    <p>{{content}}</p>
 </div>
 {{/each}}
 

@@ -42,7 +42,9 @@ async function startExpress() {
             } else {
                 return opts.inverse(this);
             }
-        }
+        },
+        json: function (context) {
+            return JSON.stringify(context);}
     };
 
     // Setup Handlebars

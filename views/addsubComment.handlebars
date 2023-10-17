@@ -1,11 +1,14 @@
+{{!-- create by zliu442 --}}
 <div id="commentModal" class="modal">
     <div class="modal-content">
-      <form action="/addcomment" method="POST">
+      <form action="/addsubcomment" method="POST">
       <fieldset>
-        <legend>Comment Content</legend>
+        <legend>SubComment Content</legend>
+        <input type="hidden" name="commentid" id="commentid" value= {{comment.id}}>
         <input type="hidden" name="articleid" id="articleid" value= {{article.id}}>
         <p>
-          <label for="name_id" class="addcontent">Reply to {{article.author.account}}</label><br />
+          <label for="name_id" class="addcontent">Reply to {{comment.author.account}}</label><br />
+          <p>for "{{comment.content}}"</p>
           <input type="text" size="250" name="content" id="content_id"/>
         </p>
       </fieldset>   

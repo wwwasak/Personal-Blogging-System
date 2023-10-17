@@ -5,6 +5,13 @@ const { verifyAuthenticated } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
 const bcrypt = require('bcryptjs');
 
+//for image upload
+const multer = require ("multer");
+const path = require('path');
+const upload = multer({dest: path.join(__dirname, "public/images/articleimages")});
+const fs = require("fs");
+
+
 let userid;
 
 router.use(express.static('public'));
@@ -15,6 +22,7 @@ router.get('/', async (req, res) => {
         const articles = await blogDao.getAllArticles();
         articles.forEach(article => {
             article.content = article.content.substring(0, 50) + '...';
+            article.postdate = formatTimestamp(article.postdate);
         });
         res.locals.userid = userid;
         res.render('home', { categories, articles });
@@ -50,11 +58,7 @@ router.get("/toProfile", async function (req, res) {
     res.render("profile")
 });
 
-router.get('/comment/', async function (req, res) {
-    let id = req.params.articleId;
-    console.log(id)
-    res.render("addComment")
-})
+
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
@@ -84,6 +88,7 @@ router.post('/userLogin', async function (req, res) {
 //admin login create by zliu442
 router.post('/adminLogin', async function (req, res) {
     let { admin_account, admin_password } = req.body;
+    console.log({ admin_account, admin_password } )
     try {
         let userDetails = await blogDao.searchAdminByAccount(admin_account, admin_password);
         if (userDetails.length > 0) {
@@ -178,7 +183,10 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
     let userName = userInfo.account;
     res.locals.userid = userInfo.id;
     res.locals.name = userName;
-    let userArticles = await blogDao.searchArticlesByUserAccount(userid)
+    let userArticles = await blogDao.searchArticlesByUserAccount(userid);
+    userArticles.forEach(item =>{
+        item.postdate = formatTimestamp(item.postdate);
+    });
     res.locals.articles = userArticles;
 
     //following lines are related to analytics function create by zliu442 10/16
@@ -210,8 +218,55 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
     res.locals.toparticle = topThreeArticles;
     res.locals.commentNum = commentNumber;
     res.locals.likeNum = likeNumber;
+
+    //for draw histogram comment
+    const lastTendays = getLastTenDays();
+    res.locals.lastTendays = lastTendays;
+    const tenDayTimeStamp = getTendayTimeStamp();
+    const commentNumTendays = await commentNumInTimeRanges(userInfo.id,tenDayTimeStamp);
+    res.locals.commentNumTendays = commentNumTendays;
+
     res.render("dashboard");
 });
+
+//get prior 10 days zliu442
+function getLastTenDays() {
+    let dates = [];
+    let today = new Date();
+    // Set the date to 10 days ago
+    today.setDate(today.getDate() - 9);
+    for (let i = 0; i < 10; i++) {
+        // Format the date as yyyy/mm/dd
+        let formattedDate = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
+        dates.push(formattedDate);
+        // Increase the day by one
+        today.setDate(today.getDate() + 1);
+    }
+    return dates;
+}
+
+function getTendayTimeStamp(){
+    let today = new Date();
+    today.setDate(today.getDate() - 9);
+    let dateRanges = [];
+    for (let i = 0; i < 10; i++) {
+        let startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0).getTime();
+        let endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999).getTime();       
+        dateRanges.push([startOfDay, endOfDay]);
+        today.setDate(today.getDate() + 1);
+    }
+    return dateRanges;
+}
+
+//get comment num by each day zliu442
+async function commentNumInTimeRanges(userid,timeRanges) {
+    const results = await Promise.all(timeRanges.map(async (range) => {
+        const [starttime, endtime] = range;
+        return await blogDao.commentNumOnUserAday(userid, starttime, endtime);
+    }));
+
+    return results; 
+}
 
 //define popularity calculator
 function popularindex(commentNum, likeNum) {
@@ -421,12 +476,17 @@ router.get('/whoLikedArticle', async (req, res) => {
 
 //route post.article create by zliu442
 //when add new article, will notify subscribers---txu470
-router.post('/addarticle', async function (req, res) {
+router.post('/addarticle', upload.single("imageFile"), async function (req, res) {
     let { title, content, categoryid } = req.body;
+    let fileInfo = req.file;
+    let oldpath = fileInfo.path;
+    let newpath = `./public/images/articleimages/${fileInfo.originalname}`;
+    fs.renameSync(oldpath, newpath);
+    let imagepath = `/images/articleimages/${fileInfo.originalname}`
     const timeStamp = generateTimestamp();
     try {
         if ((userid != null)) {
-            const result = await blogDao.addArticle(title, content, timeStamp, userid, categoryid);
+            const result = await blogDao.addArticle(title, content, timeStamp, userid, categoryid, imagepath);
             articleId = result.lastID;
             const subscribers = await blogDao.getSubscribers(userid);
             subscribers.forEach(async subscriber => {
@@ -451,6 +511,48 @@ router.post('/addarticle', async function (req, res) {
     }
 });
 
+//modified byzliu442 10/17
+router.get('/comment/',async function(req,res){
+    let id = req.query.articleId;
+    let article = await blogDao.searchArticleById(id);
+    article.author = await blogDao.searchUserById(article.userid);
+    res.locals.article = article;
+    res.render("addComment")
+});
+
+//create by zliu442 10/17
+router.get('/subcomment/',async function(req,res){
+    let articleid = req.query.articleid;
+    let article = await blogDao.searchArticleById(articleid);
+    article.author = await blogDao.searchUserById(article.userid);
+    let commentid = req.query.commentid;
+    let comment = await blogDao.searchCommentById(commentid);
+    comment.author = await blogDao.searchUserById(comment.user_id);
+    res.locals.article = article;
+    res.locals.comment = comment;
+    res.render("addsubComment")
+});
+
+//create by zliu442 10/17
+router.get('/subsubcomment/',async function(req,res){
+    let subcommentid = req.query.subcommentid;
+    let subcomment = await blogDao.searchCommentById(subcommentid);
+    subcomment.author = await blogDao.searchUserById(subcomment.user_id);
+    let commentid = req.query.commentid;
+    let comment = await blogDao.searchCommentById(commentid);
+    comment.author = await blogDao.searchUserById(comment.user_id);
+    let articleid = req.query.articleid;
+    let article = await blogDao.searchArticleById(articleid);
+    article.author = await blogDao.searchUserById(article.userid);
+    let replyTo = req.query.replyto;
+    let replyToUser = await blogDao.searchUserById(replyTo);
+    subcomment.content = formatCommentStr(subcomment.content);
+    res.locals.article = article;
+    res.locals.comment = comment;
+    res.locals.replyto = replyToUser;
+    res.locals.subcomment = subcomment;
+    res.render("addsubsubComment")
+});
 
 //route post.comment create by zliu442
 //when add new comment, will notify subscribers---txu470
@@ -461,10 +563,10 @@ router.post('/addcomment', async function (req, res) {
         if ((articleid != null && userid != null)) {
             const result = await blogDao.addComment(userid, timeStamp, content, articleid);
             commentId = result.lastID;
-            const subscribers = await blogDao.getSubscribers(userid);
-            subscribers.forEach(async subscriber => {
-                await blogDao.addNotification(userid, subscriber.user_id, 'newComment', commentId, 'have a new comment!');
-            });
+            // const subscribers = await blogDao.getSubscribers(userid);
+            // subscribers.forEach(async subscriber => {
+            //     await blogDao.addNotification(userid, subscriber.user_id, 'newComment', commentId, 'have a new comment!');
+            // });
             res.redirect(`/article/${articleid}`);
         }
         else if (userid == null) {
@@ -490,24 +592,18 @@ router.post('/addcomment', async function (req, res) {
 
 //route post.subcomment create by zliu442 2023/10/13
 router.post('/addsubcomment', async function (req, res) {
-
-    let { content, parentComment } = req.body;
-
-    try {
-        const articleId = req.params.id;
-        const article = await blogDao.getArticleById(articleId);
-        res.render('articlePage', { article });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-
-    const articleid = (await blogDao.searchArticleByCommentid(parentComment)).article_id;
+    let { content, commentid, articleid } = req.body;
+    const article = await blogDao.getArticleById(articleid);
+    const parentComment = await blogDao.searchCommentById(commentid);
+    const parentCommentContent = parentComment.content;
+    const parentCommentAccount = (await blogDao.searchUserById(parentComment.user_id)).account;
+    const parentCommentId = (await blogDao.searchUserById(parentComment.user_id)).id;
+    content = `<p>Reply to <a href='/othersProfile/${parentCommentId}'>${parentCommentAccount}</a> for "${parentCommentContent}" with <strong>${content}</strong> `
     const timeStamp = generateTimestamp();
 
     try {
-        if ((parentComment != null && userid != null)) {
-            await blogDao.addSubComment(userid, timeStamp, content, parentComment);
+        if ((commentid != null && userid != null)) {
+            await blogDao.addSubComment(userid, timeStamp, content, commentid);
             res.redirect(`/article/${articleid}`);
         }
         else if (userid == null) {
@@ -519,7 +615,7 @@ router.post('/addsubcomment', async function (req, res) {
         else {
             res.send({
                 code: 402,
-                msg: "no father comment id"
+                msg: "no parent comment id"
             })
         }
 
@@ -530,6 +626,51 @@ router.post('/addsubcomment', async function (req, res) {
         })
     }
 });
+
+router.post('/addsubsubcomment', async function (req, res) {
+    let { content, commentid, subcommentid, replytoid, articleid } = req.body;
+    const parentComment = await blogDao.searchCommentById(subcommentid);
+    const parentCommentContent = formatCommentStr(parentComment.content);
+    const parentCommentAccount = (await blogDao.searchUserById(parentComment.user_id)).account;
+    const parentCommentId = (await blogDao.searchUserById(parentComment.user_id)).id;
+    content = `<p>Reply to <a href='/othersProfile/${parentCommentId}'>${parentCommentAccount}</a> for "${parentCommentContent}" with <strong>${content}</strong> `
+    const timeStamp = generateTimestamp();
+
+    try {
+        if ((commentid != null && userid != null)) {
+            await blogDao.addSubComment(userid, timeStamp, content, commentid);
+            res.redirect(`/article/${articleid}`);
+        }
+        else if (userid == null) {
+            res.send({
+                code: 408,
+                msg: "no user id"
+            })
+        }
+        else {
+            res.send({
+                code: 402,
+                msg: "no parent comment id"
+            })
+        }
+
+    } catch (error) {
+        res.send({
+            code: 401,
+            msg: "Add Comment failed"
+        })
+    }
+});
+
+function formatCommentStr(string){
+    let regex = /<strong>(.+?)<\/strong>/;
+    let match = string.match(regex);
+    if (match && match[1]) {
+        return match[1];
+    } else{
+        return string;
+    }
+}
 
 //add read article feature and add comments here by zliu442 2023/10/13
 
@@ -552,6 +693,7 @@ router.get('/article/:id', async (req, res) => {
             dateTime: articleTime,
             category: categoryInfo.name,
             content: articleInfo.content,
+            imagename : articleInfo.imagename,
             hasLiked: hasLiked,
             likeColor: hasLiked ? 'red' : 'black',
             likeCount: likeCount,
@@ -641,6 +783,9 @@ router.get('/othersProfile/:otheruserid', async (req, res) => {
         res.locals.userid = userid;
         res.locals.otheruser = otherUser;
         const articleList = await blogDao.searchArticlesByUserAccount(otherUserId);
+        articleList.forEach(item =>{
+            item.postdate = formatTimestamp(item.postdate);
+        })
         res.locals.articles = articleList;
         res.render('othersProfile');
 
@@ -781,6 +926,7 @@ router.delete('/api/users/:id', async function (req, res) {
 });
 
 
+
 router.get('/notification/:userid', async (req, res) => {
     try {
         const userId = req.params.userid;
@@ -792,6 +938,7 @@ router.get('/notification/:userid', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+
 
 
 

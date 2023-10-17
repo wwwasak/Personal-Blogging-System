@@ -13,6 +13,12 @@
     <div>
         <h2><a href='/article/{{id}}'>{{title}}</a></h2>
         <p>{{{content}}}</p>
+        <p>PostTime: {{postdate}}</p>
+        {{#if imagename}}
+            <img src="{{imagename}}" alt="{{imagename}}" width="200" height="150">
+        {{else}}
+            <p>The article do not have image</p>
+        {{/if}}
         <button onclick="updateArticle('{{id}}')">Update</button>
         <button class='deleteArticle' data-article-id={{this.id}}>Delete</button>
     </div>
@@ -45,25 +51,50 @@
     <p>You do not post any article now.</p>
     {{/if}}
 
-    {{! add histogram chart }}
-    <p>This is histogram chart of the number of your articles commented</p>
-    <canvas id='commentHistogram'></canvas>
+
+    {{!-- add histogram chart --}}
+    <h2>This is histogram chart of the number of your articles commented</h2>
+    <canvas id="commentHistogram"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </div>
 
-{{! to Create comment analysis histogram }}
-{{!--
+
+
+{{!-- to Create comment analysis histogram --}}
 <script>
-    var ctx = document.getElementById('commentHistogram').getContext('2d');
-    var chart = new Chart(ctx, {
+    let ctx = document.getElementById('commentHistogram').getContext('2d');
+    let chart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: {{ json labels }},
-    datasets: [{
-        label: 'Sample Data',
-        data: {{ json data }},
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1
+            labels: {{{json lastTendays}}},
+            datasets: [{
+                label: 'number of comment on your artical each day',
+                data: {{{json commentNumTendays}}},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(205, 99, 204, 0.2)',
+                    'rgba(54, 100, 140, 0.2)',
+                    'rgba(204, 255, 51, 0.2)',
+                    'rgba(102, 50, 153, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(205, 99, 204, 1)',
+                    'rgba(54, 100, 140, 1)',
+                    'rgba(204, 255, 51, 1)',
+                    'rgba(102, 50, 153, 1)'
+                ],
+                borderWidth: 1
             }]
         },
     options: {
@@ -74,10 +105,10 @@
         }
     }
     });
-</script> --}}
+</script>
 
 {{! add button to delete a article-----txu470 }}
-{{!
+
 <script>
 
     function updateArticle(articleId) {
@@ -85,7 +116,8 @@
         window.location.href = updateUrl;
     }
 
-</script> }}
+
+</script>
 <script>
     const deleteArticleButtons = document.querySelectorAll('.deleteArticle');
     deleteArticleButtons.forEach(button => {
@@ -95,5 +127,6 @@
                     fetch(`/article/${articleId}`, { method: 'DELETE' }); const data = await
                         response.json(); console.log(data);
         });
+
     });
 </script>

@@ -167,10 +167,10 @@ async function deleteUserAndRelatedData(userId) {
 
 
 //function addArticle by zliu442
-async function addArticle(title, content, timedate, userid, categoryid) {
+async function addArticle(title, content, timedate, userid, categoryid, imagepath) {
   const db = await dbPromise;
-  const result = await db.run(SQL`insert into article (title, content, postdate, userid, categoryid) values
-    (${title}, ${content}, ${timedate}, ${userid}, ${categoryid})`);
+  const result = await db.run(SQL`insert into article (title, content, postdate, userid, categoryid, imagename) values
+    (${title}, ${content}, ${timedate}, ${userid}, ${categoryid}, ${imagepath})`);
   return result;
 }
 
@@ -312,7 +312,7 @@ async function articleLikeNum(articleid) {
 // admin search-------zliu442
 async function searchAdminByAccount(userName, password) {
   const db = await dbPromise;
-  const result = await db.all(SQL`select * from admins where admin_account = ${userName} AND admin_password = ${password}`);
+  const result = await db.all(SQL`select * from user where account = ${userName} AND password = ${password} AND isAdmin = 1`);
   return result;
 }
 
@@ -320,7 +320,7 @@ async function searchAdminByAccount(userName, password) {
 async function addCategory(name, des) {
   const db = await dbPromise;
   const result = await db.run(SQL`insert into category (name, description, userid) values
-  (${name}, ${des}, 0)`);
+  (${name}, ${des}, 4)`);
   return result;
 }
 
@@ -334,6 +334,17 @@ async function updateCategory(id, updatename, updatedes) {
   const db = await dbPromise;
   const result = await db.run(SQL`update category set name = ${updatename}, description = ${updatedes} where id = ${id} `);
   return result;
+}
+
+//count comment to one user in a day
+async function commentNumOnUserAday(userid, starttime, endtime){
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT COUNT(*) 
+  FROM comments AS c
+  JOIN article AS a ON c.article_id = a.id
+  WHERE a.userid = ${userid}
+  AND c.timeDate BETWEEN ${starttime} AND ${endtime}`);
+  return result['COUNT(*)'];
 }
 
 //create by zliu442
@@ -398,6 +409,10 @@ module.exports = {
   deleteCategory,
   updateCategory,
   getAllUsers,
+  getArticleById,
+  getAllCategories,
+  getAllArticles,
+  commentNumOnUserAday,
   searchNotificationsByUserID
 };
 

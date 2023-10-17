@@ -17,6 +17,7 @@ insert into user (id,account,password,birthday,description,isAdmin) values
     (2,'Demo','456234','1990/05/27','This is the second user',FALSE),
     (3,'Clarke','abcdefg','1995/04/23','This is the third user',FALSE),
     (4,'Admin','1wde356fg','1993/02/23','This is the fourth user',TRUE);
+    (5,'zliu442','20000721','2000/07/21','This is the fifth user',FALSE);
 
 
 
@@ -52,16 +53,17 @@ create table article(
     postdate integer,
     userid integer,
     categoryid integer,
+    imagename text,
     foreign key (userid) references user(id),
     foreign key (categoryid) references category(id)
 );
 insert into article (id, title, content, postdate, userid, categoryid) values
-    (1, 'Love', '<strong>I love you!</strong>' ,562767818, 3,1),
-    (2, 'Boy', '<em>I am a boy!</em>' , 172881287,2,1),
-    (4, 'Love', '<strong>I love you!</strong>' ,217886129, 3,1),
-    (5, 'Love', '<strong>I love you!</strong>' ,261812711, 3,1),
-    (6, 'Love', '<strong>I love you!</strong>' ,187212111, 3,1),
-    (3, 'Game', 'I love play game',176281721,1,1 );
+    (1, 'Love', '<strong>I love you!</strong>' ,562767818, ,3,1),
+    (2, 'Boy', '<em>I am a boy!</em>' , 172881287,,2,1),
+    (4, 'Love', '<strong>I love you!</strong>' ,217886129, ,3,1),
+    (5, 'Love', '<strong>I love you!</strong>' ,261812711, ,3,1),
+    (6, 'Love', '<strong>I love you!</strong>' ,187212111, ,3,1),
+    (3, 'Game', 'I love play game',176281721,,1,1 );
 
 
 
@@ -140,13 +142,5 @@ VALUES
     (5,3,1),
     (6,4,1);
 
---admin sql create by zliu442
-DROP TABLE if exists admins;
-CREATE TABLE admins(
-    id integer not null PRIMARY KEY,
-    admin_account text,
-    admin_password integer
-);
-INSERT INTO admins (admin_account,admin_password) 
-VALUES ('admin', 12345678)
+
 
