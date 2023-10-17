@@ -1,7 +1,7 @@
 {{!-- handlebar addcomment create by zliu442 --}}
 <head>
-  <link rel="stylesheet" href="/public/css/articlereader.css">
-  <script src="/public/frontend javascripts/articlereader.js"></script>
+  <link rel="stylesheet" href="/css/articlereader.css">
+  <script src="/frontend-javascripts/likeFunctionality.js"></script>
 </head>
 <div>
   <h1>This is an article reader!</h1>
@@ -106,7 +106,7 @@
 
 
 <button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
-    <span id="like-icon" style="color: black;">❤️</span>
+    <span id="like-icon" >♥</span>
 </button>
 <p id="like-count">{{article.likeCount}} likes</p>
 
@@ -117,7 +117,7 @@
         <li><a href="/othersProfile/{{this.id}}">{{this.account}}</a></li>
     {{/each}}
 </ul>
-<script src="../public/frontend javascripts/likeFunctionality.js"></script>
+
 
 
 

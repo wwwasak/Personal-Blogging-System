@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
-const { verifyAuthenticated } = require("../middleware/authorToken.js");
+const { verifyAuthenticated, addUserToLocals } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
 
 let userid;
@@ -49,7 +49,7 @@ router.get("/toProfile", async function (req, res) {
     res.render("profile")
 });
 
-router.get('/comment/',async function(req,res){
+router.get('/comment/', async function (req, res) {
     let id = req.params.articleId;
     console.log(id)
     res.render("addComment")
@@ -141,7 +141,7 @@ router.get('/deletecategory', async (req, res) => {
 });
 
 //routers create by zliu442
-router.get('/deletearticle',async(req,res) => {
+router.get('/deletearticle', async (req, res) => {
     try {
         const id = req.query.id;
         await blogDao.deleteArticleById(id);
@@ -192,20 +192,20 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
         likeNumber += likeForTheArticle;
         item.commentForTheArticle = commentForTheArticle;
         item.likeForTheArticle = likeForTheArticle;
-        item.popularIndex = popularindex(commentForTheArticle,likeForTheArticle);
+        item.popularIndex = popularindex(commentForTheArticle, likeForTheArticle);
         item.postDate = formatTimestamp(item.postdate);
     });
     await Promise.all(promises);
     //choose top 3 rank articles
     const sortedArticleArray = userArticles.sort((a, b) => b.popularIndex - a.popularIndex);
     const topThreeArticles = sortedArticleArray.slice(0, 3);
-    topThreeArticles.forEach((item,index) =>{
+    topThreeArticles.forEach((item, index) => {
         item.rank = index + 1;
     });
 
     //for histogram chart
-    
-// send to front end
+
+    // send to front end
     res.locals.toparticle = topThreeArticles;
     res.locals.commentNum = commentNumber;
     res.locals.likeNum = likeNumber;
@@ -213,7 +213,7 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
 });
 
 //define popularity calculator
-function popularindex(commentNum, likeNum){
+function popularindex(commentNum, likeNum) {
     popularNum = commentNum * 1.7 + likeNum;
     return popularNum;
 }
@@ -251,7 +251,7 @@ router.get('/userDelete', async function (req, res) {
     }
 });
 
-router.get('/updatearticle',function(req,res){
+router.get('/updatearticle', function (req, res) {
     res.render("updatearticle")
 })
 // This is a router to get the request of update article from users
@@ -271,6 +271,8 @@ router.get('/updateArticleRoutes', async function (req, res) {
 });
 router.delete('/article/:id', async function (req, res) {
     let id = req.params.id;
+    const userid = user.id;
+    console.log(userid, id);
     if (!await isArticleOwner(userid, id)) {
         // If user is not the owner of the article
         return res.status(403).send({ code: 403, msg: 'Forbidden' });
@@ -292,8 +294,8 @@ router.delete('/article/:id', async function (req, res) {
 //commenter delete comment by id  ------txu470
 async function isCommentOwner(userid, commentId) {
     let result = await blogDao.searchCommentById(commentId);
-    if (result.length > 0) {
-        if (result[0].user_id == userid) {
+    if (result) {
+        if (result.user_id == userid) {
             return true;
         }
     }
@@ -303,16 +305,17 @@ async function isCommentOwner(userid, commentId) {
 //ArticleOwner delete comment by id  ------txu470
 async function isArticleOwner(userid, articleId) {
     let result = await blogDao.searchArticleById(articleId);
-    if (result.length > 0) {
-        if (result[0].userid == userid) {
+    if (result) {
+        if (result.userid == userid) {
             return true;
         }
     }
     return false;
 }
-router.delete('/article/:id/comment/:commentid', async function (req, res) {
+router.delete('/article/:id/comment/:commentid',async function (req, res) {
     let id = req.params.id;
     let commentid = req.params.commentid;
+    const userid = res.locals.user.id;
     if (!await isArticleOwner(userid, id) && (!await isCommentOwner(userid, commentid))) {
         // If user is not the owner of the article and comment
         return res.status(403).send({ code: 403, msg: 'Forbidden' });
@@ -369,17 +372,14 @@ router.get('/category/:categoryName', async (req, res) => {
 router.get('/hasUserLikedArticle', async (req, res) => {
     const { userId, articleId } = req.query;
     const hasLiked = await blogDao.hasUserLikedArticle(userId, articleId);
-    res.json({ hasLiked });
+    res.json(hasLiked);
 });
 
 
-router.post('/likeArticle', verifyAuthenticated, async (req, res) => {
-    const { userId, articleId } = req.body;
-
+router.get('/likeArticle', async (req, res) => {
+    const { userId, articleId } = req.query;
     try {
-
         await blogDao.likeArticle(userId, articleId);
-
         res.json({ success: true });
     } catch (error) {
         console.error(error);
@@ -387,14 +387,10 @@ router.post('/likeArticle', verifyAuthenticated, async (req, res) => {
     }
 });
 
-
-router.post('/unlikeArticle', verifyAuthenticated, async (req, res) => {
-    const { userId, articleId } = req.body;
-
+router.get('/unlikeArticle', async (req, res) => {
+    const { userId, articleId } = req.query;
     try {
-
         await blogDao.unlikeArticle(userId, articleId);
-
         res.json({ success: true });
     } catch (error) {
         console.error(error);
@@ -705,8 +701,8 @@ function formatTimestamp(timestamp) {
 
 
 
-  //api create by zli178
-  router.post('/api/login', async function (req, res) {
+//api create by zli178
+router.post('/api/login', async function (req, res) {
     let { account, password } = req.body;
 
     try {
@@ -731,7 +727,7 @@ router.get("/api/logout", function (req, res) {
     res.status(204).end();
 });
 
-router.get("/api/users", async function(req, res) {
+router.get("/api/users", async function (req, res) {
     const token = req.cookies.authToken;
     if (!token) {
         return res.status(401).json({ message: "Unauthenticated" });
