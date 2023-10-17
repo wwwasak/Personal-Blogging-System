@@ -57,13 +57,13 @@ create table article(
     foreign key (userid) references user(id),
     foreign key (categoryid) references category(id)
 );
-insert into article (id, title, content, postdate, userid, categoryid) values
-    (1, 'Love', '<strong>I love you!</strong>' ,562767818, ,3,1),
-    (2, 'Boy', '<em>I am a boy!</em>' , 172881287,,2,1),
-    (4, 'Love', '<strong>I love you!</strong>' ,217886129, ,3,1),
-    (5, 'Love', '<strong>I love you!</strong>' ,261812711, ,3,1),
-    (6, 'Love', '<strong>I love you!</strong>' ,187212111, ,3,1),
-    (3, 'Game', 'I love play game',176281721,,1,1 );
+insert into article (id, title, content, postdate,imagename, userid, categoryid) values
+    (1, 'Love', '<strong>I love you!</strong>' ,562767818,'',3,1),
+    (2, 'Boy', '<em>I am a boy!</em>' , 172881287,'',2,1),
+    (4, 'Love', '<strong>I love you!</strong>' ,217886129, '',3,1),
+    (5, 'Love', '<strong>I love you!</strong>' ,261812711, '',3,1),
+    (6, 'Love', '<strong>I love you!</strong>' ,187212111,'' ,3,1),
+    (3, 'Game', 'I love play game',176281721,'',1,1 );
 
 
 
