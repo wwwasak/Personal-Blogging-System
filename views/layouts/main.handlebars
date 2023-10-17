@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/stylesheet.css">
+     <link rel="stylesheet" href="/public/css/home.css">
     {{#if title}}
     <title>{{title}}</title>
     {{else}}
@@ -13,13 +13,7 @@
 
 <body>
     <header>
-        
-        <nav>
-            <a href="/">Home</a>
-            {{#each categories}}
-                <a href="/category/{{this.name}}">{{this.name}}</a>
-            {{/each}}
-        </nav>
+
     </header>
     <main>
         {{{body}}}

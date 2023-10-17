@@ -1,6 +1,137 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal webiste</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
+    <link rel="stylesheet" href="css/home.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+    <script src="js/scripts.js"></script>
+</head>
 
-{{! add a input and a button to delete a article by router'/article/:id' }}
-<a href="./login">Login here please! </a><br>
+<nav class="navbar">
+    <div class="inner-width">
+        <a href="/" class="logo"></a>
+        <button class="menu-toggler">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="navbar-menu">
+            <a href="#home">Home</a>
+            {{#each categories}}
+            <a href="/category/{{this.name}}" id="{{this.name}}">{{this.name}}</a>
+            {{/each}}
+        </div>
+    </div>
+</nav>
+
+<!-- Home -->
+<section id="home">
+    <div class="inner-width">
+        <div class="content">
+            <h1>Welcome to blog</h1>
+            <div class="buttons">
+                <a href="./login">Log in</a>
+                <a href="#">Register</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Services -->
+<section id="services" class="dark">
+    <div class="inner-width">
+        <h1 class="section-title">All articles</h1>
+        <div class="services">
+
+            <a class="service" href="/category/{{categories.[0].name}}">
+                <div>
+                    <i class="icon fas fa-paint-brush"></i>
+                    <h4>{{categories.[0].name}}</h4>
+                    <p>{{categories.[0].description}}</p>
+                </div>
+            </a>
+
+            <a class="service" href="/category/{{categories.[1].name}}">
+                <div>
+                    <i class="icon fas fa-pager"></i>
+                    <h4>{{categories.[1].name}}</h4>
+                    <p>{{categories.[1].description}}</p>
+                </div>
+            </a>
+
+
+            <a class="service" href="/category/{{categories.[2].name}}">
+                <div>
+                    <i class="icon fas fa-database"></i>
+                    <h4>{{categories.[2].name}}</h4>
+                    <p>{{categories.[2].description}}</p>
+                </div>
+            </a>
+
+
+            <a class="service" href="/category/{{categories.[3].name}}">
+                <div>
+                    <i class="icon fab fa-android"></i>
+                    <h4>{{categories.[3].name}}</h4>
+                    <p>{{categories.[3].description}}</p>
+                </div>
+            </a>
+
+
+            <a class="service" href="/category/{{categories.[4].name}}">
+                <div>
+                    <i class="icon fas fa-credit-card"></i>
+                    <h4>{{categories.[4].name}}</h4>
+                    <p>{{categories.[4].description}}</p>
+                </div>
+            </a>
+
+            <a class="service" href="/category/{{categories.[5].name}}">
+                <div>
+                    <i class="icon fas fa-keyboard"></i>
+                    <h4>{{categories.[5].name}}</h4>
+                    <p>{{categories.[5].description}}</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</section>
+
+
+<script>
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            if (this.scrollY > 20) {
+                $(".navbar").addClass("sticky");
+                $(".goTop").fadeIn();
+            }
+            else {
+                $(".navbar").removeClass("sticky");
+                $(".goTop").fadeOut();
+            }
+        });
+
+        $('.menu-toggler').click(function () {
+            $(this).toggleClass("active");
+            $(".navbar-menu").toggleClass("active");
+        });
+
+
+    });
+
+</script>
+
+
+{{!-- {{! add a input and a button to delete a article by router'/article/:id' }}
 <input type='text' id='articleId' placeholder='Article Id' />
 <button class='deleteArticle'>Delete Article</button>
 <form action='/search' method='get'>
@@ -23,15 +154,23 @@
 <script>
     const deleteArticleButtons = document.querySelectorAll('.deleteArticle');
     const deleteCommentButtons = document.querySelectorAll('.deleteComment');
-    deleteArticleButtons.forEach(button => { button.addEventListener('click',
-    async (e) => { const articleId = document.querySelector('#articleId').value;
-    const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
-    const data = await response.json(); console.log(data); }); });
-    deleteCommentButtons.forEach(button => { button.addEventListener('click',
-    async (e) => { const commentId = document.querySelector('#commentId').value;
-    const articleId = document.querySelector('#articleId').value; const
-    response= await fetch(`/article/${articleId}/comment/${commentId}`, {
-    method: 'DELETE' }); const data = await response.json(); console.log(data);
-    }); });
+    deleteArticleButtons.forEach(button => {
+        button.addEventListener('click',
+            async (e) => {
+                const articleId = document.querySelector('#articleId').value;
+                const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
+                const data = await response.json(); console.log(data);
+            });
+    });
+    deleteCommentButtons.forEach(button => {
+        button.addEventListener('click',
+            async (e) => {
+                const commentId = document.querySelector('#commentId').value;
+                const articleId = document.querySelector('#articleId').value; const
+                    response = await fetch(`/article/${articleId}/comment/${commentId}`, {
+                        method: 'DELETE'
+                    }); const data = await response.json(); console.log(data);
+            });
+    });
 
-</script>
+</script> --}}
