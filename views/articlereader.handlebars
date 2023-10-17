@@ -1,11 +1,13 @@
 {{!-- handlebar addcomment create by zliu442 --}}
+
 <head>
   <link rel="stylesheet" href="/public/css/articlereader.css">
 </head>
 <div>
   <h1>This is an article reader!</h1>
-  
+
   {{#if article}}
+
     <h2>Title: {{article.title}}</h2>
     <p>Category: {{article.category}}</p>
     <p>Author: </p><a href = "/othersProfile/{{article.authorid}}">{{article.author}}</a>
@@ -67,17 +69,18 @@
               <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> post in : {{this.timeDate}}</p>
               <p>{{{this.content}}} </p>
               <a href="/subsubcomment/?articleid={{../../article.id}}&commentid={{../this.id}}&subcommentid={{this.id}}&replyto={{this.author.id}}">Comment</a>
+
             </div>
-            </li>
-            {{/each}}
-          </ul>
-          {{/if}}
-        </li>
-      {{/each}}
-    </ul>
-    {{else}}
-      <p>There is no comment yet. Please add one now!</p>
-    {{/if}}
+          </li>
+          {{/each}}
+        </ul>
+        {{/if}}
+    </li>
+    {{/each}}
+  </ul>
+  {{else}}
+  <p>There is no comment yet. Please add one now!</p>
+  {{/if}}
 
 
 
@@ -85,17 +88,19 @@
 
 
 <button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
-    <span id="like-icon" style="color: black;">❤️</span>
+  <span id="like-icon" style="color: black;">❤️</span>
 </button>
+<script src="../public/frontend javascripts/likeFunctionality.js"></script>
 <p id="like-count">{{article.likeCount}} likes</p>
 
 
 <h2>Users who liked this article:</h2>
 <ul id="users-liked-list">
-    {{#each article.usersLiked}}
-        <li><a href="/othersProfile/{{this.id}}">{{this.account}}</a></li>
-    {{/each}}
+  {{#each article.usersLiked}}
+  <li><a href="/othersProfile/{{this.id}}">{{this.account}}</a></li>
+  {{/each}}
 </ul>
+
 <script src="../public/frontend javascripts/likeFunctionality.js"></script>
 
   {{!-- Modal --}}
@@ -107,6 +112,7 @@
     }
 
 </script>
+
 
 
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
 const { verifyAuthenticated } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
+const bcrypt = require('bcryptjs');
 
 //for image upload
 const multer = require ("multer");
@@ -61,9 +62,9 @@ router.get("/toProfile", async function (req, res) {
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
-        let userDetails = await blogDao.searchUsersByAccount(account, password)
-        console.log(userDetails)
-        if (userDetails.length > 0) {
+        let userDetails = await blogDao.searchUsersByAccount(account)
+        let isMatch = await bcrypt.compare(password, userDetails[0].password)
+        if (userDetails.length > 0 && isMatch) {
             let loginToken = uuidv4();
             await blogDao.updateToken(userDetails[0].id, loginToken)
             userid = userDetails[0].id
@@ -146,7 +147,7 @@ router.get('/deletecategory', async (req, res) => {
 });
 
 //routers create by zliu442
-router.get('/deletearticle',async(req,res) => {
+router.get('/deletearticle', async (req, res) => {
     try {
         const id = req.query.id;
         await blogDao.deleteArticleById(id);
@@ -200,20 +201,20 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
         likeNumber += likeForTheArticle;
         item.commentForTheArticle = commentForTheArticle;
         item.likeForTheArticle = likeForTheArticle;
-        item.popularIndex = popularindex(commentForTheArticle,likeForTheArticle);
+        item.popularIndex = popularindex(commentForTheArticle, likeForTheArticle);
         item.postDate = formatTimestamp(item.postdate);
     });
     await Promise.all(promises);
     //choose top 3 rank articles
     const sortedArticleArray = userArticles.sort((a, b) => b.popularIndex - a.popularIndex);
     const topThreeArticles = sortedArticleArray.slice(0, 3);
-    topThreeArticles.forEach((item,index) =>{
+    topThreeArticles.forEach((item, index) => {
         item.rank = index + 1;
     });
 
     //for histogram chart
-    
-// send to front end
+
+    // send to front end
     res.locals.toparticle = topThreeArticles;
     res.locals.commentNum = commentNumber;
     res.locals.likeNum = likeNumber;
@@ -268,7 +269,7 @@ async function commentNumInTimeRanges(userid,timeRanges) {
 }
 
 //define popularity calculator
-function popularindex(commentNum, likeNum){
+function popularindex(commentNum, likeNum) {
     popularNum = commentNum * 1.7 + likeNum;
     return popularNum;
 }
@@ -276,7 +277,8 @@ function popularindex(commentNum, likeNum){
 router.post('/userRegister', async function (req, res) {
     let { account, password, birthday, description } = req.body;
     try {
-        await blogDao.registerUser(account, password, birthday, description)
+        let hashedPassword = await bcrypt.hash(password, 8)
+        await blogDao.registerUser(account, hashedPassword, birthday, description)
         res.send({
             code: 200,
             msg: "Register successful",
@@ -306,7 +308,7 @@ router.get('/userDelete', async function (req, res) {
     }
 });
 
-router.get('/updatearticle',function(req,res){
+router.get('/updatearticle', function (req, res) {
     res.render("updatearticle")
 })
 // This is a router to get the request of update article from users
@@ -347,8 +349,8 @@ router.delete('/article/:id', async function (req, res) {
 //commenter delete comment by id  ------txu470
 async function isCommentOwner(userid, commentId) {
     let result = await blogDao.searchCommentById(commentId);
-    if (result.length > 0) {
-        if (result[0].user_id == userid) {
+    if (result) {
+        if (result.user_id == userid) {
             return true;
         }
     }
@@ -358,8 +360,8 @@ async function isCommentOwner(userid, commentId) {
 //ArticleOwner delete comment by id  ------txu470
 async function isArticleOwner(userid, articleId) {
     let result = await blogDao.searchArticleById(articleId);
-    if (result.length > 0) {
-        if (result[0].userid == userid) {
+    if (result) {
+        if (result.userid == userid) {
             return true;
         }
     }
@@ -799,6 +801,13 @@ router.get('/subscribe', async (req, res) => {
         const userid = req.query.userid;
         const otheruserid = req.query.otheruserid;
         await blogDao.addSubscribe(userid, otheruserid);
+        const user = await blogDao.searchUserById(userid);
+        console.log(user)
+        const otherUser = await blogDao.searchUserById(otheruserid);
+        const userName = user.account;
+        const otherUserName = otherUser.account;
+        const content = "Congratulation!" + otherUserName + "," + userName + " has subscribed to you!";
+        await blogDao.addNotification(userid, otheruserid, "newSubscriber", 0, content)
         res.redirect(`othersProfile/${otheruserid}`);
     } catch (error) {
         console.error(error);
@@ -850,8 +859,8 @@ function formatTimestamp(timestamp) {
 
 
 
-  //api create by zli178
-  router.post('/api/login', async function (req, res) {
+//api create by zli178
+router.post('/api/login', async function (req, res) {
     let { account, password } = req.body;
 
     try {
@@ -860,7 +869,8 @@ function formatTimestamp(timestamp) {
         if (userDetails.length > 0) {
             let loginToken = uuidv4();
             await blogDao.updateToken(userDetails[0].id, loginToken);
-            res.status(204).json({ authToken: loginToken });
+            res.cookie('authToken', loginToken);
+            res.status(204).end();
         } else {
             res.status(401).json({ message: 'Authentication failed!' });
         }
@@ -876,13 +886,14 @@ router.get("/api/logout", function (req, res) {
     res.status(204).end();
 });
 
-router.get("/api/users", async function(req, res) {
+router.get("/api/users", async function (req, res) {
     const token = req.cookies.authToken;
     if (!token) {
         return res.status(401).json({ message: "Unauthenticated" });
     }
 
     const user = await blogDao.userAuthenticatorToken(token);
+    console.log('Queried User:', user);
     if (!user || !user.isAdmin) {
         return res.status(401).json({ message: "Unauthorized" });
     }
@@ -909,8 +920,27 @@ router.delete('/api/users/:id', async function (req, res) {
 
         res.status(204).end();
     } catch (error) {
+        console.error("Error during user deletion:", error);
         res.status(500).json({ message: "Delete failed" });
     }
 });
+
+
+
+router.get('/notification/:userid', async (req, res) => {
+    try {
+        const userId = req.params.userid;
+        const notifications = await blogDao.searchNotificationsByUserID(userId);
+        res.locals.notifications = notifications;
+        res.render('notification');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+
+
+
 
 module.exports = router;

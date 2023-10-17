@@ -4,7 +4,7 @@ const { dbPromise } = require('../db/database.js');
 // user search, register and delete -------yji413
 async function searchUsersByAccount(userName, password) {
   const db = await dbPromise;
-  const result = await db.all(SQL`select * from user where account = ${userName} AND password = ${password}`);
+  const result = await db.all(SQL`select * from user where account = ${userName}`);
   return result;
 }
 
@@ -25,9 +25,10 @@ async function updateToken(id, token) {
 }
 async function userAuthenticatorToken(token) {
   const db = await dbPromise;
-  const result = await db.run(SQL`SELECT * FROM user WHERE token = ${token};`);
-  return result;
+  const user = await db.get(SQL`SELECT * FROM user WHERE token = ${token};`);
+  return user;
 }
+
 
 async function updateArticle(userid, articleId, title, content, categoryid) {
   const db = await dbPromise;
@@ -103,7 +104,7 @@ async function likeArticle(userId, articleId) {
   const db = await dbPromise;
   const existingLike = await db.get(SQL`SELECT * FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
   if (existingLike) {
-      return; 
+    return;
   }
   const result = await db.run(SQL`INSERT INTO userlike (user_id, article_id) VALUES (${userId}, ${articleId})`);
   return result;
@@ -147,23 +148,20 @@ async function getAllUsersWithArticleCount() {
       LEFT JOIN article ON user.id = article.userid
       GROUP BY user.id;
   `;
-  const [users] = await db.execute(query);
+  const users = await db.all(query);
   return users;
 }
+
 
 async function deleteUserAndRelatedData(userId) {
   const db = await dbPromise;
 
+  await db.run("DELETE FROM article WHERE userid = ?", [userId]);
 
-  await db.execute("DELETE FROM article WHERE userid = ?", [userId]);
+  await db.run("DELETE FROM comments WHERE user_id = ?", [userId]);
 
-
-  await db.execute("DELETE FROM comments WHERE user_id = ?", [userId]);
-
-
-  await db.execute("DELETE FROM user WHERE id = ?", [userId]);
+  await db.run("DELETE FROM user WHERE id = ?", [userId]);
 }
-
 
 
 
@@ -235,13 +233,13 @@ async function searchArticleByCommentid(commentid) {
 }
 
 //create subscribebylist and subscribetolist function by zliu442
-async function subscribebyList(userid){
+async function subscribebyList(userid) {
   const db = await dbPromise;
   const result = await db.all(SQL`SELECT user.id, user.account FROM subscribes JOIN user ON subscribes.subscribe_by_userid = user.id WHERE subscribe_to_userid = ${userid}`);
   return result;
 }
 
-async function subscribetoList(userid){
+async function subscribetoList(userid) {
   const db = await dbPromise;
   const result = await db.all(SQL`SELECT user.id, user.account FROM subscribes JOIN user ON subscribes.subscribe_to_userid = user.id WHERE subscribe_by_userid = ${userid}`);
   return result;
@@ -267,7 +265,7 @@ async function checkSubscribe(subscribe_by_userid, subscribe_to_userid) {
   SELECT COUNT(*) as count 
   FROM subscribes 
   WHERE subscribe_by_userid = ${subscribe_by_userid} AND subscribe_to_userid = ${subscribe_to_userid}`);
-return result.count > 0;
+  return result.count > 0;
 }
 
 //function checkCategory by zliu442 - use for handlebar of add article 2023/10/11
@@ -287,25 +285,25 @@ async function getSubscribers(userid) {
 }
 async function addNotification(sender_id, recipient_id, notification_type, related_object_id, content) {
   const db = await dbPromise;
-  const result = await db.run(SQL`insert into notification (sender_id,recipient_id,notification_type,related_object_id,content) values
+  const result = await db.run(SQL`insert into notifications (sender_id,recipient_id,notification_type,related_object_id,content) values
     (${sender_id}, ${recipient_id}, ${notification_type}, ${related_object_id}, ${content})`);
   return result;
 }
 
 //analytic functions create by zliu442
-async function followerNum(userid){
+async function followerNum(userid) {
   const db = await dbPromise;
   const result = await db.get(SQL`SELECT COUNT(*) FROM subscribes WHERE subscribe_to_userid = ${userid}`);
   return result['COUNT(*)'];
 }
 
-async function articleCommentNum(articleid){
+async function articleCommentNum(articleid) {
   const db = await dbPromise;
   const result = await db.get(SQL`SELECT COUNT(*) FROM comments WHERE article_id = ${articleid}`);
   return result['COUNT(*)'];
 }
 
-async function articleLikeNum(articleid){
+async function articleLikeNum(articleid) {
   const db = await dbPromise;
   const result = await db.get(SQL`SELECT COUNT(*) FROM userlike WHERE article_id = ${articleid}`);
   return result['COUNT(*)'];
@@ -319,14 +317,14 @@ async function searchAdminByAccount(userName, password) {
 }
 
 //category admin functions --zliu442
-async function addCategory(name, des){
+async function addCategory(name, des) {
   const db = await dbPromise;
   const result = await db.run(SQL`insert into category (name, description, userid) values
   (${name}, ${des}, 4)`);
   return result;
 }
 
-async function deleteCategory(id){
+async function deleteCategory(id) {
   const db = await dbPromise;
   const result = await db.run(SQL`delete from category where id = ${id} `);
   return result;
@@ -353,6 +351,11 @@ async function commentNumOnUserAday(userid, starttime, endtime){
 async function getAllUsers() {
   const db = await dbPromise;
   const result = await db.all(`SELECT * FROM user`);
+  return result;
+}
+async function searchNotificationsByUserID(userid) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`select * from notifications where recipient_id = ${userid}`);
   return result;
 }
 
@@ -409,6 +412,7 @@ module.exports = {
   getArticleById,
   getAllCategories,
   getAllArticles,
-  commentNumOnUserAday
+  commentNumOnUserAday,
+  searchNotificationsByUserID
 };
 
