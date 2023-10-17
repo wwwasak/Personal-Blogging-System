@@ -16,7 +16,7 @@ insert into user (id,account,password,birthday,description,isAdmin) values
     (1,'Sean','123456','1983/02/24','This is the first user',FALSE),
     (2,'Demo','456234','1990/05/27','This is the second user',FALSE),
     (3,'Clarke','abcdefg','1995/04/23','This is the third user',FALSE),
-    (4,'Admin','1wde356fg','1993/02/23','This is the fourth user',TRUE);
+    (4,'Admin','1wde356fg','1993/02/23','This is the fourth user',TRUE),
     (5,'zliu442','20000721','2000/07/21','This is the fifth user',FALSE);
 
 
