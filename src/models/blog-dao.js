@@ -25,9 +25,10 @@ async function updateToken(id, token) {
 }
 async function userAuthenticatorToken(token) {
   const db = await dbPromise;
-  const result = await db.run(SQL`SELECT * FROM user WHERE token = ${token};`);
-  return result;
+  const user = await db.get(SQL`SELECT * FROM user WHERE token = ${token};`);
+  return user;
 }
+
 
 async function updateArticle(userid, articleId, title, content, categoryid) {
   const db = await dbPromise;
@@ -147,23 +148,20 @@ async function getAllUsersWithArticleCount() {
       LEFT JOIN article ON user.id = article.userid
       GROUP BY user.id;
   `;
-  const [users] = await db.execute(query);
+  const users = await db.all(query);
   return users;
 }
+
 
 async function deleteUserAndRelatedData(userId) {
   const db = await dbPromise;
 
+  await db.run("DELETE FROM article WHERE userid = ?", [userId]);
 
-  await db.execute("DELETE FROM article WHERE userid = ?", [userId]);
+  await db.run("DELETE FROM comments WHERE user_id = ?", [userId]);
 
-
-  await db.execute("DELETE FROM comments WHERE user_id = ?", [userId]);
-
-
-  await db.execute("DELETE FROM user WHERE id = ?", [userId]);
+  await db.run("DELETE FROM user WHERE id = ?", [userId]);
 }
-
 
 
 

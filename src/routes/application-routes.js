@@ -715,7 +715,8 @@ router.post('/api/login', async function (req, res) {
         if (userDetails.length > 0) {
             let loginToken = uuidv4();
             await blogDao.updateToken(userDetails[0].id, loginToken);
-            res.status(204).json({ authToken: loginToken });
+            res.cookie('authToken', loginToken);
+            res.status(204).end();
         } else {
             res.status(401).json({ message: 'Authentication failed!' });
         }
@@ -738,6 +739,7 @@ router.get("/api/users", async function (req, res) {
     }
 
     const user = await blogDao.userAuthenticatorToken(token);
+    console.log('Queried User:', user);
     if (!user || !user.isAdmin) {
         return res.status(401).json({ message: "Unauthorized" });
     }
@@ -764,6 +766,7 @@ router.delete('/api/users/:id', async function (req, res) {
 
         res.status(204).end();
     } catch (error) {
+        console.error("Error during user deletion:", error);
         res.status(500).json({ message: "Delete failed" });
     }
 });
