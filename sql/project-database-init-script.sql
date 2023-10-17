@@ -33,10 +33,12 @@ create table category (
  
 );
 insert into category (id, name, description) values 
-(1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones'), 
-(2, 'Science', 'Science'),
-(3, 'Sports', 'Sports'),
-(4, 'Financial', 'Financial');
+(1, 'Fiction', 'a type of literature that describes imaginary people and events, not real ones'), 
+(2, 'Science', 'knowledge about the structure and behaviour of the natural and physical world, based on facts that you can prove, for example by experiments'),
+(3, 'Sports', 'activity that you do for pleasure and that needs physical effort or skill, usually done in a special area and according to fixed rules'),
+(4, 'Financial', 'the activity of managing money, especially by a government or commercial organization'),
+(5, 'Financial', 'the activity of managing money, especially by a government or commercial organization'),
+(6, 'Financial', 'the activity of managing money, especially by a government or commercial organization');
 
 
 

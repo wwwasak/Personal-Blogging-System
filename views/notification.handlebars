@@ -1,0 +1,12 @@
+<div>
+    <h1>Your notifications listed below:</h1>
+    <a href="/toDashboard">Return</a>
+    <ul>
+    {{#each notifications}}
+            <li>
+            <h2>{{this.notification_type}}</h2>
+                <p>{{this.content}}</p>
+            </li>
+    {{/each}}
+    </ul>
+</div>

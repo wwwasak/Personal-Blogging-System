@@ -4,7 +4,7 @@ const { dbPromise } = require('../db/database.js');
 // user search, register and delete -------yji413
 async function searchUsersByAccount(userName, password) {
   const db = await dbPromise;
-  const result = await db.all(SQL`select * from user where account = ${userName} AND password = ${password}`);
+  const result = await db.all(SQL`select * from user where account = ${userName}`);
   return result;
 }
 
@@ -25,9 +25,10 @@ async function updateToken(id, token) {
 }
 async function userAuthenticatorToken(token) {
   const db = await dbPromise;
-  const result = await db.run(SQL`SELECT * FROM user WHERE token = ${token};`);
-  return result;
+  const user = await db.get(SQL`SELECT * FROM user WHERE token = ${token};`);
+  return user;
 }
+
 
 async function updateArticle(userid, articleId, title, content, categoryid) {
   const db = await dbPromise;
@@ -147,23 +148,20 @@ async function getAllUsersWithArticleCount() {
       LEFT JOIN article ON user.id = article.userid
       GROUP BY user.id;
   `;
-  const [users] = await db.execute(query);
+  const users = await db.all(query);
   return users;
 }
+
 
 async function deleteUserAndRelatedData(userId) {
   const db = await dbPromise;
 
+  await db.run("DELETE FROM article WHERE userid = ?", [userId]);
 
-  await db.execute("DELETE FROM article WHERE userid = ?", [userId]);
+  await db.run("DELETE FROM comments WHERE user_id = ?", [userId]);
 
-
-  await db.execute("DELETE FROM comments WHERE user_id = ?", [userId]);
-
-
-  await db.execute("DELETE FROM user WHERE id = ?", [userId]);
+  await db.run("DELETE FROM user WHERE id = ?", [userId]);
 }
-
 
 
 
@@ -287,7 +285,7 @@ async function getSubscribers(userid) {
 }
 async function addNotification(sender_id, recipient_id, notification_type, related_object_id, content) {
   const db = await dbPromise;
-  const result = await db.run(SQL`insert into notification (sender_id,recipient_id,notification_type,related_object_id,content) values
+  const result = await db.run(SQL`insert into notifications (sender_id,recipient_id,notification_type,related_object_id,content) values
     (${sender_id}, ${recipient_id}, ${notification_type}, ${related_object_id}, ${content})`);
   return result;
 }
@@ -344,6 +342,11 @@ async function getAllUsers() {
   const result = await db.all(`SELECT * FROM user`);
   return result;
 }
+async function searchNotificationsByUserID(userid) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`select * from notifications where recipient_id = ${userid}`);
+  return result;
+}
 
 module.exports = {
   searchUsersByAccount,
@@ -395,5 +398,6 @@ module.exports = {
   deleteCategory,
   updateCategory,
   getAllUsers,
+  searchNotificationsByUserID
 };
 
