@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { dbPromise } = require('../db/database.js');
 const { v4: uuidv4 } = require("uuid");
 const { verifyAuthenticated } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
@@ -16,6 +15,7 @@ router.get('/', async (req, res) => {
         articles.forEach(article => {
             article.content = article.content.substring(0, 50) + '...';
         });
+        res.locals.userid = userid;
         res.render('home', { categories, articles });
     } catch (error) {
         console.error(error);
@@ -48,6 +48,12 @@ router.get("/toProfile", async function (req, res) {
     res.locals.user = userAccount;
     res.render("profile")
 });
+
+router.get('/comment/', async function (req, res) {
+    let id = req.params.articleId;
+    console.log(id)
+    res.render("addComment")
+})
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
@@ -59,7 +65,7 @@ router.post('/userLogin', async function (req, res) {
             userid = userDetails[0].id
             res.cookie("authToken", loginToken)
             res.locals.user = userDetails;
-            res.redirect("/toDashboard")
+            res.redirect("/")
         } else {
             res.locals.user = null;
             res.setToastMessage("Authentication failed!");
@@ -74,6 +80,93 @@ router.post('/userLogin', async function (req, res) {
     }
 });
 
+//admin login create by zliu442
+router.post('/adminLogin', async function (req, res) {
+    let { admin_account, admin_password } = req.body;
+    try {
+        let userDetails = await blogDao.searchAdminByAccount(admin_account, admin_password);
+        if (userDetails.length > 0) {
+            res.redirect("/adminpage")
+        } else {
+            res.redirect("/login");
+        }
+    } catch (error) {
+        res.send({
+            code: 500,
+            msg: "Login failed"
+        })
+    }
+});
+
+router.get('/adminpage', async function (req, res) {
+    res.locals.category = await blogDao.getAllCategories();
+
+    //article raleted
+    const articleList = await blogDao.getAllArticles();
+    let promises = articleList.map(async item => {
+        item.category = await blogDao.searchCategoryById(item.categoryid);
+        item.authorid = item.userid;
+        item.author = (await blogDao.searchUserById(item.userid)).account;
+        item.dateTime = formatTimestamp(item.postdate);
+    });
+    await Promise.all(promises);
+
+    res.locals.user = await blogDao.getAllUsers();
+    res.locals.article = articleList;
+    res.render("adminPage");
+});
+
+//category handle backend functions create by zliu442
+router.get('/addcategory', async (req, res) => {
+    try {
+        const name = req.query.name;
+        const description = req.query.description;
+        await blogDao.addCategory(name, description);
+        res.redirect(`/adminpage`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('add category error');
+    }
+});
+
+router.get('/deletecategory', async (req, res) => {
+    try {
+        const id = req.query.id;
+        await blogDao.deleteCategory(id);
+        res.redirect(`/adminpage`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('delete category error');
+    }
+});
+
+//routers create by zliu442
+router.get('/deletearticle', async (req, res) => {
+    try {
+        const id = req.query.id;
+        await blogDao.deleteArticleById(id);
+        res.redirect(`/adminpage`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('delete article error');
+    }
+
+});
+
+router.get('/updatecategory', async (req, res) => {
+    try {
+        const id = req.query.id;
+        const updatename = req.query.updatename;
+        const updatedes = req.query.updatedescription;
+        await blogDao.updateCategory(id, updatename, updatedes);
+        res.redirect(`/adminpage`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('update category error');
+    }
+});
+
+
 router.get("/logout", function (req, res) {
     res.clearCookie("authToken");
     res.setToastMessage("Successfully logged out!");
@@ -86,8 +179,44 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
     res.locals.name = userName;
     let userArticles = await blogDao.searchArticlesByUserAccount(userid)
     res.locals.articles = userArticles;
+
+    //following lines are related to analytics function create by zliu442 10/16
+    res.locals.followerNum = (await blogDao.followerNum(userInfo.id));
+    //get total comment number and like number and send to handlebar
+    let commentNumber = 0;
+    let likeNumber = 0;
+    let promises = userArticles.map(async item => {
+        let commentForTheArticle = await blogDao.articleCommentNum(item.id);
+        let likeForTheArticle = await blogDao.articleLikeNum(item.id);
+        commentNumber += commentForTheArticle;
+        likeNumber += likeForTheArticle;
+        item.commentForTheArticle = commentForTheArticle;
+        item.likeForTheArticle = likeForTheArticle;
+        item.popularIndex = popularindex(commentForTheArticle, likeForTheArticle);
+        item.postDate = formatTimestamp(item.postdate);
+    });
+    await Promise.all(promises);
+    //choose top 3 rank articles
+    const sortedArticleArray = userArticles.sort((a, b) => b.popularIndex - a.popularIndex);
+    const topThreeArticles = sortedArticleArray.slice(0, 3);
+    topThreeArticles.forEach((item, index) => {
+        item.rank = index + 1;
+    });
+
+    //for histogram chart
+
+    // send to front end
+    res.locals.toparticle = topThreeArticles;
+    res.locals.commentNum = commentNumber;
+    res.locals.likeNum = likeNumber;
     res.render("dashboard");
 });
+
+//define popularity calculator
+function popularindex(commentNum, likeNum) {
+    popularNum = commentNum * 1.7 + likeNum;
+    return popularNum;
+}
 
 router.post('/userRegister', async function (req, res) {
     let { account, password, birthday, description } = req.body;
@@ -97,6 +226,7 @@ router.post('/userRegister', async function (req, res) {
             code: 200,
             msg: "Register successful",
         })
+        res.redirect("/login");
     } catch (error) {
         res.send({
             code: 500,
@@ -107,11 +237,12 @@ router.post('/userRegister', async function (req, res) {
 router.get('/userDelete', async function (req, res) {
     let id = req.query.userid;
     try {
-        await blogDao.deleteUser(id)
+        await blogDao.deleteUser(id);
         res.send({
             code: 200,
             msg: "Delete successful",
         })
+        res.redirect("/login");
     } catch (error) {
         res.send({
             code: 500,
@@ -120,7 +251,7 @@ router.get('/userDelete', async function (req, res) {
     }
 });
 
-router.get('/updatearticle',function(req,res){
+router.get('/updatearticle', function (req, res) {
     res.render("updatearticle")
 })
 // This is a router to get the request of update article from users
@@ -161,8 +292,8 @@ router.delete('/article/:id', async function (req, res) {
 //commenter delete comment by id  ------txu470
 async function isCommentOwner(userid, commentId) {
     let result = await blogDao.searchCommentById(commentId);
-    if (result.length > 0) {
-        if (result[0].user_id == userid) {
+    if (result) {
+        if (result.user_id == userid) {
             return true;
         }
     }
@@ -172,8 +303,8 @@ async function isCommentOwner(userid, commentId) {
 //ArticleOwner delete comment by id  ------txu470
 async function isArticleOwner(userid, articleId) {
     let result = await blogDao.searchArticleById(articleId);
-    if (result.length > 0) {
-        if (result[0].userid == userid) {
+    if (result) {
+        if (result.userid == userid) {
             return true;
         }
     }
@@ -411,9 +542,7 @@ router.get('/article/:id', async (req, res) => {
         const hasLiked = await blogDao.hasUserLikedArticle(userid, articleid);
         const likeCount = await blogDao.countLikesForArticle(articleid);
         const likeUsers = await blogDao.getUsersWhoLikedArticle(articleid);
-
         const article = {
-
             id: articleid,
             title: articleInfo.title,
             author: authorInfo.account,
@@ -437,7 +566,8 @@ router.get('/article/:id', async (req, res) => {
 
         res.locals.userid = userid;
         res.locals.comment = processedComments;
-        res.render('articlereader', { article: article });
+        res.locals.article = article;
+        res.render('articlereader');
 
 
     } catch (error) {
@@ -570,5 +700,81 @@ function formatTimestamp(timestamp) {
 
     return `${year}/${month}/${day} ${hours}:${minutes}`;
 }
+
+
+
+
+
+//api create by zli178
+router.post('/api/login', async function (req, res) {
+    let { account, password } = req.body;
+
+    try {
+        let userDetails = await blogDao.searchUsersByAccount(account, password);
+
+        if (userDetails.length > 0) {
+            let loginToken = uuidv4();
+            await blogDao.updateToken(userDetails[0].id, loginToken);
+            res.cookie('authToken', loginToken);
+            res.status(204).end();
+        } else {
+            res.status(401).json({ message: 'Authentication failed!' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Login failed" });
+    }
+});
+
+
+
+router.get("/api/logout", function (req, res) {
+    res.clearCookie("authToken");
+    res.status(204).end();
+});
+
+router.get("/api/users", async function (req, res) {
+    const token = req.cookies.authToken;
+    if (!token) {
+        return res.status(401).json({ message: "Unauthenticated" });
+    }
+
+    const user = await blogDao.userAuthenticatorToken(token);
+    console.log('Queried User:', user);
+    if (!user || !user.isAdmin) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const usersWithArticleCount = await blogDao.getAllUsersWithArticleCount();
+    res.json(usersWithArticleCount);
+});
+
+router.delete('/api/users/:id', async function (req, res) {
+    const token = req.cookies.authToken;
+    const userIdToDelete = req.params.id;
+
+    try {
+        if (!token) {
+            return res.status(401).json({ message: "Unauthenticated" });
+        }
+
+        const user = await blogDao.userAuthenticatorToken(token);
+        if (!user || !user.isAdmin) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        await blogDao.deleteUserAndRelatedData(userIdToDelete);
+
+        res.status(204).end();
+    } catch (error) {
+        console.error("Error during user deletion:", error);
+        res.status(500).json({ message: "Delete failed" });
+    }
+});
+
+
+
+
+
+
 
 module.exports = router;

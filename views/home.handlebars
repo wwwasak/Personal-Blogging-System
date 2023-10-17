@@ -13,6 +13,7 @@
     <script src="js/scripts.js"></script>
 </head>
 
+
 <nav class="navbar">
     <div class="inner-width">
         <a href="/" class="logo"></a>
@@ -134,6 +135,7 @@
 {{!-- {{! add a input and a button to delete a article by router'/article/:id' }}
 <input type='text' id='articleId' placeholder='Article Id' />
 <button class='deleteArticle'>Delete Article</button>
+
 <form action='/search' method='get'>
     <input type='text' name='keyword' placeholder='Search for articles...' />
     <button type='submit'>Search</button>
@@ -143,7 +145,7 @@
 {{#each articles}}
 <div>
     <h2><a href="/article/{{id}}">{{title}}</a></h2>
-    <p>{{content}}</p>
+    <p>{{{content}}}</p>
 </div>
 {{/each}}
 

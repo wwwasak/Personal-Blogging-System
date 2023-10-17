@@ -8,14 +8,15 @@ create table user (
     password text,
 	birthday text,
 	description text,
-    token text
+    token text,
+    isAdmin BOOLEAN DEFAULT FALSE 
 );
 
-insert into user (id,account,password,birthday,description) values
-    (1,'Sean','123456','1983/02/24','This is the first user'),
-    (2,'Demo','456234','1990/05/27','This is the second user'),
-    (3,'Clarke','abcdefg','1995/04/23','This is the third user'),
-    (4,'Admin','1wde356fg','1993/02/23','This is the fourth user');
+insert into user (id,account,password,birthday,description,isAdmin) values
+    (1,'Sean','123456','1983/02/24','This is the first user',FALSE),
+    (2,'Demo','456234','1990/05/27','This is the second user',FALSE),
+    (3,'Clarke','abcdefg','1995/04/23','This is the third user',FALSE),
+    (4,'Admin','1wde356fg','1993/02/23','This is the fourth user',TRUE);
 
 
 
@@ -137,6 +138,15 @@ VALUES
     (3,1,4),
     (4,2,1),
     (5,3,1),
-    (6,4,1)
+    (6,4,1);
 
+--admin sql create by zliu442
+DROP TABLE if exists admins;
+CREATE TABLE admins(
+    id integer not null PRIMARY KEY,
+    admin_account text,
+    admin_password integer
+);
+INSERT INTO admins (admin_account,admin_password) 
+VALUES ('admin', 12345678)
 
