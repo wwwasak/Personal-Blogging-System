@@ -30,9 +30,9 @@ async function userAuthenticatorToken(token) {
 }
 
 
-async function updateArticle(userid, articleId, title, content, categoryid) {
+async function updateArticle(userid, articleId, title, content, categoryid, imagepath) {
   const db = await dbPromise;
-  const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid} where userid = ${userid} and id = ${articleId}`);
+  const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid}, imagename = ${imagepath} where userid = ${userid} and id = ${articleId}`);
   return result;
 }
 
@@ -41,6 +41,19 @@ async function deleteArticleById(id) {
   const db = await dbPromise;
   const result =await db.run(SQL`DELETE FROM article WHERE id = ${id}`);
   await db.run(SQL`DELETE FROM comments WHERE article_id = ${id}`);
+  return result;
+}
+
+//delete all comment for a article zliu442
+async function deleteCommentByArticleID(id){
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from comments where article_id = ${id}`);
+  return result;
+}
+
+async function deleteCommentByParentCommentID(id){
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from comments where parentComment = ${id}`);
   return result;
 }
 
@@ -410,6 +423,8 @@ module.exports = {
   getAllCategories,
   getAllArticles,
   commentNumOnUserAday,
-  searchNotificationsByUserID
+  searchNotificationsByUserID,
+  deleteCommentByParentCommentID,
+  deleteCommentByArticleID
 };
 
