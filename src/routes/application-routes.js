@@ -309,17 +309,18 @@ router.get('/userDelete', async function (req, res) {
 });
 
 router.get('/updatearticle', function (req, res) {
+    const articleId = req.query.articleId;
+    res.locals.articleId = articleId;
     res.render("updatearticle")
 })
 // This is a router to get the request of update article from users
-router.get('/updateArticleRoutes', async function (req, res) {
+router.post('/updateArticleRoutes', async function (req, res) {
     try {
-        const { articleId, title, content, categoryid } = req.query;
+        const { articleId, title, content, categoryid } = req.params;
+        console.log({ articleId, title, content, categoryid } )
         const result = await blogDao.updateArticle(userid, articleId, title, content, categoryid);
         // return successful response
-
-
-        res.send({ message: 'Article updated successfully', result });
+        res.redirect('/toDashboard');
     } catch (error) {
         // deal error message
         console.error(error);
@@ -492,10 +493,7 @@ router.post('/addarticle', upload.single("imageFile"), async function (req, res)
             subscribers.forEach(async subscriber => {
                 await blogDao.addNotification(userid, subscriber.user_id, 'newBlog', articleId, 'have a new article!');
             });
-            res.send({
-                code: 204,
-                msg: "Add Article successful",
-            })
+            res.redirect('/toDashboard');
         }
         else {
             res.send({
