@@ -1,9 +1,11 @@
 <head>
 
+
   <link rel="stylesheet" href="/css/articlereader.css">
 
 
   <script src="/frontend-javascripts/likeFunctionality.js"></script>
+
 
 </head>
 <div class="container">
@@ -12,7 +14,9 @@
   {{#if article}}
     <div class="article-section">
         <h2>Title: {{article.title}}</h2>
+
         <p>Category: {{article.categoryInfo.name}}</p>
+
         <div class="author-subscribe">
             <p>Author: </p><a href="/othersProfile/{{article.authorid}}">{{article.author}}</a>
             {{!-- Subscribe functionality moved here --}}
@@ -63,6 +67,7 @@
                     <p>Post date and time: {{this.timeDate}}</p>
                     <p>Comment content: <strong>{{this.content}}</strong> </p>
                     <a href="/subcomment/?commentid={{this.id}}&articleid={{../article.id}}">Comment</a>
+
                     {{#if_eq ../userid this.author.id}}
                         <a href="/deletecomment/?commentid={{this.id}}&articleid={{../article.id}}">Delete</a>
                     {{/if_eq}}
@@ -74,9 +79,11 @@
                             <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> post in : {{this.timeDate}}</p>
                             <p>{{{this.content}}} </p>
                             <a href="/subsubcomment/?articleid={{../../article.id}}&commentid={{../this.id}}&subcommentid={{this.id}}&replyto={{this.author.id}}">Comment</a>
+
                             {{#if_eq ../../userid this.author.id}}
                                 <a href="/deletecomment/?commentid={{this.id}}&articleid={{../../article.id}}">Delete</a>
                             {{/if_eq}}
+
                         </li>
                         {{/each}}
                     </ul>
@@ -97,11 +104,6 @@
   </ul>
 </div>
 
-
-
-
-
-  {{!-- Modal --}}
 <script>
     function addComment(articleID) {
         const commentUrl = `/comment/?articleId=${articleID}`;
