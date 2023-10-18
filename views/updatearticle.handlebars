@@ -1,14 +1,45 @@
 <h1>Edit Article</h1>
   <a href="/toDashboard">Return</a>
-<form id="edit-article-form" method="post" action="/updateArticleRoutes">
-    <input type="hidden" name="userid">
+<form id="edit-article-form" method="post" action="/updateArticleRoutes" enctype="multipart/form-data">
+    <input type="hidden" name="userid" id="userid" value="{{userid}}">
     <input type="hidden" name="articleId" id="articleId" value="{{articleId}}">
-    <label for="title-input">Title:</label>
-    <input type="text" name="title" placeholder="Title">
-    <label for="category-input">Category:</label>
-    <input type="text" name="categoryid" id="category-input" placeholder="category">
-        <label for="content-textarea">Content:</label>
-    <textarea id="mytextarea" name="content">Please enter your content here!</textarea>
+    <input type="hidden" name="currentimage" id="articleimage" value="{{article.imagename}}">
+    <fieldset>
+      <legend>Article Title</legend>
+      <p>
+        <label for="name_id" class="addtitle">Title</label><br />
+        <input type="text" size="100" name="title" id="title_id" value="{{article.title}}"/>
+      </p>
+    </fieldset>
+    <fieldset>
+      <legend>Category</legend>
+      <p class="question">What is the category of the article:</p>
+      <p>You current category: {{article.category.name}}</p>
+      <p>
+        {{#each category}}
+        <input type="radio" name="categoryid" id="{{this.name}}" value={{this.id}} />
+        <label for="{{this.id}}">{{this.name}}</label>
+        {{/each}}
+      </p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Image</legend>
+      <p>You current image</p>
+      {{#if article.imagename}}
+        <img src="{{article.imagename}}" alt="{{article.imagename}}" width="300" height="180">
+      {{else}}
+        <p>No img for the article</p>
+      {{/if}}
+      <br>
+      <label for="inpFile">Upload your image for article here if you want to change</label>
+      <input id="inpFile" type="file" name="imageFile" accept =".png,.jpeg,.jpg,.bmp">
+    </fieldset>
+
+    <fieldset>
+      <legend>Content</legend>
+        <textarea id="mytextarea" name="content"> {{{article.content}}}</textarea>
+    </fieldset>
     <button type="submit">Submit</button>
 </form>
 

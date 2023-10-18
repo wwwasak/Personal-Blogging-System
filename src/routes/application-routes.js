@@ -149,7 +149,14 @@ router.get('/deletecategory', async (req, res) => {
 //routers create by zliu442
 router.get('/deletearticle', async (req, res) => {
     try {
-        const id = req.query.id;
+        const id = req.query.id;  
+        console.log(id)
+        const commentlist = await blogDao.searchCommentByArticleID(id);
+        console.log(commentlist)
+        for (let item of commentlist){
+            await blogDao.deleteCommentByParentCommentID(item.id);
+        }
+        await blogDao.deleteCommentByArticleID(id);
         await blogDao.deleteArticleById(id);
         res.redirect(`/adminpage`);
     } catch (error) {
@@ -308,17 +315,33 @@ router.get('/userDelete', async function (req, res) {
     }
 });
 
-router.get('/updatearticle', function (req, res) {
+router.get('/updatearticle', async function (req, res) {
     const articleId = req.query.articleId;
+    res.locals.userid = userid;
     res.locals.articleId = articleId;
+    res.locals.category = await blogDao.getAllCategories();
+    const article = await blogDao.searchArticleById(articleId);
+    article.category = await blogDao.searchCategoryById(article.categoryid);
+    res.locals.article = article;
     res.render("updatearticle")
 })
-// This is a router to get the request of update article from users
-router.post('/updateArticleRoutes', async function (req, res) {
+// This is a router to get the request of update article from users, modify by zliu442
+router.post('/updateArticleRoutes', upload.single("imageFile"), async function (req, res) {
     try {
-        const { articleId, title, content, categoryid } = req.params;
-        console.log({ articleId, title, content, categoryid } )
-        const result = await blogDao.updateArticle(userid, articleId, title, content, categoryid);
+        const { articleId, title, content, categoryid, currentimage } = req.body;
+        const imageFile = req.file; 
+        if (imageFile != null){
+            let fileInfo = req.file;
+            let oldpath = fileInfo.path;
+            let newpath = `./public/images/articleimages/${fileInfo.originalname}`;
+            fs.renameSync(oldpath, newpath);
+            let imagepath = `/images/articleimages/${fileInfo.originalname}`;
+            const result = await blogDao.updateArticle(userid, articleId, title, content, categoryid, imagepath);
+        }
+        else {
+            let imagepath = currentimage;
+            const result = await blogDao.updateArticle(userid, articleId, title, content, categoryid, imagepath);
+        }
         // return successful response
         res.redirect('/toDashboard');
     } catch (error) {
@@ -333,6 +356,12 @@ router.delete('/article/:id', async function (req, res) {
         // If user is not the owner of the article
         return res.status(403).send({ code: 403, msg: 'Forbidden' });
     }
+    const commentlist = await blogDao.searchCommentByArticleID(id);
+    console.log(commentlist)
+    for (let item of commentlist){
+        await blogDao.deleteCommentByParentCommentID(item.id);
+    }
+    await blogDao.deleteCommentByArticleID(id);
     let result = await blogDao.deleteArticleById(id);
     if (result.changes > 0) {
         res.send({
@@ -348,15 +377,15 @@ router.delete('/article/:id', async function (req, res) {
 });
 
 //commenter delete comment by id  ------txu470
-async function isCommentOwner(userid, commentId) {
-    let result = await blogDao.searchCommentById(commentId);
-    if (result) {
-        if (result.user_id == userid) {
-            return true;
-        }
-    }
-    return false;
-}
+// async function isCommentOwner(userid, commentId) {
+//     let result = await blogDao.searchCommentById(commentId);
+//     if (result) {
+//         if (result.user_id == userid) {
+//             return true;
+//         }
+//     }
+//     return false;
+// }
 
 //ArticleOwner delete comment by id  ------txu470
 async function isArticleOwner(userid, articleId) {
@@ -368,26 +397,28 @@ async function isArticleOwner(userid, articleId) {
     }
     return false;
 }
-router.delete('/article/:id/comment/:commentid', async function (req, res) {
-    let id = req.params.id;
-    let commentid = req.params.commentid;
-    if (!await isArticleOwner(userid, id) && (!await isCommentOwner(userid, commentid))) {
-        // If user is not the owner of the article and comment
-        return res.status(403).send({ code: 403, msg: 'Forbidden' });
-    }
-    let result = await blogDao.deleteCommentById(commentid);
-    if (result.changes > 0) {
-        res.send({
-            code: 200,
-            msg: "Delete successful"
-        })
-    } else {
-        res.send({
-            code: 500,
-            msg: "Delete failed"
-        })
-    }
-});
+
+// no use now -zliu442
+// router.delete('/article/:id/comment/:commentid', async function (req, res) {
+//     let id = req.params.id;
+//     let commentid = req.params.commentid;
+//     if (!await isArticleOwner(userid, id) && (!await isCommentOwner(userid, commentid))) {
+//         // If user is not the owner of the article and comment
+//         return res.status(403).send({ code: 403, msg: 'Forbidden' });
+//     }
+//     let result = await blogDao.deleteCommentById(commentid);
+//     if (result.changes > 0) {
+//         res.send({
+//             code: 200,
+//             msg: "Delete successful"
+//         })
+//     } else {
+//         res.send({
+//             code: 500,
+//             msg: "Delete failed"
+//         })
+//     }
+// });
 
 
 //search by zli178
@@ -480,16 +511,23 @@ router.get('/whoLikedArticle', async (req, res) => {
 router.post('/addarticle', upload.single("imageFile"), async function (req, res) {
     let { title, content, categoryid } = req.body;
     let fileInfo = req.file;
-    let oldpath = fileInfo.path;
-    let newpath = `./public/images/articleimages/${fileInfo.originalname}`;
-    fs.renameSync(oldpath, newpath);
-    let imagepath = `/images/articleimages/${fileInfo.originalname}`
+    let imagepath;
+    if (fileInfo != null){
+        let oldpath = fileInfo.path;
+        let newpath = `./public/images/articleimages/${fileInfo.originalname}`;
+        fs.renameSync(oldpath, newpath);
+        imagepath = `/images/articleimages/${fileInfo.originalname}`;
+    }
+    else{
+        imagepath = null;
+    }
     const timeStamp = generateTimestamp();
     try {
         if ((userid != null)) {
             const result = await blogDao.addArticle(title, content, timeStamp, userid, categoryid, imagepath);
             articleId = result.lastID;
-            const subscribers = await blogDao.getSubscribers(userid);
+            const subscribers = await blogDao.subscribebyList(userid);
+            console.log(subscribers)
             subscribers.forEach(async subscriber => {
                 await blogDao.addNotification(userid, subscriber.user_id, 'newBlog', articleId, 'have a new article!');
             });
@@ -689,7 +727,7 @@ router.get('/article/:id', async (req, res) => {
             author: authorInfo.account,
             authorid: authorInfo.id,
             dateTime: articleTime,
-            category: categoryInfo.name,
+            categoryInfo: categoryInfo,
             content: articleInfo.content,
             imagename : articleInfo.imagename,
             hasLiked: hasLiked,
@@ -716,6 +754,20 @@ router.get('/article/:id', async (req, res) => {
         console.error(error);
         res.status(500).send('Server Error');
     }
+});
+
+router.get('/deletecomment',async(req,res) => {
+    try {
+        const commentid = req.query.commentid;
+        const articleid = req.query.articleid;
+        await blogDao.deleteCommentByParentCommentID(commentid);
+        await blogDao.deleteCommentById(commentid);
+        res.redirect(`/article/${articleid}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('update category error');
+    }
+
 });
 
 //function processComments use for print comment list by zliu442

@@ -1,118 +1,100 @@
-{{!-- handlebar addcomment create by zliu442 --}}
-
 <head>
-  <link rel="stylesheet" href="/public/css/articlereader.css">
+  <link rel="stylesheet" href="/css/articlereader.css">
 </head>
-<div>
+<div class="container">
   <h1>This is an article reader!</h1>
 
   {{#if article}}
-
-    <h2>Title: {{article.title}}</h2>
-    <p>Category: {{article.category}}</p>
-    <p>Author: </p><a href = "/othersProfile/{{article.authorid}}">{{article.author}}</a>
-    
-    {{!-- check userid and show the botton --}}
-    {{#if userid}}
-        {{#if_eq userid article.authorid}}
-            <p>Cannot subscribe to yourself</p>
-        {{else}}
-            {{#if isSubscribed}}
-                <form id="unsubscribeform" method="get" action="/unsubscribe">
-                    <input type="hidden" name="userid" id="userid" value="{{userid}}">
-                    <input type="hidden" name="otheruserid" id="otheruserid" value={{article.authorid}}>
-                    <button type="submit">Unsubscribe</button>
-                </form>
+    <div class="article-section">
+        <h2>Title: {{article.title}}</h2>
+        <p>Category: {{article.categoryInfo.name}}</p>
+        <div class="author-subscribe">
+            <p>Author: </p><a href="/othersProfile/{{article.authorid}}">{{article.author}}</a>
+            {{!-- Subscribe functionality moved here --}}
+            {{#if userid}}
+                {{#if_eq userid article.authorid}}
+                    <p>Cannot subscribe to yourself</p>
+                {{else}}
+                    {{#if isSubscribed}}
+                        <form id="unsubscribeform" method="get" action="/unsubscribe">
+                            <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                            <input type="hidden" name="otheruserid" id="otheruserid" value={{article.authorid}}>
+                            <button type="submit">Unsubscribe</button>
+                        </form>
+                    {{else}}
+                        <form id="subscribeform" method="get" action="/subscribe">
+                            <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                            <input type="hidden" name="otheruserid" id="otheruserid" value={{article.authorid}}>
+                            <button type="submit">Subscribe</button>
+                        </form>
+                    {{/if}}
+                {{/if_eq}}
             {{else}}
-                <form id="subscribeform" method="get" action="/subscribe">
-                    <input type="hidden" name="userid" id="userid" value="{{userid}}">
-                    <input type="hidden" name="otheruserid" id="otheruserid" value={{article.authorid}}>
-                    <button type="submit">Subscribe</button>
-                </form>
+                <a href="/login">Please Login to subscribe to others</a>
             {{/if}}
-        {{/if_eq}}
-    {{else}}
-        <a href="/login">Please Login to subscribe to others</a>
-    {{/if}}
-    <p>Image:</p>
-    {{#if article.imagename}}
-      <img src="{{article.imagename}}" alt="{{article.imagename}}" width="500" height="300">
-    {{else}}
-      <p>The article do not have image</p>
-    {{/if}}
-    <p>Post date and time: {{article.dateTime}}</p>
-    {{!-- reserve for css --}}
-    <div class ="articlecontent">
-      <p>Content: {{{article.content}}}</p>
-    </div>
-    <button id="openModalBtn" onclick="addComment('{{article.id}}')">Comment</button>
-  {{/if}}
-
-
-    {{#if comment}}
-      <ul>
-      {{#each comment}}
-        <li>
-         {{!-- reserve for css --}}
-         <div class ="firsttiercomment">
-          <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> reply to <a href="/othersProfile/{{this.replyeeid}}">{{this.replyee}}</a></p>
-          <p>Post date and time: {{this.timeDate}}</p>
-          <p>Comment content: <strong>{{this.content}}</strong> </p>
-          <a href="/subcomment/?commentid={{this.id}}&articleid={{../article.id}}">Comment</a>
-
-          {{#if this.subcomment}}
-          <ul>
-            {{#each this.subcomment}}
-            <li>
-         {{!-- reserve for css --}}
-            <div class ="secondtiercomment">
-              <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> post in : {{this.timeDate}}</p>
-              <p>{{{this.content}}} </p>
-              <a href="/subsubcomment/?articleid={{../../article.id}}&commentid={{../this.id}}&subcommentid={{this.id}}&replyto={{this.author.id}}">Comment</a>
-
-            </div>
-          </li>
-          {{/each}}
-        </ul>
+        </div>
+        <p>Image:</p>
+        {{#if article.imagename}}
+          <img src="{{article.imagename}}" alt="{{article.imagename}}" width="500" height="300">
+        {{else}}
+          <p>The article does not have an image.</p>
         {{/if}}
-    </li>
+        <p>Post date and time: {{article.dateTime}}</p>
+        <div class="article-content">
+          <p>Content: {{{article.content}}}</p>
+        </div>
+        <button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
+            <span id="like-icon" style="color: black;">❤️</span>
+        </button>
+        <p id="like-count">{{article.likeCount}} likes</p>
+        <button id="openModalBtn" onclick="addComment('{{article.id}}')">Comment</button>
+    </div>
+    <div class="comment-section">
+        {{#if comment}}
+            <ul>
+            {{#each comment}}
+                <li class="first-tier-comment">
+                    <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> reply to <a href="/othersProfile/{{this.replyeeid}}">{{this.replyee}}</a></p>
+                    <p>Post date and time: {{this.timeDate}}</p>
+                    <p>Comment content: <strong>{{this.content}}</strong> </p>
+                    <a href="/subcomment/?commentid={{this.id}}&articleid={{../article.id}}">Comment</a>
+                    {{#if_eq ../userid this.author.id}}
+                        <a href="/deletecomment/?commentid={{this.id}}&articleid={{../article.id}}">Delete</a>
+                    {{/if_eq}}
+                    <p>{{userid}}</p>
+                    {{#if this.subcomment}}
+                    <ul>
+                        {{#each this.subcomment}}
+                        <li class="second-tier-comment">
+                            <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> post in : {{this.timeDate}}</p>
+                            <p>{{{this.content}}} </p>
+                            <a href="/subsubcomment/?articleid={{../../article.id}}&commentid={{../this.id}}&subcommentid={{this.id}}&replyto={{this.author.id}}">Comment</a>
+                            {{#if_eq ../../userid this.author.id}}
+                                <a href="/deletecomment/?commentid={{this.id}}&articleid={{../../article.id}}">Delete</a>
+                            {{/if_eq}}
+                        </li>
+                        {{/each}}
+                    </ul>
+                    {{/if}}
+                </li>
+            {{/each}}
+            </ul>
+        {{else}}
+            <p>There is no comment yet. Please add one now!</p>
+        {{/if}}
+    </div>
+  {{/if}}
+  <h2>Users who liked this article:</h2>
+  <ul id="users-liked-list">
+    {{#each article.usersLiked}}
+    <li><a href="/othersProfile/{{this.id}}">{{this.account}}</a></li>
     {{/each}}
   </ul>
-  {{else}}
-  <p>There is no comment yet. Please add one now!</p>
-  {{/if}}
-
-
-
 </div>
-
-
-<button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
-    <span id="like-icon" >♥</span>
-</button>
 <script src="../public/frontend javascripts/likeFunctionality.js"></script>
-<p id="like-count">{{article.likeCount}} likes</p>
-
-
-<h2>Users who liked this article:</h2>
-<ul id="users-liked-list">
-  {{#each article.usersLiked}}
-  <li><a href="/othersProfile/{{this.id}}">{{this.account}}</a></li>
-  {{/each}}
-</ul>
-
-<script src="../public/frontend javascripts/likeFunctionality.js"></script>
-
-  {{!-- Modal --}}
 <script>
-
     function addComment(articleID) {
         const commentUrl = `/comment/?articleId=${articleID}`;
         window.location.href = commentUrl;
     }
-
 </script>
-
-
-
-
