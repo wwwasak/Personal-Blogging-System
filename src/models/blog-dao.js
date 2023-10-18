@@ -39,7 +39,8 @@ async function updateArticle(userid, articleId, title, content, categoryid) {
 // delete article and it's comments by articleid  ------txu470
 async function deleteArticleById(id) {
   const db = await dbPromise;
-  const result = await db.run(SQL`delete from article AS a,comments AS c where a.id=c.article_id a.id = ${id}`);
+  const result =await db.run(SQL`DELETE FROM article WHERE id = ${id}`);
+  await db.run(SQL`DELETE FROM comments WHERE article_id = ${id}`);
   return result;
 }
 
