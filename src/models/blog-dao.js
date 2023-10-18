@@ -30,16 +30,30 @@ async function userAuthenticatorToken(token) {
 }
 
 
-async function updateArticle(userid, articleId, title, content, categoryid) {
+async function updateArticle(userid, articleId, title, content, categoryid, imagepath) {
   const db = await dbPromise;
-  const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid} where userid = ${userid} and id = ${articleId}`);
+  const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid}, imagename = ${imagepath} where userid = ${userid} and id = ${articleId}`);
   return result;
 }
 
-// delete article by id  ------txu470
+// delete article and it's comments by articleid  ------txu470
 async function deleteArticleById(id) {
   const db = await dbPromise;
-  const result = await db.run(SQL`delete from article where id = ${id}`);
+  const result =await db.run(SQL`DELETE FROM article WHERE id = ${id}`);
+  await db.run(SQL`DELETE FROM comments WHERE article_id = ${id}`);
+  return result;
+}
+
+//delete all comment for a article zliu442
+async function deleteCommentByArticleID(id){
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from comments where article_id = ${id}`);
+  return result;
+}
+
+async function deleteCommentByParentCommentID(id){
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from comments where parentComment = ${id}`);
   return result;
 }
 
@@ -102,11 +116,7 @@ async function hasUserLikedArticle(userId, articleId) {
 
 async function likeArticle(userId, articleId) {
   const db = await dbPromise;
-  const existingLike = await db.get(SQL`SELECT * FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
-  if (existingLike) {
-    return;
-  }
-  const result = await db.run(SQL`INSERT INTO userlike (user_id, article_id) VALUES (${userId}, ${articleId})`);
+  const result = await db.run(SQL`INSERT INTO userlike (user_id,article_id) VALUES (${userId},${articleId})`);
   return result;
 }
 
@@ -220,6 +230,11 @@ async function searchCommentByArticleID(articleid) {
   return result;
 }
 
+async function searchUserByArticleID(articleid) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT * FROM user LEFT JOIN article ON user.id = article.userid where article.id=${articleid}`);
+  return result;
+}
 async function searchSubCommentByCommentID(commentid) {
   const db = await dbPromise;
   const result = await db.all(SQL`SELECT * FROM comments WHERE parentComment = ${commentid}`);
@@ -413,6 +428,9 @@ module.exports = {
   getAllCategories,
   getAllArticles,
   commentNumOnUserAday,
-  searchNotificationsByUserID
+  searchNotificationsByUserID,
+  deleteCommentByParentCommentID,
+  deleteCommentByArticleID,
+  searchUserByArticleID
 };
 

@@ -1,5 +1,12 @@
 <head>
+
+
   <link rel="stylesheet" href="/css/articlereader.css">
+
+
+  <script src="/frontend-javascripts/likeFunctionality.js"></script>
+
+
 </head>
 <div class="container">
   <h1>This is an article reader!</h1>
@@ -7,7 +14,9 @@
   {{#if article}}
     <div class="article-section">
         <h2>Title: {{article.title}}</h2>
-        <p>Category: {{article.category}}</p>
+
+        <p>Category: {{article.categoryInfo.name}}</p>
+
         <div class="author-subscribe">
             <p>Author: </p><a href="/othersProfile/{{article.authorid}}">{{article.author}}</a>
             {{!-- Subscribe functionality moved here --}}
@@ -58,6 +67,11 @@
                     <p>Post date and time: {{this.timeDate}}</p>
                     <p>Comment content: <strong>{{this.content}}</strong> </p>
                     <a href="/subcomment/?commentid={{this.id}}&articleid={{../article.id}}">Comment</a>
+
+                    {{#if_eq ../userid this.author.id}}
+                        <a href="/deletecomment/?commentid={{this.id}}&articleid={{../article.id}}">Delete</a>
+                    {{/if_eq}}
+                    <p>{{userid}}</p>
                     {{#if this.subcomment}}
                     <ul>
                         {{#each this.subcomment}}
@@ -65,6 +79,11 @@
                             <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> post in : {{this.timeDate}}</p>
                             <p>{{{this.content}}} </p>
                             <a href="/subsubcomment/?articleid={{../../article.id}}&commentid={{../this.id}}&subcommentid={{this.id}}&replyto={{this.author.id}}">Comment</a>
+
+                            {{#if_eq ../../userid this.author.id}}
+                                <a href="/deletecomment/?commentid={{this.id}}&articleid={{../../article.id}}">Delete</a>
+                            {{/if_eq}}
+
                         </li>
                         {{/each}}
                     </ul>
@@ -84,7 +103,7 @@
     {{/each}}
   </ul>
 </div>
-<script src="../public/frontend javascripts/likeFunctionality.js"></script>
+
 <script>
     function addComment(articleID) {
         const commentUrl = `/comment/?articleId=${articleID}`;

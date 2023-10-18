@@ -11,28 +11,33 @@
 <body>
 
 <div>
-    <div>
+       <div>
         <nav id="navbar">
             <a class="nav-item" href='/'>Home</a>
             <a class="nav-item" href='/toProfile'>Profile</a>
             <a class="nav-item" href='/toAdd'>Add your article</a>
             <a class="nav-item" href='/subscribelist/{{userid}}'>View your subscribe and follow list</a>
+            <a class="nav-item" href='/notification/{{userid}}'>Notifications</a>
         </nav>
         <div id="greeting">
             <h2>Hello {{name}}</h2><a id="logout-btn" href='/logout'>Log out</a>
         </div>
         <h2>Your Articles:</h2>
+        {{#if articles}}
         {{#each articles}}
             <div class="article-item">
                 <h2><a href='/article/{{id}}'>{{title}}</a></h2>
                 <p>{{{content}}}</p>
-                <button onclick="updateArticle('{{id}}')">Update</button>
+                <button class='updateArticle' data-article-id={{id}}>Update</button>
                 <button
                     class='deleteArticle'
                     data-article-id={{this.id}}
                 >Delete</button>
             </div>
         {{/each}}
+        {{else}}
+            <p>Add your first acticle here! <a href='/toAdd'>Add</a></p>
+        {{/if}}
         <h1>Analytic dashboard:</h1>
 <table id="analytics-table">
     <thead>
@@ -73,7 +78,7 @@
         </thead>
         <tbody>
             {{#each toparticle}}
-                <tr>
+            <tr>
                     <td>{{this.rank}}</td>
                     <td><a href='/article/{{this.id}}'>{{this.title}}</a></td>
                     <td>{{this.popularIndex}}</td>
@@ -81,17 +86,72 @@
                     <td>{{this.likeForTheArticle}}</td>
                     <td>{{this.postDate}}</td>
                 </tr>
+            
             {{/each}}
-        </tbody>
+           </tbody>
     </table>
-{{else}}
+    {{else}}
     <p>You do not post any article now.</p>
-{{/if}}
+    {{/if}}
 
-            <p>This is histogram chart of the number of your articles commented</p>
-            <canvas id='commentHistogram'></canvas>
-        </div>
+
+{{!-- add histogram chart --}}
+    <h2>The chart of the number of your articles commented by day</h2>
+    <canvas id='commentHistogram'></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </div>
+</div>
+
+{{!-- to Create comment analysis histogram --}}
+<script>
+    let ctx = document.getElementById('commentHistogram').getContext('2d');
+    let chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{{json lastTendays}}},
+            datasets: [{
+                label: 'number of comment on your artical each day',
+                data: {{{json commentNumTendays}}},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(205, 99, 204, 0.2)',
+                    'rgba(54, 100, 140, 0.2)',
+                    'rgba(204, 255, 51, 0.2)',
+                    'rgba(102, 50, 153, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(205, 99, 204, 1)',
+                    'rgba(54, 100, 140, 1)',
+                    'rgba(204, 255, 51, 1)',
+                    'rgba(102, 50, 153, 1)'
+                ],
+
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+</script>    
+
+
 
 <script>
     const deleteArticleButtons = document.querySelectorAll('.deleteArticle');
@@ -99,9 +159,18 @@
         button.addEventListener('click', async (e) => {
             const articleId = button.getAttribute('data-article-id');
             const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
-            const data = await response.json();
-            console.log(data);
+            location.reload();
         });
+    });
+
+    const updateArticleButtons = document.querySelectorAll('.updateArticle');
+    updateArticleButtons.forEach(button =>{
+        button.addEventListener('click', async (e) => {
+            const articleId = button.getAttribute('data-article-id');
+            const updateUrl = `/updatearticle/?articleId=${articleId}`;
+            window.location.href = updateUrl;
+        });
+
     });
 </script>
 
