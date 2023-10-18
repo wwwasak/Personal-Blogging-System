@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function () {
+    console.log("dajkdjasdja");
     const likeButton = document.querySelector("#like-button");
     const likeIcon = document.querySelector("#like-icon");
     const articleId = likeButton.getAttribute("data-article-id");

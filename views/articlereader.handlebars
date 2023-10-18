@@ -2,6 +2,7 @@
 
 <head>
   <link rel="stylesheet" href="/public/css/articlereader.css">
+  <script src="/frontend-javascripts/likeFunctionality.js"></script>
 </head>
 <div>
   <h1>This is an article reader!</h1>
@@ -90,7 +91,7 @@
 <button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
     <span id="like-icon" >♥</span>
 </button>
-<script src="../public/frontend javascripts/likeFunctionality.js"></script>
+
 <p id="like-count">{{article.likeCount}} likes</p>
 
 
@@ -101,7 +102,6 @@
   {{/each}}
 </ul>
 
-<script src="../public/frontend javascripts/likeFunctionality.js"></script>
 
   {{!-- Modal --}}
 <script>
