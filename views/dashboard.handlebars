@@ -11,7 +11,7 @@
 <body>
 
 <div>
-    <div>
+       <div>
         <nav id="navbar">
             <a class="nav-item" href='/'>Home</a>
             <a class="nav-item" href='/toProfile'>Profile</a>
@@ -73,7 +73,7 @@
         </thead>
         <tbody>
             {{#each toparticle}}
-                <tr>
+            <tr>
                     <td>{{this.rank}}</td>
                     <td><a href='/article/{{this.id}}'>{{this.title}}</a></td>
                     <td>{{this.popularIndex}}</td>
@@ -81,27 +81,65 @@
                     <td>{{this.likeForTheArticle}}</td>
                     <td>{{this.postDate}}</td>
                 </tr>
+            
             {{/each}}
-        </tbody>
+           </tbody>
     </table>
-{{else}}
+    {{else}}
     <p>You do not post any article now.</p>
-{{/if}}
+    {{/if}}
 
-            <p>This is histogram chart of the number of your articles commented</p>
-            <canvas id='commentHistogram'></canvas>
-        </div>
-    </div>
+    {{!-- add histogram chart --}}
+    <p>This is histogram chart of the number of your articles commented</p>
+    <canvas id='commentHistogram'></canvas>
+</div>
 
+
+
+{{!-- to Create comment analysis histogram --}}
+{{!-- <script>
+    var ctx = document.getElementById('commentHistogram').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar', 
+        data: {
+            labels: {{json labels}}, 
+            datasets: [{
+                label: 'Sample Data',
+                data: {{json data}},  
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script> --}}
+
+{{! add button to delete a article-----txu470 }}
+<script>
+
+    function updateArticle(articleId) {
+        const updateUrl = `/updatearticle/?articleId=${articleId}`;
+        window.location.href = updateUrl;
+    }
+
+</script>
 <script>
     const deleteArticleButtons = document.querySelectorAll('.deleteArticle');
-    deleteArticleButtons.forEach(button =>{
-        button.addEventListener('click', async (e) => {
-            const articleId = button.getAttribute('data-article-id');
-            const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
-            const data = await response.json();
-            console.log(data);
-        });
+    deleteArticleButtons.forEach(button = > {
+        button.addEventListener('click',
+            async(e) = > {
+                const articleId = button.getAttribute('data-article-id');
+                const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
+                const data = await response.json(); 
+                console.log(data);
+            });
     });
 </script>
 
