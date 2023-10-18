@@ -11,7 +11,7 @@
 <body>
 
 <div>
-    <div>
+       <div>
         <nav id="navbar">
             <a class="nav-item" href='/'>Home</a>
             <a class="nav-item" href='/toProfile'>Profile</a>
@@ -77,7 +77,7 @@
         </thead>
         <tbody>
             {{#each toparticle}}
-                <tr>
+            <tr>
                     <td>{{this.rank}}</td>
                     <td><a href='/article/{{this.id}}'>{{this.title}}</a></td>
                     <td>{{this.popularIndex}}</td>
@@ -85,12 +85,14 @@
                     <td>{{this.likeForTheArticle}}</td>
                     <td>{{this.postDate}}</td>
                 </tr>
+            
             {{/each}}
-        </tbody>
+           </tbody>
     </table>
-{{else}}
+    {{else}}
     <p>You do not post any article now.</p>
-{{/if}}
+    {{/if}}
+
 
 {{!-- add histogram chart --}}
     <h2>The chart of the number of your articles commented by day</h2>
@@ -133,6 +135,7 @@
                     'rgba(204, 255, 51, 1)',
                     'rgba(102, 50, 153, 1)'
                 ],
+
                 borderWidth: 1
             }]
         },
@@ -144,7 +147,10 @@
             }
         }
     });
+
 </script>    
+
+
 
 <script>
     const deleteArticleButtons = document.querySelectorAll('.deleteArticle');
@@ -163,6 +169,7 @@
             const updateUrl = `/updatearticle/?articleId=${articleId}`;
             window.location.href = updateUrl;
         });
+
     });
 </script>
 

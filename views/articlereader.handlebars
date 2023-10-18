@@ -1,5 +1,10 @@
 <head>
+
   <link rel="stylesheet" href="/css/articlereader.css">
+
+
+  <script src="/frontend-javascripts/likeFunctionality.js"></script>
+
 </head>
 <div class="container">
   <h1>This is an article reader!</h1>
@@ -91,7 +96,27 @@
     {{/each}}
   </ul>
 </div>
+
 <script src="../public/frontend javascripts/likeFunctionality.js"></script>
+
+
+
+<button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
+    <span id="like-icon" >♥</span>
+</button>
+
+<p id="like-count">{{article.likeCount}} likes</p>
+
+
+<h2>Users who liked this article:</h2>
+<ul id="users-liked-list">
+  {{#each article.usersLiked}}
+  <li><a href="/othersProfile/{{this.id}}">{{this.account}}</a></li>
+  {{/each}}
+</ul>
+
+
+  {{!-- Modal --}}
 <script>
     function addComment(articleID) {
         const commentUrl = `/comment/?articleId=${articleID}`;

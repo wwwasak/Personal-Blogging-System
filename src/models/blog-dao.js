@@ -36,10 +36,11 @@ async function updateArticle(userid, articleId, title, content, categoryid, imag
   return result;
 }
 
-// delete article by id  ------txu470
+// delete article and it's comments by articleid  ------txu470
 async function deleteArticleById(id) {
   const db = await dbPromise;
-  const result = await db.run(SQL`delete from article where id = ${id}`);
+  const result =await db.run(SQL`DELETE FROM article WHERE id = ${id}`);
+  await db.run(SQL`DELETE FROM comments WHERE article_id = ${id}`);
   return result;
 }
 
@@ -115,11 +116,7 @@ async function hasUserLikedArticle(userId, articleId) {
 
 async function likeArticle(userId, articleId) {
   const db = await dbPromise;
-  const existingLike = await db.get(SQL`SELECT * FROM userlike WHERE user_id = ${userId} AND article_id = ${articleId}`);
-  if (existingLike) {
-    return;
-  }
-  const result = await db.run(SQL`INSERT INTO userlike (user_id, article_id) VALUES (${userId}, ${articleId})`);
+  const result = await db.run(SQL`INSERT INTO userlike (user_id,article_id) VALUES (${userId},${articleId})`);
   return result;
 }
 
