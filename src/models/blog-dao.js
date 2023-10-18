@@ -4,7 +4,7 @@ const { dbPromise } = require('../db/database.js');
 // user search, register and delete -------yji413
 async function searchUsersByAccount(userName, password) {
   const db = await dbPromise;
-  const result = await db.all(SQL`select * from user where account = ${userName} AND password = ${password}`);
+  const result = await db.all(SQL`select * from user where account = ${userName}`);
   return result;
 }
 
@@ -25,9 +25,10 @@ async function updateToken(id, token) {
 }
 async function userAuthenticatorToken(token) {
   const db = await dbPromise;
-  const result = await db.run(SQL`SELECT * FROM user WHERE token = ${token};`);
-  return result;
+  const user = await db.get(SQL`SELECT * FROM user WHERE token = ${token};`);
+  return user;
 }
+
 
 async function updateArticle(userid, articleId, title, content, categoryid) {
   const db = await dbPromise;
@@ -143,32 +144,29 @@ async function getAllUsersWithArticleCount() {
       LEFT JOIN article ON user.id = article.userid
       GROUP BY user.id;
   `;
-  const [users] = await db.execute(query);
+  const users = await db.all(query);
   return users;
 }
+
 
 async function deleteUserAndRelatedData(userId) {
   const db = await dbPromise;
 
+  await db.run("DELETE FROM article WHERE userid = ?", [userId]);
 
-  await db.execute("DELETE FROM article WHERE userid = ?", [userId]);
+  await db.run("DELETE FROM comments WHERE user_id = ?", [userId]);
 
-
-  await db.execute("DELETE FROM comments WHERE user_id = ?", [userId]);
-
-
-  await db.execute("DELETE FROM user WHERE id = ?", [userId]);
+  await db.run("DELETE FROM user WHERE id = ?", [userId]);
 }
-
 
 
 
 
 //function addArticle by zliu442
-async function addArticle(title, content, timedate, userid, categoryid) {
+async function addArticle(title, content, timedate, userid, categoryid, imagepath) {
   const db = await dbPromise;
-  const result = await db.run(SQL`insert into article (title, content, postdate, userid, categoryid) values
-    (${title}, ${content}, ${timedate}, ${userid}, ${categoryid})`);
+  const result = await db.run(SQL`insert into article (title, content, postdate, userid, categoryid, imagename) values
+    (${title}, ${content}, ${timedate}, ${userid}, ${categoryid}, ${imagepath})`);
   return result;
 }
 
@@ -283,7 +281,7 @@ async function getSubscribers(userid) {
 }
 async function addNotification(sender_id, recipient_id, notification_type, related_object_id, content) {
   const db = await dbPromise;
-  const result = await db.run(SQL`insert into notification (sender_id,recipient_id,notification_type,related_object_id,content) values
+  const result = await db.run(SQL`insert into notifications (sender_id,recipient_id,notification_type,related_object_id,content) values
     (${sender_id}, ${recipient_id}, ${notification_type}, ${related_object_id}, ${content})`);
   return result;
 }
@@ -310,7 +308,7 @@ async function articleLikeNum(articleid) {
 // admin search-------zliu442
 async function searchAdminByAccount(userName, password) {
   const db = await dbPromise;
-  const result = await db.all(SQL`select * from admins where admin_account = ${userName} AND admin_password = ${password}`);
+  const result = await db.all(SQL`select * from user where account = ${userName} AND password = ${password} AND isAdmin = 1`);
   return result;
 }
 
@@ -318,7 +316,7 @@ async function searchAdminByAccount(userName, password) {
 async function addCategory(name, des) {
   const db = await dbPromise;
   const result = await db.run(SQL`insert into category (name, description, userid) values
-  (${name}, ${des}, 0)`);
+  (${name}, ${des}, 4)`);
   return result;
 }
 
@@ -334,10 +332,26 @@ async function updateCategory(id, updatename, updatedes) {
   return result;
 }
 
+//count comment to one user in a day
+async function commentNumOnUserAday(userid, starttime, endtime){
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT COUNT(*) 
+  FROM comments AS c
+  JOIN article AS a ON c.article_id = a.id
+  WHERE a.userid = ${userid}
+  AND c.timeDate BETWEEN ${starttime} AND ${endtime}`);
+  return result['COUNT(*)'];
+}
+
 //create by zliu442
 async function getAllUsers() {
   const db = await dbPromise;
   const result = await db.all(`SELECT * FROM user`);
+  return result;
+}
+async function searchNotificationsByUserID(userid) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`select * from notifications where recipient_id = ${userid}`);
   return result;
 }
 
@@ -391,5 +405,10 @@ module.exports = {
   deleteCategory,
   updateCategory,
   getAllUsers,
+  getArticleById,
+  getAllCategories,
+  getAllArticles,
+  commentNumOnUserAday,
+  searchNotificationsByUserID
 };
 

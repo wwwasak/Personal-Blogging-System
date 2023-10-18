@@ -1,58 +1,102 @@
-<div>
-    <nav>
-        <a href='/'>Home</a>
-        <a href='/toProfile'>Profile</a>
-        <a href='/toAdd'>Add your article</a>
-        {{! add one line by zliu442 to subscribe list }}
-        <a href='/subscribelist/{{userid}}'>View your subscribe and follow list</a>
-    </nav>
-    <h2>Hello {{name}}</h2><a href='/logout'>Log out</a>
-    <h2>Your Articles:</h2>
-    {{#each articles}}
-        <div>
-            <h2><a href='/article/{{id}}'>{{title}}</a></h2>
-            <p>{{{content}}}</p>
-            <button onclick="updateArticle('{{id}}')">Update</button>
-            <button
-                class='deleteArticle'
-                data-article-id={{this.id}}
-            >Delete</button>
-        </div>
-    {{/each}}
-    {{! analytic part create by zliu442 }}
-    <h1>Analytic dashboard:</h1>
-    <p>Total Number of followers: {{followerNum}}</p>
-    <p>Total Number of Comments for {{name}}'s articles: {{commentNum}}</p>
-    <p>Total Number of Likes for {{name}}'s articles: {{likeNum}}</p>
+<!DOCTYPE html>
+<html lang="en">
 
-    <h2>{{name}}'s top popular article</h2>
-    {{#if toparticle}}
-        <ul>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+
+<div>
+       <div>
+        <nav id="navbar">
+            <a class="nav-item" href='/'>Home</a>
+            <a class="nav-item" href='/toProfile'>Profile</a>
+            <a class="nav-item" href='/toAdd'>Add your article</a>
+            <a class="nav-item" href='/subscribelist/{{userid}}'>View your subscribe and follow list</a>
+        </nav>
+        <div id="greeting">
+            <h2>Hello {{name}}</h2><a id="logout-btn" href='/logout'>Log out</a>
+        </div>
+        <h2>Your Articles:</h2>
+        {{#each articles}}
+            <div class="article-item">
+                <h2><a href='/article/{{id}}'>{{title}}</a></h2>
+                <p>{{{content}}}</p>
+                <button onclick="updateArticle('{{id}}')">Update</button>
+                <button
+                    class='deleteArticle'
+                    data-article-id={{this.id}}
+                >Delete</button>
+            </div>
+        {{/each}}
+        <h1>Analytic dashboard:</h1>
+<table id="analytics-table">
+    <thead>
+        <tr>
+            <th>Metrics</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Total Number of followers:</td>
+            <td>{{followerNum}}</td>
+        </tr>
+        <tr>
+            <td>Total Number of Comments for {{name}}'s articles:</td>
+            <td>{{commentNum}}</td>
+        </tr>
+        <tr>
+            <td>Total Number of Likes for {{name}}'s articles:</td>
+            <td>{{likeNum}}</td>
+        </tr>
+    </tbody>
+</table>
+
+       
+<h2>{{name}}'s top popular articles</h2>
+{{#if toparticle}}
+    <table id="popular-articles-table">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Title</th>
+                <th>Popular Index</th>
+                <th>Comments</th>
+                <th>Likes</th>
+                <th>Post Date</th>
+            </tr>
+        </thead>
+        <tbody>
             {{#each toparticle}}
-                <li>
-                    <ul>
-                        <li>{{this.rank}} Ranked</li>
-                        <li><p>Title: </p><a
-                                href='/article/{{this.id}}'
-                            >{{this.title}}</a></li>
-                        <li>Popular index is {{this.popularIndex}}</li>
-                        <li>Comment Number is {{this.commentForTheArticle}}</li>
-                        <li>Like Number is {{this.likeForTheArticle}}</li>
-                        <li>Posted on {{this.postDate}}</li>
-                    </ul>
-                </li>
+            <tr>
+                    <td>{{this.rank}}</td>
+                    <td><a href='/article/{{this.id}}'>{{this.title}}</a></td>
+                    <td>{{this.popularIndex}}</td>
+                    <td>{{this.commentForTheArticle}}</td>
+                    <td>{{this.likeForTheArticle}}</td>
+                    <td>{{this.postDate}}</td>
+                </tr>
+            
             {{/each}}
-        </ul>
+           </tbody>
+    </table>
     {{else}}
-        <p>You do not post any article now.</p>
+    <p>You do not post any article now.</p>
     {{/if}}
 
-    {{! add histogram chart }}
+    {{!-- add histogram chart --}}
     <p>This is histogram chart of the number of your articles commented</p>
     <canvas id='commentHistogram'></canvas>
 </div>
 
-{{! to Create comment analysis histogram }}
+
+
+{{!-- to Create comment analysis histogram --}}
 {{!-- <script>
     var ctx = document.getElementById('commentHistogram').getContext('2d');
     var chart = new Chart(ctx, {
@@ -80,16 +124,25 @@
 {{! add button to delete a article-----txu470 }}
 <script>
 
-    function updateArticle(articleId) { const updateUrl =
-    `/updatearticle/?articleId=${articleId}`; window.location.href = updateUrl;
+    function updateArticle(articleId) {
+        const updateUrl = `/updatearticle/?articleId=${articleId}`;
+        window.location.href = updateUrl;
     }
 
 </script>
 <script>
     const deleteArticleButtons = document.querySelectorAll('.deleteArticle');
-    deleteArticleButtons.forEach(button =>{button.addEventListener('click',async(e) =>{
-    const articleId=button.getAttribute('data-article-id'); 
-    const response = await fetch(`/article/${articleId}`, { method: 'DELETE' }); 
-    const data = await response.json(); 
-    console.log(data); }); });
+    deleteArticleButtons.forEach(button = > {
+        button.addEventListener('click',
+            async(e) = > {
+                const articleId = button.getAttribute('data-article-id');
+                const response = await fetch(`/article/${articleId}`, { method: 'DELETE' });
+                const data = await response.json(); 
+                console.log(data);
+            });
+    });
 </script>
+
+</body>
+
+</html>

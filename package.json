@@ -7,6 +7,7 @@
         "dev": "nodemon --watch src --delay 0.5s src/index.js"
     },
     "dependencies": {
+        "bcryptjs": "^2.4.3",
         "cookie-parser": "^1.4.6",
         "express": "^4.18.2",
         "express-handlebars": "^7.1.2",

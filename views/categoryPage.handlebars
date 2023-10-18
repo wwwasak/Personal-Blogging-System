@@ -1,17 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{categoryName}} Articles</title>
+<link rel="stylesheet" href="/css/categoryPage.css">
 </head>
+
 <body>
-    <h1>Articles for {{categoryName}}</h1>
-    <ul>
-        {{#each articles}}
-            <li>
-            <h2><a href="/article/{{this.id}}">{{this.title}}</a></h2>
-                <p>{{this.content}}</p>
-            </li>
-        {{/each}}
-    </ul>
+    <div class="container">
+        <h1 class="category-title">Articles for {{categoryName}}</h1>
+        <ul class="articles-list">
+            {{#each articles}}
+                <li class="article-item">
+                    <h2 class="article-title"><a href="/article/{{this.id}}">{{this.title}}</a></h2>
+                    <p class="article-content">{{this.content}}</p>
+                </li>
+            {{/each}}
+        </ul>
+    </div>
 </body>
+
 </html>

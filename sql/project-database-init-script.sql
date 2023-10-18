@@ -16,7 +16,8 @@ insert into user (id,account,password,birthday,description,isAdmin) values
     (1,'Sean','123456','1983/02/24','This is the first user',FALSE),
     (2,'Demo','456234','1990/05/27','This is the second user',FALSE),
     (3,'Clarke','abcdefg','1995/04/23','This is the third user',FALSE),
-    (4,'Admin','1wde356fg','1993/02/23','This is the fourth user',TRUE);
+    (4,'Admin','1wde356fg','1993/02/23','This is the fourth user',TRUE),
+    (5,'zliu442','20000721','2000/07/21','This is the fifth user',FALSE);
 
 
 
@@ -33,10 +34,12 @@ create table category (
  
 );
 insert into category (id, name, description) values 
-(1, 'fiction', 'a type of literature that describes imaginary people and events, not real ones'), 
-(2, 'Science', 'Science'),
-(3, 'Sports', 'Sports'),
-(4, 'Financial', 'Financial');
+(1, 'Fiction', 'a type of literature that describes imaginary people and events, not real ones'), 
+(2, 'Science', 'knowledge about the structure and behaviour of the natural and physical world, based on facts that you can prove, for example by experiments'),
+(3, 'Sports', 'activity that you do for pleasure and that needs physical effort or skill, usually done in a special area and according to fixed rules'),
+(4, 'Financial', 'the activity of managing money, especially by a government or commercial organization'),
+(5, 'Financial', 'the activity of managing money, especially by a government or commercial organization'),
+(6, 'Financial', 'the activity of managing money, especially by a government or commercial organization');
 
 
 
@@ -50,16 +53,17 @@ create table article(
     postdate integer,
     userid integer,
     categoryid integer,
+    imagename text,
     foreign key (userid) references user(id),
     foreign key (categoryid) references category(id)
 );
-insert into article (id, title, content, postdate, userid, categoryid) values
-    (1, 'Love', '<strong>I love you!</strong>' ,562767818, 3,1),
-    (2, 'Boy', '<em>I am a boy!</em>' , 172881287,2,1),
-    (4, 'Love', '<strong>I love you!</strong>' ,217886129, 3,1),
-    (5, 'Love', '<strong>I love you!</strong>' ,261812711, 3,1),
-    (6, 'Love', '<strong>I love you!</strong>' ,187212111, 3,1),
-    (3, 'Game', 'I love play game',176281721,1,1 );
+insert into article (id, title, content, postdate,imagename, userid, categoryid) values
+    (1, 'Love', '<strong>I love you!</strong>' ,562767818,'',3,1),
+    (2, 'Boy', '<em>I am a boy!</em>' , 172881287,'',2,1),
+    (4, 'Love', '<strong>I love you!</strong>' ,217886129, '',3,1),
+    (5, 'Love', '<strong>I love you!</strong>' ,261812711, '',3,1),
+    (6, 'Love', '<strong>I love you!</strong>' ,187212111,'' ,3,1),
+    (3, 'Game', 'I love play game',176281721,'',1,1 );
 
 
 
@@ -138,13 +142,5 @@ VALUES
     (5,3,1),
     (6,4,1);
 
---admin sql create by zliu442
-DROP TABLE if exists admins;
-CREATE TABLE admins(
-    id integer not null PRIMARY KEY,
-    admin_account text,
-    admin_password integer
-);
-INSERT INTO admins (admin_account,admin_password) 
-VALUES ('admin', 12345678)
+
 
