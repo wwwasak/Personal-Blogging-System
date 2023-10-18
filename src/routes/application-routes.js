@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
-const { verifyAuthenticated} = require("../middleware/authorToken.js");
+const { verifyAuthenticated } = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
 const bcrypt = require('bcryptjs');
 
 //for image upload
-const multer = require ("multer");
+const multer = require("multer");
 const path = require('path');
-const upload = multer({dest: path.join(__dirname, "public/images/articleimages")});
+const upload = multer({ dest: path.join(__dirname, "public/images/articleimages") });
 const fs = require("fs");
 
 
@@ -88,7 +88,7 @@ router.post('/userLogin', async function (req, res) {
 //admin login create by zliu442
 router.post('/adminLogin', async function (req, res) {
     let { admin_account, admin_password } = req.body;
-    console.log({ admin_account, admin_password } )
+    console.log({ admin_account, admin_password })
     try {
         let userDetails = await blogDao.searchAdminByAccount(admin_account, admin_password);
         if (userDetails.length > 0) {
@@ -149,11 +149,11 @@ router.get('/deletecategory', async (req, res) => {
 //routers create by zliu442
 router.get('/deletearticle', async (req, res) => {
     try {
-        const id = req.query.id;  
+        const id = req.query.id;
         console.log(id)
         const commentlist = await blogDao.searchCommentByArticleID(id);
         console.log(commentlist)
-        for (let item of commentlist){
+        for (let item of commentlist) {
             await blogDao.deleteCommentByParentCommentID(item.id);
         }
         await blogDao.deleteCommentByArticleID(id);
@@ -191,7 +191,7 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
     res.locals.userid = userInfo.id;
     res.locals.name = userName;
     let userArticles = await blogDao.searchArticlesByUserAccount(userid);
-    userArticles.forEach(item =>{
+    userArticles.forEach(item => {
         item.postdate = formatTimestamp(item.postdate);
     });
     res.locals.articles = userArticles;
@@ -230,7 +230,7 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
     const lastTendays = getLastTenDays();
     res.locals.lastTendays = lastTendays;
     const tenDayTimeStamp = getTendayTimeStamp();
-    const commentNumTendays = await commentNumInTimeRanges(userInfo.id,tenDayTimeStamp);
+    const commentNumTendays = await commentNumInTimeRanges(userInfo.id, tenDayTimeStamp);
     res.locals.commentNumTendays = commentNumTendays;
 
     res.render("dashboard");
@@ -252,13 +252,13 @@ function getLastTenDays() {
     return dates;
 }
 
-function getTendayTimeStamp(){
+function getTendayTimeStamp() {
     let today = new Date();
     today.setDate(today.getDate() - 9);
     let dateRanges = [];
     for (let i = 0; i < 10; i++) {
         let startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0).getTime();
-        let endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999).getTime();       
+        let endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999).getTime();
         dateRanges.push([startOfDay, endOfDay]);
         today.setDate(today.getDate() + 1);
     }
@@ -266,13 +266,13 @@ function getTendayTimeStamp(){
 }
 
 //get comment num by each day zliu442
-async function commentNumInTimeRanges(userid,timeRanges) {
+async function commentNumInTimeRanges(userid, timeRanges) {
     const results = await Promise.all(timeRanges.map(async (range) => {
         const [starttime, endtime] = range;
         return await blogDao.commentNumOnUserAday(userid, starttime, endtime);
     }));
 
-    return results; 
+    return results;
 }
 
 //define popularity calculator
@@ -282,15 +282,20 @@ function popularindex(commentNum, likeNum) {
 }
 
 router.post('/userRegister', async function (req, res) {
-    let { account, password, birthday, description } = req.body;
+    let { account, password, repassword, birthday, description } = req.body;
     try {
-        let hashedPassword = await bcrypt.hash(password, 8)
-        await blogDao.registerUser(account, hashedPassword, birthday, description)
-        res.send({
-            code: 200,
-            msg: "Register successful",
-        })
-        res.redirect("/userLogin");
+        if (password == repassword) {
+
+            let hashedPassword = await bcrypt.hash(password, 8)
+            await blogDao.registerUser(account, hashedPassword, birthday, description)
+            res.redirect("/login");
+
+        } else {
+            res.send({
+                code: 400,
+                msg: "Please enter the same password!!"
+            })
+        }
     } catch (error) {
         res.send({
             code: 500,
@@ -302,11 +307,11 @@ router.get('/userDelete', async function (req, res) {
     let id = req.query.userid;
     try {
         await blogDao.deleteUser(id);
+        res.redirect("/login");
         res.send({
             code: 200,
             msg: "Delete successful",
         })
-        res.redirect("/userLogin");
     } catch (error) {
         res.send({
             code: 500,
@@ -329,8 +334,8 @@ router.get('/updatearticle', async function (req, res) {
 router.post('/updateArticleRoutes', upload.single("imageFile"), async function (req, res) {
     try {
         const { articleId, title, content, categoryid, currentimage } = req.body;
-        const imageFile = req.file; 
-        if (imageFile != null){
+        const imageFile = req.file;
+        if (imageFile != null) {
             let fileInfo = req.file;
             let oldpath = fileInfo.path;
             let newpath = `./public/images/articleimages/${fileInfo.originalname}`;
@@ -359,7 +364,7 @@ router.delete('/article/:id', async function (req, res) {
     }
     const commentlist = await blogDao.searchCommentByArticleID(id);
     console.log(commentlist)
-    for (let item of commentlist){
+    for (let item of commentlist) {
         await blogDao.deleteCommentByParentCommentID(item.id);
     }
     await blogDao.deleteCommentByArticleID(id);
@@ -469,6 +474,14 @@ router.get('/likeArticle', async (req, res) => {
     const { userId, articleId } = req.query;
     try {
         await blogDao.likeArticle(userId, articleId);
+        const otherUser = await blogDao.searchUserByArticleID(articleId);
+        const otherUserId = otherUser[0].userid;
+        const article = await blogDao.searchArticleById(articleId);
+        const articleTitle = article.title;
+        const user = await blogDao.searchUserById(userId);
+        const userName = user.account;
+        const content = "Congratulation!" + userName + " has liked your Article " + articleTitle;
+        await blogDao.addNotification(userId, otherUserId, 'newLike', articleId, content)
         res.json({ success: true });
     } catch (error) {
         console.error(error);
@@ -508,13 +521,13 @@ router.post('/addarticle', upload.single("imageFile"), async function (req, res)
     let { title, content, categoryid } = req.body;
     let fileInfo = req.file;
     let imagepath;
-    if (fileInfo != null){
+    if (fileInfo != null) {
         let oldpath = fileInfo.path;
         let newpath = `./public/images/articleimages/${fileInfo.originalname}`;
         fs.renameSync(oldpath, newpath);
         imagepath = `/images/articleimages/${fileInfo.originalname}`;
     }
-    else{
+    else {
         imagepath = null;
     }
     const timeStamp = generateTimestamp();
@@ -544,7 +557,7 @@ router.post('/addarticle', upload.single("imageFile"), async function (req, res)
 });
 
 //modified byzliu442 10/17
-router.get('/comment/',async function(req,res){
+router.get('/comment/', async function (req, res) {
     let id = req.query.articleId;
     let article = await blogDao.searchArticleById(id);
     article.author = await blogDao.searchUserById(article.userid);
@@ -553,7 +566,7 @@ router.get('/comment/',async function(req,res){
 });
 
 //create by zliu442 10/17
-router.get('/subcomment/',async function(req,res){
+router.get('/subcomment/', async function (req, res) {
     let articleid = req.query.articleid;
     let article = await blogDao.searchArticleById(articleid);
     article.author = await blogDao.searchUserById(article.userid);
@@ -566,7 +579,7 @@ router.get('/subcomment/',async function(req,res){
 });
 
 //create by zliu442 10/17
-router.get('/subsubcomment/',async function(req,res){
+router.get('/subsubcomment/', async function (req, res) {
     let subcommentid = req.query.subcommentid;
     let subcomment = await blogDao.searchCommentById(subcommentid);
     subcomment.author = await blogDao.searchUserById(subcomment.user_id);
@@ -694,12 +707,12 @@ router.post('/addsubsubcomment', async function (req, res) {
     }
 });
 
-function formatCommentStr(string){
+function formatCommentStr(string) {
     let regex = /<strong>(.+?)<\/strong>/;
     let match = string.match(regex);
     if (match && match[1]) {
         return match[1];
-    } else{
+    } else {
         return string;
     }
 }
@@ -725,7 +738,7 @@ router.get('/article/:id', async (req, res) => {
             dateTime: articleTime,
             categoryInfo: categoryInfo,
             content: articleInfo.content,
-            imagename : articleInfo.imagename,
+            imagename: articleInfo.imagename,
             hasLiked: hasLiked,
             likeColor: hasLiked ? 'red' : 'black',
             likeCount: likeCount,
@@ -752,7 +765,7 @@ router.get('/article/:id', async (req, res) => {
     }
 });
 
-router.get('/deletecomment',async(req,res) => {
+router.get('/deletecomment', async (req, res) => {
     try {
         const commentid = req.query.commentid;
         const articleid = req.query.articleid;
@@ -829,7 +842,7 @@ router.get('/othersProfile/:otheruserid', async (req, res) => {
         res.locals.userid = userid;
         res.locals.otheruser = otherUser;
         const articleList = await blogDao.searchArticlesByUserAccount(otherUserId);
-        articleList.forEach(item =>{
+        articleList.forEach(item => {
             item.postdate = formatTimestamp(item.postdate);
         })
         res.locals.articles = articleList;
