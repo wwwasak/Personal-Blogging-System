@@ -1,4 +1,17 @@
-<div>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- custom css file link  -->
+    <link rel="stylesheet" href="css/profile.css">
+
+</head>
+
+{{!-- <div>
     <h2>Profile</h2>
     <h4>Id : {{user.id}}</h4>
     <h4>Name : {{user.account}}</h4>
@@ -6,4 +19,33 @@
     <h4>Description : {{user.description}}</h4>
     <a href="/toDashboard">Return</a>
     <a href="/toDelete">Delete user</a>
-</div>
+</div> --}}
+
+<section class="about" id="about">
+
+    <h1 class="heading"> about <span>me</span> </h1>
+
+    <div class="row">
+
+        <div class="image">
+            <img class="tilt" src="https://code.5g-o.com/wp-content/uploads/2021/06/about-pic.jpg" alt="">
+        </div>
+
+        <div class="content">
+            <h3> my name is <span> {{user.account}} </span> </h3>
+            <p class="info">{{user.description}}</p>
+            <div class="box-container">
+                <div class="box">
+                    <p> <span> ID: </span> {{user.id}} </p>
+                </div>
+                <div class="box">
+                    <p> <span> Birthday : </span> {{user.birthday}} </p>
+                </div>
+            </div>
+            <a href="/toDashboard" class="btn">Return</a>
+            <a href="/toDelete" class="btn">Delete user</a>
+        </div>
+
+    </div>
+
+</section>
