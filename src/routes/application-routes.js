@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
-const { verifyAuthenticated, addUserToLocals } = require("../middleware/authorToken.js");
+const { verifyAuthenticated} = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
 
 let userid;
@@ -271,7 +271,6 @@ router.get('/updateArticleRoutes', async function (req, res) {
 });
 router.delete('/article/:id', async function (req, res) {
     let id = req.params.id;
-    const userid = user.id;
     console.log(userid, id);
     if (!await isArticleOwner(userid, id)) {
         // If user is not the owner of the article
