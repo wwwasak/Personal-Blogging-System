@@ -230,6 +230,11 @@ async function searchCommentByArticleID(articleid) {
   return result;
 }
 
+async function searchUserByArticleID(articleid) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT * FROM user LEFT JOIN article ON user.id = article.userid where article.id=${articleid}`);
+  return result;
+}
 async function searchSubCommentByCommentID(commentid) {
   const db = await dbPromise;
   const result = await db.all(SQL`SELECT * FROM comments WHERE parentComment = ${commentid}`);
@@ -425,6 +430,7 @@ module.exports = {
   commentNumOnUserAday,
   searchNotificationsByUserID,
   deleteCommentByParentCommentID,
-  deleteCommentByArticleID
+  deleteCommentByArticleID,
+  searchUserByArticleID
 };
 
