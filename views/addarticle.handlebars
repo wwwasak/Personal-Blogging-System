@@ -1,20 +1,22 @@
-{{!-- handlebar addarticle create by zliu442 --}}
-
-<div class="container">
-  <p>Add your artical here!</p>
-  <a href="/toDashboard">Return</a>
+{{! handlebar addarticle create by zliu442 }}
+<head>
+    <link rel='stylesheet' href='/css/article.css' type='text/css' />
+</head>
+<div class='container'>
+    <p class='section-title'>Add your artical here!</p>
+    <a href='/toDashboard'>Return</a>
 
   <form action="/addarticle" method="POST" enctype="multipart/form-data">
 
-    <fieldset>
-      <legend>Article Title</legend>
+        <fieldset>
+            <legend>Article Title</legend>
 
-      <p>
-        <label for="name_id" class="addtitle">Title</label><br />
-        <input type="text" size="100" name="title" id="title_id" />
-      </p>
+            <p>
+                <label for='name_id' class='addtitle'>Title</label><br />
+                <input type='text' size='100' name='title' id='title_id' />
+            </p>
 
-    </fieldset>
+        </fieldset>
 
     <fieldset>
       <legend>Category</legend>
@@ -34,33 +36,48 @@
       <input id="inpFile" type="file" name="imageFile" accept =".png,.jpeg,.jpg,.bmp">
     </fieldset>
 
-    <fieldset>
-      <legend>Content</legend>
-        <textarea id="mytextarea" name="content">Please enter your content here!</textarea>
-    </fieldset>
+        <fieldset>
+            <legend>Content</legend>
+            <textarea id='mytextarea' name='content'>Please enter your content
+                here!</textarea>
+        </fieldset>
 
-
-    <p>
-      <input type="submit" name="submit_button" id="submit_id" value="Done!" />
-      <input type="reset" name="reset_button" id="reset_id" value="Clear" />
-    </p>
-  </form>
+        <p>
+            <input
+                type='submit'
+                name='submit_button'
+                id='submit_id'
+                value='Done!'
+            />
+            <input
+                type='reset'
+                name='reset_button'
+                id='reset_id'
+                value='Clear'
+            />
+        </p>
+    </form>
 
 </div>
 
-<script src="https://cdn.tiny.cloud/1/kindgwy6154gcl4sj7ok1lzziypb6p5k0ilsttw63g7anvj8/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script
+    src='https://cdn.tiny.cloud/1/kindgwy6154gcl4sj7ok1lzziypb6p5k0ilsttw63g7anvj8/tinymce/6/tinymce.min.js'
+    referrerpolicy='origin'
+></script>
 
 <script>
-    tinymce.init({
-      selector: 'textarea',
-      plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
-      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-      tinycomments_mode: 'embedded',
-      tinycomments_author: 'Author name',
-      mergetags_list: [
-        { value: 'First.Name', title: 'First Name' },
-        { value: 'Email', title: 'Email' },
-      ],
-      ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant"))
-    });
+    tinymce.init({ selector: 'textarea', plugins: 'ai tinycomments mentions
+    anchor autolink charmap codesample emoticons image link lists media
+    searchreplace table visualblocks wordcount checklist mediaembed casechange
+    export formatpainter pageembed permanentpen footnotes advtemplate advtable
+    advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker
+    autocorrect a11ychecker typography inlinecss', toolbar: 'undo redo | blocks
+    fontfamily fontsize | bold italic underline strikethrough | link image media
+    table mergetags | align lineheight | tinycomments | checklist numlist
+    bullist indent outdent | emoticons charmap | removeformat',
+    tinycomments_mode: 'embedded', tinycomments_author: 'Author name',
+    mergetags_list: [ { value: 'First.Name', title: 'First Name' }, { value:
+    'Email', title: 'Email' }, ], ai_request: (request, respondWith) =>
+    respondWith.string(() => Promise.reject("See docs to implement AI
+    Assistant")) });
 </script>

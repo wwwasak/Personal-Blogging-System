@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
-const { verifyAuthenticated } = require("../middleware/authorToken.js");
+const { verifyAuthenticated} = require("../middleware/authorToken.js");
 const blogDao = require('../models/blog-dao.js');
 const bcrypt = require('bcryptjs');
 
@@ -329,6 +329,7 @@ router.post('/updateArticleRoutes', async function (req, res) {
 });
 router.delete('/article/:id', async function (req, res) {
     let id = req.params.id;
+    console.log(userid, id);
     if (!await isArticleOwner(userid, id)) {
         // If user is not the owner of the article
         return res.status(403).send({ code: 403, msg: 'Forbidden' });
@@ -368,9 +369,10 @@ async function isArticleOwner(userid, articleId) {
     }
     return false;
 }
-router.delete('/article/:id/comment/:commentid', async function (req, res) {
+router.delete('/article/:id/comment/:commentid',async function (req, res) {
     let id = req.params.id;
     let commentid = req.params.commentid;
+    const userid = res.locals.user.id;
     if (!await isArticleOwner(userid, id) && (!await isCommentOwner(userid, commentid))) {
         // If user is not the owner of the article and comment
         return res.status(403).send({ code: 403, msg: 'Forbidden' });
@@ -427,17 +429,14 @@ router.get('/category/:categoryName', async (req, res) => {
 router.get('/hasUserLikedArticle', async (req, res) => {
     const { userId, articleId } = req.query;
     const hasLiked = await blogDao.hasUserLikedArticle(userId, articleId);
-    res.json({ hasLiked });
+    res.json(hasLiked);
 });
 
 
-router.post('/likeArticle', verifyAuthenticated, async (req, res) => {
-    const { userId, articleId } = req.body;
-
+router.get('/likeArticle', async (req, res) => {
+    const { userId, articleId } = req.query;
     try {
-
         await blogDao.likeArticle(userId, articleId);
-
         res.json({ success: true });
     } catch (error) {
         console.error(error);
@@ -445,14 +444,10 @@ router.post('/likeArticle', verifyAuthenticated, async (req, res) => {
     }
 });
 
-
-router.post('/unlikeArticle', verifyAuthenticated, async (req, res) => {
-    const { userId, articleId } = req.body;
-
+router.get('/unlikeArticle', async (req, res) => {
+    const { userId, articleId } = req.query;
     try {
-
         await blogDao.unlikeArticle(userId, articleId);
-
         res.json({ success: true });
     } catch (error) {
         console.error(error);
