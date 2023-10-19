@@ -382,6 +382,22 @@ router.delete('/article/:id', async function (req, res) {
     }
 });
 
+router.delete('/notification/:id', async function (req, res) {
+    let id = req.params.id;
+    console.log(userid, id);
+    try{
+        await blogDao.deleteNotification(id);
+        res.send({
+            code: 200,
+            msg: "Delete successful"
+        })
+    } catch (error){
+        res.send({
+            code: 500,
+            msg: "Delete failed"
+        })
+    }
+});
 //commenter delete comment by id  ------txu470
 // async function isCommentOwner(userid, commentId) {
 //     let result = await blogDao.searchCommentById(commentId);
@@ -536,9 +552,8 @@ router.post('/addarticle', upload.single("imageFile"), async function (req, res)
             const result = await blogDao.addArticle(title, content, timeStamp, userid, categoryid, imagepath);
             articleId = result.lastID;
             const subscribers = await blogDao.subscribebyList(userid);
-            console.log(subscribers)
             subscribers.forEach(async subscriber => {
-                await blogDao.addNotification(userid, subscriber.user_id, 'newBlog', articleId, 'have a new article!');
+                await blogDao.addNotification(userid, subscriber.id, 'newBlog', articleId, 'Your subscription has a new article!');
             });
             res.redirect('/toDashboard');
         }
@@ -608,10 +623,11 @@ router.post('/addcomment', async function (req, res) {
         if ((articleid != null && userid != null)) {
             const result = await blogDao.addComment(userid, timeStamp, content, articleid);
             commentId = result.lastID;
-            // const subscribers = await blogDao.getSubscribers(userid);
-            // subscribers.forEach(async subscriber => {
-            //     await blogDao.addNotification(userid, subscriber.user_id, 'newComment', commentId, 'have a new comment!');
-            // });
+            const author = await blogDao.searchUserByArticleID(articleid);
+            const subscribers = await blogDao.subscribebyList(author[0].userid);
+            subscribers.forEach(async subscriber => {
+                await blogDao.addNotification(author[0].userid, subscriber.id, 'newComment', commentId, 'Your subscription article has a new comment!');
+            });
             res.redirect(`/article/${articleid}`);
         }
         else if (userid == null) {
@@ -649,6 +665,11 @@ router.post('/addsubcomment', async function (req, res) {
     try {
         if ((commentid != null && userid != null)) {
             await blogDao.addSubComment(userid, timeStamp, content, commentid);
+            const author = await blogDao.searchUserByArticleID(articleid);
+            const subscribers = await blogDao.subscribebyList(author[0].userid);
+            subscribers.forEach(async subscriber => {
+                await blogDao.addNotification(author[0].userid, subscriber.id, 'newComment', commentid, 'Your subscription article comment has a new reply!');
+            });
             res.redirect(`/article/${articleid}`);
         }
         else if (userid == null) {

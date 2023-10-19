@@ -2,7 +2,7 @@ const SQL = require('sql-template-strings');
 const { dbPromise } = require('../db/database.js');
 
 // user search, register and delete -------yji413
-async function searchUsersByAccount(userName, password) {
+async function searchUsersByAccount(userName) {
   const db = await dbPromise;
   const result = await db.all(SQL`select * from user where account = ${userName}`);
   return result;
@@ -345,6 +345,11 @@ async function deleteCategory(id) {
   return result;
 }
 
+async function deleteNotification(id) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from notifications where id = ${id} `);
+  return result;
+}
 async function updateCategory(id, updatename, updatedes) {
   const db = await dbPromise;
   const result = await db.run(SQL`update category set name = ${updatename}, description = ${updatedes} where id = ${id} `);
@@ -431,6 +436,7 @@ module.exports = {
   searchNotificationsByUserID,
   deleteCommentByParentCommentID,
   deleteCommentByArticleID,
-  searchUserByArticleID
+  searchUserByArticleID,
+  deleteNotification
 };
 
