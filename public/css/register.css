@@ -10,7 +10,7 @@ main{
 .register{
     background-color: whitesmoke;
     width: 500px;
-    height: 600px;
+    height: 950px;
     border-radius: 25px;
     text-align: center;
     padding: 5px 40px;
@@ -46,4 +46,15 @@ input{
 
 .btn:hover{
     background-color: #59c2a0;
+}
+.radiocontainer{
+    width: 400px;
+}
+.radioType{
+    width: 20px;
+}
+.textarea{
+    width: 420px;
+    border: none;
+    border-bottom: 2px solid silver;
 }

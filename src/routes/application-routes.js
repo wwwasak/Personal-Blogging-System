@@ -53,7 +53,6 @@ router.get("/toAdd", async function (req, res) {
 });
 router.get("/toProfile", async function (req, res) {
     let userAccount = await blogDao.searchUserById(userid);
-    console.log(userAccount)
     res.locals.user = userAccount;
     res.render("profile")
 });
@@ -282,12 +281,13 @@ function popularindex(commentNum, likeNum) {
 }
 
 router.post('/userRegister', async function (req, res) {
-    let { account, password, repassword, birthday, description } = req.body;
+    let { account,realname, password, repassword, birthday,userImage, description } = req.body;
+    console.log(req.body)
     try {
         if (password == repassword) {
 
             let hashedPassword = await bcrypt.hash(password, 8)
-            await blogDao.registerUser(account, hashedPassword, birthday, description)
+            await blogDao.registerUser(account,realname, hashedPassword, birthday,userImage, description)
             res.redirect("/login");
 
         } else {

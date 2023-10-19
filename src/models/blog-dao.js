@@ -8,9 +8,9 @@ async function searchUsersByAccount(userName) {
   return result;
 }
 
-async function registerUser(account, password, birthday, description) {
+async function registerUser(account, realname,password, birthday,userImage, description) {
   const db = await dbPromise;
-  const result = await db.run(SQL`INSERT INTO user (account,password,birthday,description) values (${account},${password},${birthday},${description});`);
+  const result = await db.run(SQL`INSERT INTO user (account,realname,password,birthday,userimage,description) values (${account},${realname},${password},${birthday},${userImage},${description});`);
   return result;
 }
 async function deleteUser(id) {

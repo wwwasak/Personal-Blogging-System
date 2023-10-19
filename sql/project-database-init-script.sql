@@ -5,8 +5,10 @@ drop table if exists user;
 create table user (
     id integer not null primary key,
     account text,
+    realname text,
     password text,
 	birthday text,
+    userimage text,
 	description text,
     token text,
     isAdmin BOOLEAN DEFAULT FALSE 
