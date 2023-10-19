@@ -43,6 +43,12 @@ async function startExpress() {
                 return opts.inverse(this);
             }
         },
+        if_any_eq:function(value1, compare1, value2, compare2, options) {
+            if (value1 === compare1 || value2 === compare2) {
+              return options.fn(this);
+            }
+            return options.inverse(this);
+        },
         json: function (context) {
             return JSON.stringify(context);}
     };

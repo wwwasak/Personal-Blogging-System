@@ -1,60 +1,86 @@
-<div>
-    <h2>Profile</h2>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <h4>Id : {{otheruser.id}}</h4>
-    <h4>Name : {{otheruser.account}}</h4>
-    <h4>birthday : {{otheruser.birthday}}</h4>
-    <h4>Description : {{otheruser.description}}</h4>
-    <a href="/">Return</a>
-    {{#each articles}}
-    <div>
-        <h2><a href="/article/{{id}}">{{title}}</a></h2>
-    </div>
-    {{/each}}
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-    <a href="/subscribelist/{{otheruser.id}}">{{otheruser.account}}'s subscribe list</a>
+    <!-- custom css file link  -->
+    <link rel="stylesheet" href="/css/othersProfile.css">
 
-    {{!-- check userid and show the botton --}}
-    {{#if userid}}
-        {{#if_eq userid otheruser.id}}
+</head>
+
+
+<section class="about" id="about">
+
+    <h1 class="heading"> about <span>me</span> </h1>
+
+    <div class="row">
+
+        <div class="image">
+            <img class="tilt" src='/images/userimages/{{otheruser.userimage}}.png' alt="">
+        </div>
+
+        <div class="content">
+            <h3> my name is <span> {{otheruser.account}} </span> </h3>
+            <p class="info">{{otheruser.description}}</p>
+            <div class="box-container">
+                <div class="box">
+                    <p> <span> ID: </span> {{otheruser.id}} </p>
+                </div>
+                <div class="box">
+                    <p> <span> Birthday : </span> {{otheruser.birthday}} </p>
+                </div>
+            </div>
+            <a href="/toDashboard" class="btn">Return</a>
+            <a href="/subscribelist/{{otheruser.id}}" class="btn">My subscribe</a>
+            {{#if userid}}
+            {{#if_eq userid otheruser.id}}
             <p>Cannot subscribe to yourself</p>
-        {{else}}
+            {{else}}
             {{#if isSubscribed}}
-                <form id="unsubscribeform" method="get" action="/unsubscribe">
-                    <input type="hidden" name="userid" id="userid" value="{{userid}}">
-                    <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
-                    <button type="submit">Unsubscribe</button>
-                </form>
+            <form id="unsubscribeform" method="get" action="/unsubscribe">
+                <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
+                <button type="submit" class="btn">Unsubscribe</button>
+            </form>
             {{else}}
-                <form id="subscribeform" method="get" action="/subscribe">
-                    <input type="hidden" name="userid" id="userid" value="{{userid}}">
-                    <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
-                    <button type="submit">Subscribe</button>
-                </form>
+            <form id="subscribeform" method="get" action="/subscribe">
+                <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
+                <button type="submit" class="btn">Subscribe me</button>
+            </form>
             {{/if}}
-        {{/if_eq}}
-    {{else}}
-        <a href="/login">Please Login to subscribe to others</a>
-    {{/if}}
-    <a href="/toDashboard">Return</a>
-    <h3>{{otheruser.account}}'s Article List</h3>
-    {{#if articles}}
-    <ul>
-        {{#each articles}}
-        <div>
-            <h2><a href="/article/{{this.id}}">{{this.title}}</a></h2>
-            <p>Posted by {{this.author.account}} in {{this.postdate}}</p>
-            {{#if this.imagename}}
-                <img src="{{this.imagename}}" alt="{{this.imagename}}" width="200" height="150">
+            {{/if_eq}}
             {{else}}
-                <p>The article do not have image</p>
+            <a href="/login" class="btn">Please Login to subscribe to others</a>
             {{/if}}
         </div>
+    </div>
+
+</section>
+
+<section class="blogs" id="blogs">
+
+    <h1 class="heading"> <span> my </span> articles </h1>
+
+    <div class="box-container">
+
+
+        {{#each articles}}
+        <div class="box tilt">
+            <img src="https://code.5g-o.com/wp-content/uploads/2021/06/blog-img-1.jpg" alt="">
+            <h3> {{title}} </h3>
+            <p>Posted in {{this.postdate}}</p>
+            <p> 这里需要修改 </p>
+            <a href="/article/{{id}}" class="btn">learn more</a>
+        </div>
         {{/each}}
-    </ul>
-    {{else}}
-        <p>{{otheruser.account}} not post any article yet.</p>
-    {{/if}}
+
+    </div>
+
+</section>
 
 
-</div>
+
