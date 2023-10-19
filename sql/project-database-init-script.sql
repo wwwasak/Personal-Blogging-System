@@ -5,8 +5,10 @@ drop table if exists user;
 create table user (
     id integer not null primary key,
     account text,
+    realname text,
     password text,
 	birthday text,
+    userimage text,
 	description text,
     token text,
     isAdmin BOOLEAN DEFAULT FALSE 
@@ -109,7 +111,7 @@ VALUES
 -- add Notification related database----txu470
 DROP TABLE if exists notifications;
 CREATE TABLE notifications (
-    id INT NOT NULL PRIMARY KEY,
+    id INTEGER NOT NULL PRIMARY KEY,
     recipient_id INT, 
     notification_type TEXT CHECK (notifications.notification_type IN ('newBlog', 'newComment', 'newLike','newSubscriber')),
     related_object_id INT, 

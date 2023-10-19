@@ -1,5 +1,12 @@
 <head>
+
+
   <link rel="stylesheet" href="/css/articlereader.css">
+
+
+  <script src="/frontend-javascripts/likeFunctionality.js"></script>
+
+
 </head>
 <div class="container">
   <h1>This is an article reader!</h1>
@@ -7,7 +14,9 @@
   {{#if article}}
     <div class="article-section">
         <h2>Title: {{article.title}}</h2>
-        <p>Category: {{article.category}}</p>
+
+        <p>Category: {{article.categoryInfo.name}}</p>
+
         <div class="author-subscribe">
             <p>Author: </p><a href="/othersProfile/{{article.authorid}}">{{article.author}}</a>
             {{!-- Subscribe functionality moved here --}}
@@ -43,11 +52,23 @@
         <div class="article-content">
           <p>Content: {{{article.content}}}</p>
         </div>
-        <button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
-            <span id="like-icon" style="color: black;">❤️</span>
-        </button>
+            {{#if userid}}
+                <button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
+                    <span id="like-icon" style="color: black;">❤️</span>
+                </button>
+            {{else}}
+                <a href="/login">Please Login to like to others</a>
+            {{/if}}
+        
         <p id="like-count">{{article.likeCount}} likes</p>
-        <button id="openModalBtn" onclick="addComment('{{article.id}}')">Comment</button>
+
+        {{#if userid}}
+            <button id="openModalBtn" onclick="addComment('{{article.id}}')">Comment</button>
+        {{else}}
+            <a href="/login">Please Login to comment to others</a>
+        {{/if}}
+
+
     </div>
     <div class="comment-section">
         {{#if comment}}
@@ -57,14 +78,34 @@
                     <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> reply to <a href="/othersProfile/{{this.replyeeid}}">{{this.replyee}}</a></p>
                     <p>Post date and time: {{this.timeDate}}</p>
                     <p>Comment content: <strong>{{this.content}}</strong> </p>
-                    <a href="/subcomment/?commentid={{this.id}}&articleid={{../article.id}}">Comment</a>
+
+                    {{#if ../userid}}
+                        <a href="/subcomment/?commentid={{this.id}}&articleid={{../article.id}}">Comment</a>
+                    {{else}}
+                        <a href="/login">Please Login to comment to others</a>
+                    {{/if}}
+
+                    {{#if_any_eq ../userid this.author.id ../userid ../article.authorid}}
+                        <a href="/deletecomment/?commentid={{this.id}}&articleid={{../article.id}}">Delete</a>
+                    {{/if_any_eq}}
+                    <p>{{userid}}</p>
                     {{#if this.subcomment}}
                     <ul>
                         {{#each this.subcomment}}
                         <li class="second-tier-comment">
                             <p><a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> post in : {{this.timeDate}}</p>
                             <p>{{{this.content}}} </p>
-                            <a href="/subsubcomment/?articleid={{../../article.id}}&commentid={{../this.id}}&subcommentid={{this.id}}&replyto={{this.author.id}}">Comment</a>
+
+                            {{#if ../../userid}}
+                                <a href="/subsubcomment/?articleid={{../../article.id}}&commentid={{../this.id}}&subcommentid={{this.id}}&replyto={{this.author.id}}">Comment</a>
+                            {{else}}
+                                <a href="/login">Please Login to comment to others</a>
+                            {{/if}}
+                            
+                            {{#if_any_eq ../../userid this.author.id ../../userid ../../article.authorid}}
+                                <a href="/deletecomment/?commentid={{this.id}}&articleid={{../../article.id}}">Delete</a>
+                            {{/if_any_eq}}
+
                         </li>
                         {{/each}}
                     </ul>
@@ -84,7 +125,7 @@
     {{/each}}
   </ul>
 </div>
-<script src="../public/frontend javascripts/likeFunctionality.js"></script>
+
 <script>
     function addComment(articleID) {
         const commentUrl = `/comment/?articleId=${articleID}`;
