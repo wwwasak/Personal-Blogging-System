@@ -12,7 +12,11 @@
             <ul>
                 {{#each subscriber}}
                 <li>
-                    {{!-- reserve the link to add profile reader --}}
+                    {{#if this.userimage}}
+                        <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="30" height="30" class="userimage">
+                    {{else}}
+                        <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
+                    {{/if}}
                     <a class="subscriber"  href = "/othersProfile/{{this.id}}">{{this.account}}</a>
                 </li>
                 {{/each}}
@@ -28,7 +32,11 @@
             <ul>
                 {{#each follower}}
                 <li>
-                    {{!-- reserve the link to add profile reader --}}
+                    {{#if this.userimage}}
+                        <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="30" height="30" class="userimage">
+                    {{else}}
+                        <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
+                    {{/if}}
                     <a href = "/othersProfile/{{this.id}}">{{this.account}}</a>
                 </li>
                 {{/each}}

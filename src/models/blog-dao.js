@@ -250,13 +250,13 @@ async function searchArticleByCommentid(commentid) {
 //create subscribebylist and subscribetolist function by zliu442
 async function subscribebyList(userid) {
   const db = await dbPromise;
-  const result = await db.all(SQL`SELECT user.id, user.account FROM subscribes JOIN user ON subscribes.subscribe_by_userid = user.id WHERE subscribe_to_userid = ${userid}`);
+  const result = await db.all(SQL`SELECT user.id, user.account, user.userimage FROM subscribes JOIN user ON subscribes.subscribe_by_userid = user.id WHERE subscribe_to_userid = ${userid}`);
   return result;
 }
 
 async function subscribetoList(userid) {
   const db = await dbPromise;
-  const result = await db.all(SQL`SELECT user.id, user.account FROM subscribes JOIN user ON subscribes.subscribe_to_userid = user.id WHERE subscribe_by_userid = ${userid}`);
+  const result = await db.all(SQL`SELECT user.id, user.account, user.userimage FROM subscribes JOIN user ON subscribes.subscribe_to_userid = user.id WHERE subscribe_by_userid = ${userid}`);
   return result;
 }
 
