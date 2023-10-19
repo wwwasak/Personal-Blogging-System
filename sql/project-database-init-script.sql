@@ -118,7 +118,7 @@ CREATE TABLE notifications (
     sender_id INT, 
     content TEXT,
     read_status BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at int,
     FOREIGN KEY (recipient_id) REFERENCES user(id),
     FOREIGN KEY (sender_id) REFERENCES user(id)
 );
