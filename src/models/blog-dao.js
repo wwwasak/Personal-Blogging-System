@@ -72,6 +72,15 @@ async function searchArticlesByKeyword(keyword) {
       SELECT * FROM article WHERE LOWER(title) LIKE ${'%' + keyword.toLowerCase() + '%'}`);
   return result;
 }
+
+//search user by account
+async function searchUsersByKeyword(keyword) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`
+      SELECT * FROM user WHERE LOWER(account) LIKE ${'%' + keyword.toLowerCase() + '%'}`);
+  return result;
+}
+
 const getArticleById = async (articleId) => {
   const db = await dbPromise;
   const article = await db.get(SQL`SELECT * FROM article WHERE id = ${articleId}`);
@@ -453,6 +462,7 @@ module.exports = {
   searchUserByArticleID,
   deleteNotification,
   deleteArticleImage,
-  notificationNum
+  notificationNum,
+  searchUsersByKeyword
 };
 
