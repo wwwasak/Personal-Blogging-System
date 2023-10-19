@@ -10,16 +10,25 @@
 
 <body>
     <div class="container">
+                      <img class="modal-gif" src="/images/200w.webp" width="200" height="200">
+
         <h1 class="category-title">Articles for {{categoryName}}</h1>
       <ul class="articles-list">
+  <ul class="articles-list">
     {{#each articles}}
         <li class="article-item">
             <a href="/article/{{this.id}}" class="article-link">
                 <h2 class="article-title">{{this.title}}</h2>
+                <div class="meta-info">
+                    <p class="meta-author">{{this.author.account}}</p>
+                    <p class="meta-time">posted in {{this.timedate}}</p>
+                </div>
                 <p class="article-content">{{this.content}}</p>
             </a>
         </li>
     {{/each}}
+</ul>
+
 </ul>
 
     </div>
