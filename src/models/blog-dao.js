@@ -379,6 +379,13 @@ async function searchNotificationsByUserID(userid) {
   return result;
 }
 
+//delete article image by zliu442
+async function deleteArticleImage(articleid){
+  const db = await dbPromise;
+  const result = await db.run(SQL`update article set imagename = NULL where id = ${articleid}`);
+  return result;
+}
+
 module.exports = {
   searchUsersByAccount,
   searchArticlesByKeyword,
@@ -437,6 +444,7 @@ module.exports = {
   deleteCommentByParentCommentID,
   deleteCommentByArticleID,
   searchUserByArticleID,
-  deleteNotification
+  deleteNotification,
+  deleteArticleImage
 };
 

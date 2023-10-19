@@ -795,9 +795,19 @@ router.get('/deletecomment', async (req, res) => {
         res.redirect(`/article/${articleid}`);
     } catch (error) {
         console.error(error);
-        res.status(500).send('update category error');
+        res.status(500).send('delete comment error');
     }
+});
 
+router.get('/deleteimage/:articleid', async (req, res) => {
+    try {
+        const articleid = req.params.articleid;
+        await blogDao.deleteArticleImage(articleid);
+        res.redirect(`/updatearticle/?articleId=${articleid}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('delete comment error');
+    }
 });
 
 //function processComments use for print comment list by zliu442
@@ -1018,9 +1028,5 @@ router.get('/notification/:userid', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
-
-
-
 
 module.exports = router;
