@@ -624,10 +624,11 @@ router.post('/addcomment', async function (req, res) {
             const result = await blogDao.addComment(userid, timeStamp, content, articleid);
             commentId = result.lastID;
             const author = await blogDao.searchUserByArticleID(articleid);
-            const subscribers = await blogDao.subscribebyList(author[0].userid);
+            const subscribers = await blogDao.subscribebyList(userid);
             subscribers.forEach(async subscriber => {
-                await blogDao.addNotification(author[0].userid, subscriber.id, 'newComment', commentId, 'Your subscription article has a new comment!');
+                await blogDao.addNotification(userid, subscriber.id, 'newComment', commentId, 'Your subscription author has made a new comment!');
             });
+            await blogDao.addNotification(userid,author[0].userid,'newComment',commentId,'Your aritcle has been made a new comment!')
             res.redirect(`/article/${articleid}`);
         }
         else if (userid == null) {
