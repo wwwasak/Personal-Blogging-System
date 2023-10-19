@@ -10,7 +10,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
         rel="stylesheet">
-
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
 <nav class="navbar">
     <div class="inner-width">
@@ -21,15 +22,32 @@
             <span></span>
         </button>
         <div class="navbar-menu">
-            <a href="#home">Home</a>
+            <a href="/">Home</a>
             <a href='/toProfile'>Profile</a>
             <a href='/toAdd'>Add your article</a>
             <a href='/subscribelist/{{userid}}'>View your subscribe and follow list</a>
-            <a href='/notification/{{userid}}'>Notifications [{{notificationNum}}]</a>
+            
+
         </div>
     </div>
 </nav>
-
+<div class="notificationbox">
+                <div class="notificationbutton">
+                    {{!-- <a href='/notification/{{userid}}'>--}}<ion-icon name="mail-outline"></ion-icon> 
+                        [{{notificationNum}}]
+                </div>
+                <ul class="messages">
+                    {{#each notifications}}
+                    <li>
+                        <h2>{{this.notification_type}}</h2>
+                        <p>{{{this.content}}}</p>
+                        <p>Post time: {{this.time}}</p>
+                        <button class='deleteNotification' data-notification-id={{this.id}}><ion-icon
+                                name="trash-outline"></ion-icon></button>
+                    </li>
+                    {{/each}}
+                </ul>
+</div>
 <body>
 
 
@@ -178,6 +196,14 @@
                 location.reload();
             });
         });
+        const deleteNotificationButtons = document.querySelectorAll('.deleteNotification');
+        deleteNotificationButtons.forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const notificationId = button.getAttribute('data-notification-id');
+                const response = await fetch(`/notification/${notificationId}`, { method: 'DELETE' });
+                location.reload();
+            });
+        });
 
         const updateArticleButtons = document.querySelectorAll('.updateArticle');
         updateArticleButtons.forEach(button => {
@@ -188,6 +214,12 @@
             });
 
         });
+
+        const notificationbox = document.querySelector('.notificationbox');
+        const notificationbutton = document.querySelector('.notificationbutton');
+        notificationbutton.onclick = function(){
+            notificationbox.classList.toggle('active')
+        }
     </script>
 
 </body>

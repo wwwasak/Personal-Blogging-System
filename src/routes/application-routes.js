@@ -182,6 +182,7 @@ router.get('/updatecategory', async (req, res) => {
 
 router.get("/logout", function (req, res) {
     res.clearCookie("authToken");
+    userid = ''
     res.setToastMessage("Successfully logged out!");
     res.redirect("/login");
 });
@@ -195,6 +196,8 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
         item.postdate = formatTimestamp(item.postdate);
     });
     res.locals.articles = userArticles;
+    let userNotification = await blogDao.searchNotificationsByUserID(userid);
+    res.locals.notifications = userNotification;
     res.locals.notificationNum = await blogDao.notificationNum(userid);
 
     //following lines are related to analytics function create by zliu442 10/16
@@ -283,13 +286,13 @@ function popularindex(commentNum, likeNum) {
 }
 
 router.post('/userRegister', async function (req, res) {
-    let { account,realname, password, repassword, birthday,userImage, description } = req.body;
+    let { account, realname, password, repassword, birthday, userImage, description } = req.body;
     console.log(req.body)
     try {
         if (password == repassword) {
 
             let hashedPassword = await bcrypt.hash(password, 8)
-            await blogDao.registerUser(account,realname, hashedPassword, birthday,userImage, description)
+            await blogDao.registerUser(account, realname, hashedPassword, birthday, userImage, description)
             res.redirect("/login");
 
         } else {
@@ -387,13 +390,13 @@ router.delete('/article/:id', async function (req, res) {
 router.delete('/notification/:id', async function (req, res) {
     let id = req.params.id;
     console.log(userid, id);
-    try{
+    try {
         await blogDao.deleteNotification(id);
         res.send({
             code: 200,
             msg: "Delete successful"
         })
-    } catch (error){
+    } catch (error) {
         res.send({
             code: 500,
             msg: "Delete failed"
@@ -504,7 +507,7 @@ router.get('/likeArticle', async (req, res) => {
         const userName = user.account;
         const timeStamp = generateTimestamp();
         const content = `<a href = '/article/${articleId}'>Congratulation! ${userName} has liked your Article <strong>${articleTitle}</strong></a>`;
-        await blogDao.addNotification(userId, otherUserId, 'newLike', articleId, content,timeStamp)
+        await blogDao.addNotification(userId, otherUserId, 'newLike', articleId, content, timeStamp)
         res.json({ success: true });
     } catch (error) {
         console.error(error);
@@ -558,7 +561,7 @@ router.post('/addarticle', upload.single("imageFile"), async function (req, res)
         if ((userid != null)) {
             const result = await blogDao.addArticle(title, content, timeStamp, userid, categoryid, imagepath);
             articleId = result.lastID;
-            const author = await blogDao.searchUserById(userid); 
+            const author = await blogDao.searchUserById(userid);
             const subscribers = await blogDao.subscribebyList(userid);
             subscribers.forEach(async subscriber => {
                 let notiContent = `<a href = '/article/${articleId}'>You subscriber ${author.account} post a new article: ${title}<a>`
@@ -641,7 +644,7 @@ router.post('/addcomment', async function (req, res) {
                 await blogDao.addNotification(userid, subscriber.id, 'newComment', commentId, notisubContent, timeStamp);
             });
             const notiContent = `<a href='/article/${articleid}'> Your Article ${article.title} is commented by ${commenter.account} for "${content}" </a>`
-            await blogDao.addNotification(userid,author.id,'newComment',commentId, notiContent, timeStamp)
+            await blogDao.addNotification(userid, author.id, 'newComment', commentId, notiContent, timeStamp)
             res.redirect(`/article/${articleid}`);
         }
         else if (userid == null) {
@@ -682,7 +685,7 @@ router.post('/addsubcomment', async function (req, res) {
             const result = await blogDao.addSubComment(userid, timeStamp, content, commentid);
             const subcommentId = result.lastID;
             const notifcontent = `<a href='/article/${articleid}'>You comment ${parentComment.content} in ${article.title} is replyed by ${commenter.account} as "${content}"</a>`;
-            await blogDao.addNotification(userid,parentComment.user_id, 'newComment', subcommentId , notifcontent, timeStamp);
+            await blogDao.addNotification(userid, parentComment.user_id, 'newComment', subcommentId, notifcontent, timeStamp);
             res.redirect(`/article/${articleid}`);
         }
         else if (userid == null) {
@@ -765,7 +768,7 @@ router.get('/article/:id', async (req, res) => {
         const authorInfo = await blogDao.searchUserById(articleInfo.userid);
         const categoryInfo = await blogDao.searchCategoryById(articleInfo.categoryid);
         const hasLiked = await blogDao.hasUserLikedArticle(userid, articleid);
-        
+
         const likeCount = await blogDao.countLikesForArticle(articleid);
         const likeUsers = await blogDao.getUsersWhoLikedArticle(articleid);
         console.log(likeUsers)
