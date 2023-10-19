@@ -1,8 +1,8 @@
 <a href = '/' id="link">Return</a>
 {{#if articles}}
+    <p>Relative articles for keyword: {{../keyword}}</p>
     {{#each articles}}
         <div>
-            <p>Relative articles for keyword: {{../keyword}}</p>
             <h2><a href='/article/{{id}}'>{{title}}</a></h2>
                 {{#if this.author.userimage}}
                     <img src="/images/userimages/{{this.author.userimage}}.png" alt="{{this.author.userimage}}" width="30" height="30" class="userimage">
