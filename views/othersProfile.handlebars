@@ -73,7 +73,7 @@
             <img src="https://code.5g-o.com/wp-content/uploads/2021/06/blog-img-1.jpg" alt="">
             <h3> {{title}} </h3>
             <p>Posted in {{this.postdate}}</p>
-            <p> 这里需要修改 </p>
+            <p> {{{truncate this.content}}} </p>
             <a href="/article/{{id}}" class="btn">learn more</a>
         </div>
         {{/each}}

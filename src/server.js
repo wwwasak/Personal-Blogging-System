@@ -44,7 +44,13 @@ async function startExpress() {
             }
         },
         json: function (context) {
-            return JSON.stringify(context);}
+            return JSON.stringify(context);},
+        truncate: function(str){
+            if (str && typeof str === 'string'){
+                return str.length > 50? str.slice(0,50) + '...' : str;
+            }
+            return '';
+        }
     };
 
     // Setup Handlebars

@@ -53,7 +53,7 @@
 <!-- Services -->
 <section id="services" class="dark">
     <div class="inner-width">
-        <h1 class="section-title">All articles</h1>
+        <h1 class="section-title">All categories</h1>
         <div class="services">
 
             <a class="service" href="/category/{{categories.[0].name}}">
@@ -111,6 +111,29 @@
     </div>
 </section>
 
+<section class="blogs" id="blogs">
+    <div class="inner-width">
+        <h1 class="section-title"> <span> All </span> articles </h1>
+
+        <div class="box-container">
+
+
+            {{#each articles}}
+            <div class="box tilt">
+                <img src="https://code.5g-o.com/wp-content/uploads/2021/06/blog-img-1.jpg" alt="">
+                <h3> {{title}} </h3>
+                <p>Posted in {{this.postdate}}</p>
+                <p> {{{truncate this.content}}} </p>
+                <a href="/article/{{id}}" class="btn">learn more</a>
+            </div>
+            {{/each}}
+
+        </div>
+    </div>
+
+
+</section>
+
 
 <script>
     $(document).ready(function () {
@@ -150,9 +173,9 @@
 <div>
     <h2><a href="/article/{{id}}">{{title}}</a></h2>
     {{#if imagename}}
-      <img src="{{imagename}}" alt="{{imagename}}" width="200" height="150">
+    <img src="{{imagename}}" alt="{{imagename}}" width="200" height="150">
     {{else}}
-      <p>The article do not have image</p>
+    <p>The article do not have image</p>
     {{/if}}
     <p>Post date and time: {{postdate}}</p>
     <p>{{content}}</p>
