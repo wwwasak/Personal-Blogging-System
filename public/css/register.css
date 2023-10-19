@@ -15,6 +15,7 @@ main{
     text-align: center;
     padding: 5px 40px;
     box-sizing: border-box;
+    margin: 0 auto;
 }
 
 p{
@@ -58,3 +59,14 @@ input{
     border: none;
     border-bottom: 2px solid silver;
 }
+.logo{
+    width: 44px;
+    height: 32px;
+    background-image: url(../images/white-logo.png);
+    background-size: contain;
+    position: fixed;
+    z-index: 99;
+    top:20px;
+    left:30px
+
+  }
