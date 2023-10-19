@@ -263,8 +263,8 @@ canvas {
     top: 100px;
     right: 50px;
     width: 350px;
-    height: 80px;
-    background: rgb(241, 234, 234, 0.5);
+    height: 50px;
+    
 
     box-shadow: 0,50px,50px,rgba(0, 0, 0, 0.2);
     padding: 20px;
@@ -290,9 +290,12 @@ canvas {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     padding: 20px 0;
 }
-.message li {
+.messages li {
     list-style: none;
     margin: 15px 0;
+    background: rgb(241, 234, 234, 0.5);
+    border-radius: 10px;
+    padding: 20px;
 }
 
 .deleteNotification ion-icon {
