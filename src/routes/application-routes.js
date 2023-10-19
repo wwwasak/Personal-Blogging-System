@@ -292,6 +292,8 @@ router.post('/userRegister', async function (req, res) {
     let { account, realname, password, repassword, birthday, userImage, description } = req.body;
     console.log(req.body)
     try {
+        let accountCheck = await blogDao.checkUserName(account);
+        if (accountCheck == 0){
         if (password == repassword) {
 
             let hashedPassword = await bcrypt.hash(password, 8)
@@ -304,6 +306,12 @@ router.post('/userRegister', async function (req, res) {
                 msg: "Please enter the same password!!"
             })
         }
+    } else {
+        res.send({
+            code: 400,
+            msg: "The user name has been registed!!"
+        })
+    }
     } catch (error) {
         res.send({
             code: 500,
