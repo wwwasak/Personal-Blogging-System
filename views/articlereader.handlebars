@@ -96,7 +96,8 @@
             <ul>
             {{#each comment}}
                 <li class="first-tier-comment">
-                    <p>{{#if this.author.userimage}}
+                    <p>
+                        {{#if this.author.userimage}}
                             <img src="/images/userimages/{{this.author.userimage}}.png" alt="{{this.author.userimage}}" width="20" height="20" class = "userimage">
                         {{else}}
                             <img src="/images/userimages/default.png" alt="default" width="20" height="20" class="userimage">
