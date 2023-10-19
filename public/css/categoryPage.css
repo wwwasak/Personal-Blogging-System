@@ -118,3 +118,10 @@ body {
 .meta-author, .meta-time {
     font-size: 12px; 
 }
+
+.logo{
+    width: 44px;
+    height: 32px;
+    margin-left: 30px;
+    position:fixed;
+  }
