@@ -2,7 +2,7 @@ const SQL = require('sql-template-strings');
 const { dbPromise } = require('../db/database.js');
 
 // user search, register and delete -------yji413
-async function searchUsersByAccount(userName, password) {
+async function searchUsersByAccount(userName) {
   const db = await dbPromise;
   const result = await db.all(SQL`select * from user where account = ${userName}`);
   return result;
@@ -30,9 +30,9 @@ async function userAuthenticatorToken(token) {
 }
 
 
-async function updateArticle(userid, articleId, title, content, categoryid) {
+async function updateArticle(userid, articleId, title, content, categoryid, imagepath) {
   const db = await dbPromise;
-  const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid} where userid = ${userid} and id = ${articleId}`);
+  const result = await db.run(SQL`update article set title = ${title}, content = ${content}, categoryid = ${categoryid}, imagename = ${imagepath} where userid = ${userid} and id = ${articleId}`);
   return result;
 }
 
@@ -41,6 +41,19 @@ async function deleteArticleById(id) {
   const db = await dbPromise;
   const result =await db.run(SQL`DELETE FROM article WHERE id = ${id}`);
   await db.run(SQL`DELETE FROM comments WHERE article_id = ${id}`);
+  return result;
+}
+
+//delete all comment for a article zliu442
+async function deleteCommentByArticleID(id){
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from comments where article_id = ${id}`);
+  return result;
+}
+
+async function deleteCommentByParentCommentID(id){
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from comments where parentComment = ${id}`);
   return result;
 }
 
@@ -217,6 +230,11 @@ async function searchCommentByArticleID(articleid) {
   return result;
 }
 
+async function searchUserByArticleID(articleid) {
+  const db = await dbPromise;
+  const result = await db.all(SQL`SELECT * FROM user LEFT JOIN article ON user.id = article.userid where article.id=${articleid}`);
+  return result;
+}
 async function searchSubCommentByCommentID(commentid) {
   const db = await dbPromise;
   const result = await db.all(SQL`SELECT * FROM comments WHERE parentComment = ${commentid}`);
@@ -327,6 +345,11 @@ async function deleteCategory(id) {
   return result;
 }
 
+async function deleteNotification(id) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`delete from notifications where id = ${id} `);
+  return result;
+}
 async function updateCategory(id, updatename, updatedes) {
   const db = await dbPromise;
   const result = await db.run(SQL`update category set name = ${updatename}, description = ${updatedes} where id = ${id} `);
@@ -410,6 +433,10 @@ module.exports = {
   getAllCategories,
   getAllArticles,
   commentNumOnUserAday,
-  searchNotificationsByUserID
+  searchNotificationsByUserID,
+  deleteCommentByParentCommentID,
+  deleteCommentByArticleID,
+  searchUserByArticleID,
+  deleteNotification
 };
 

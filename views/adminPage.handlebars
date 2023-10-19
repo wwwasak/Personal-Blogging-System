@@ -1,4 +1,11 @@
+<head>
+  <link rel="stylesheet" href="/css/adminPage.css" type='text/css'>
+
+</head>
+
+
 <div class="container">
+    <div class="categories-section">
     <h1>This is admin page.</h1>
     <br>
     <h2>Current Categories</h2>
@@ -35,6 +42,8 @@
         </li>
         {{/each}}
     </ul>
+    </div>
+    <div class="add-category-section">
     <form id="addCategory" method="get" action="/addcategory">
         <fieldset>
             <legend>Add Category</legend>
@@ -51,9 +60,9 @@
         <input type="reset" name="reset_button" id="reset_id" value="Clear" />
     </form>
     <hr>
-    
+    </div>
 
-    <div>
+    <div class="articles-section">
         <h1>Current Articles</h1>
         <ul>
             {{#each article}}
@@ -76,7 +85,7 @@
 
     </div>
 
-    <div>
+    <div class="users-section">
         <h1>Current Users</h1>
         <ul>
             {{#each user}}

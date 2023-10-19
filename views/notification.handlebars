@@ -6,7 +6,23 @@
             <li>
             <h2>{{this.notification_type}}</h2>
                 <p>{{this.content}}</p>
+                <button
+                    class='deleteNotification'
+                    data-notification-id={{this.id}}
+                >Delete</button>
             </li>
     {{/each}}
     </ul>
 </div>
+
+<script>
+    const deleteArticleButtons = document.querySelectorAll('.deleteNotification');
+    deleteArticleButtons.forEach(button =>{
+        button.addEventListener('click', async (e) => {
+            const notificationId = button.getAttribute('data-notification-id');
+            const response = await fetch(`/notification/${notificationId}`, { method: 'DELETE' });
+            location.reload();
+        });
+    });
+
+</script>

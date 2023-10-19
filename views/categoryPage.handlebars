@@ -11,15 +11,21 @@
 <body>
     <div class="container">
         <h1 class="category-title">Articles for {{categoryName}}</h1>
-        <ul class="articles-list">
-            {{#each articles}}
-                <li class="article-item">
-                    <h2 class="article-title"><a href="/article/{{this.id}}">{{this.title}}</a></h2>
-                    <p class="article-content">{{this.content}}</p>
-                </li>
-            {{/each}}
-        </ul>
+      <ul class="articles-list">
+    {{#each articles}}
+        <li class="article-item">
+            <a href="/article/{{this.id}}" class="article-link">
+                <h2 class="article-title">{{this.title}}</h2>
+                <p class="article-content">{{this.content}}</p>
+            </a>
+        </li>
+    {{/each}}
+</ul>
+
     </div>
+
+    <button id="back-to-top" onclick="window.scrollTo(0,0)">↑</button>
+
 </body>
 
 </html>
