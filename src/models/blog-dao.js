@@ -142,7 +142,7 @@ async function getArticlesLikedByUser(userId) {
 async function getUsersWhoLikedArticle(articleId) {
   const db = await dbPromise;
   const result = await db.all(SQL`
-      SELECT user.id, user.account FROM user 
+      SELECT user.id, user.account, user.userimage FROM user 
       JOIN userlike ON user.id = userlike.user_id 
       WHERE userlike.article_id = ${articleId}
   `);

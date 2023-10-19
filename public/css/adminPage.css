@@ -7,14 +7,14 @@
 }
 
 body {
-    background-color: #2B2B2B; /* 主背景色 */
-    color: #A9B7C6;  /* 主文字颜色 */
+    background-color: #2B2B2B; 
+    color: #A9B7C6;  
 }
 
 .container {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 定义四个等宽的列 */
-    gap: 20px;  /* 列之间的距离 */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;  
     max-width: 1200px;
     margin: 20px auto;
     padding: 20px;
@@ -29,13 +29,13 @@ body {
     padding: 20px;
     background-color: #3C3F41; 
     border-radius: 8px;
-    border: 2px solid #FFFFFF;  /* 各个板块的白色边框 */
+    border: 2px solid #FFFFFF;  
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
 
 }
 
 h1, h2 {
-    color: whi;  /* 标题颜色 */
+    color: whi; 
     padding-bottom: 10px;
     border-bottom: 1px solid #464646;
     margin-bottom: 20px;
@@ -48,7 +48,7 @@ ul {
 li {
     margin-bottom: 10px;
     padding: 8px;
-    background-color: #3C3F41;  /* 列表背景色 */
+    background-color: #3C3F41; 
     border-radius: 6px;
 }
 
@@ -76,7 +76,7 @@ button:hover {
 
 input[type="text"] {
     padding: 5px;
-    border: 2px solid #FFFFFF;  /* 明显的白色输入框边框颜色 */
+    border: 2px solid #FFFFFF;  
     background-color: #3C3F41;  
     color: #A9B7C6;
     border-radius: 4px;
@@ -84,7 +84,7 @@ input[type="text"] {
 }
 
 input[type="text"]:focus {
-    border-color: #FFC66D;  /* 当输入框被选中时的边框颜色 */
+    border-color: #FFC66D; 
 }
 
 label {
@@ -93,7 +93,7 @@ label {
 }
 
 a {
-    color: #6897BB;  /* 链接颜色 */
+    color: #6897BB; 
     text-decoration: none;
 }
 

@@ -19,7 +19,11 @@
     <div class="row">
 
         <div class="image">
-            <img class="tilt" src='/images/userimages/{{otheruser.userimage}}.png' alt="">
+            {{#if otheruser.userimage}}
+                <img class="tilt" src='/images/userimages/{{otheruser.userimage}}.png' alt="">
+            {{else}}
+                <img class="tilt" src="/images/userimages/default.png" alt="default">
+            {{/if}}
         </div>
 
         <div class="content">
