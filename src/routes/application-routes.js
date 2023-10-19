@@ -197,6 +197,9 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
     });
     res.locals.articles = userArticles;
     let userNotification = await blogDao.searchNotificationsByUserID(userid);
+    for (let item of userNotification) {
+        item.time = formatTimestamp(item.created_at);
+    }
     res.locals.notifications = userNotification;
     res.locals.notificationNum = await blogDao.notificationNum(userid);
 
@@ -289,6 +292,8 @@ router.post('/userRegister', async function (req, res) {
     let { account, realname, password, repassword, birthday, userImage, description } = req.body;
     console.log(req.body)
     try {
+        let accountCheck = await blogDao.checkUserName(account);
+        if (accountCheck == 0){
         if (password == repassword) {
 
             let hashedPassword = await bcrypt.hash(password, 8)
@@ -301,6 +306,12 @@ router.post('/userRegister', async function (req, res) {
                 msg: "Please enter the same password!!"
             })
         }
+    } else {
+        res.send({
+            code: 400,
+            msg: "The user name has been registed!!"
+        })
+    }
     } catch (error) {
         res.send({
             code: 500,
@@ -455,9 +466,19 @@ router.get('/search', async (req, res) => {
     try {
         const keyword = req.query.keyword;
         const articles = await blogDao.searchArticlesByKeyword(keyword);
-        articles.forEach(article => {
+        const userSearched = await blogDao.searchUsersByKeyword(keyword);
+        for (let user of userSearched){
+            const userArticles = await blogDao.searchArticlesByUserAccount(user.id);
+            articles.push(...userArticles);
+        }
+        
+        for (let article of articles) {
             article.content = article.content.substring(0, 50) + '...';
-        });
+            article.timeDate = formatTimestamp(article.postdate);
+            article.author = await blogDao.searchUserById(article.userid);
+        }
+        res.locals.keyword = keyword;
+
         res.render('searchResults', { articles });
     } catch (error) {
         console.error(error);

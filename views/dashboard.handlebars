@@ -26,28 +26,29 @@
             <a href='/toProfile'>Profile</a>
             <a href='/toAdd'>Add your article</a>
             <a href='/subscribelist/{{userid}}'>View your subscribe and follow list</a>
-            
+
 
         </div>
     </div>
 </nav>
 <div class="notificationbox">
-                <div class="notificationbutton">
-                    {{!-- <a href='/notification/{{userid}}'>--}}<ion-icon name="mail-outline"></ion-icon> 
-                        [{{notificationNum}}]
-                </div>
-                <ul class="messages">
-                    {{#each notifications}}
-                    <li>
-                        <h2>{{this.notification_type}}</h2>
-                        <p>{{{this.content}}}</p>
-                        <p>Post time: {{this.time}}</p>
-                        <button class='deleteNotification' data-notification-id={{this.id}}><ion-icon
-                                name="trash-outline"></ion-icon></button>
-                    </li>
-                    {{/each}}
-                </ul>
+    <div class="notificationbutton">
+        {{!-- <a href='/notification/{{userid}}'>--}}<ion-icon name="mail-outline"></ion-icon>
+            [{{notificationNum}}]
+    </div>
+    <ul class="messages">
+        {{#each notifications}}
+        <li>
+            <h3>{{this.notification_type}}</h3>
+            <p>{{{this.content}}}</p>
+            <p>Post time: {{this.time}}</p>
+            <button class='deleteNotification' data-notification-id={{this.id}}><ion-icon
+                    name="trash-outline"></ion-icon></button>
+        </li>
+        {{/each}}
+    </ul>
 </div>
+
 <body>
 
 
@@ -217,7 +218,7 @@
 
         const notificationbox = document.querySelector('.notificationbox');
         const notificationbutton = document.querySelector('.notificationbutton');
-        notificationbutton.onclick = function(){
+        notificationbutton.onclick = function () {
             notificationbox.classList.toggle('active')
         }
     </script>

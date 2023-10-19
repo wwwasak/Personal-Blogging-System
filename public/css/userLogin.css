@@ -5,7 +5,9 @@ main{
     display: flex;
     justify-content: space-around;
     align-items: center;
+
 }
+
 
 .login{
     background-color: whitesmoke;
@@ -47,3 +49,11 @@ input{
 .btn:hover{
     background-color: #59c2a0;
 }
+
+.logo{
+    width: 44px;
+    height: 32px;
+    margin-left: 30px;
+    position:fixed;
+    top:50px;
+  }
