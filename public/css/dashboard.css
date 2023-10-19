@@ -142,9 +142,16 @@ h2 {
 
 .article-item {
     padding: 20px;
+    height: 200px;
     background-color: #fff;
     margin: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.article-item p{
+    margin-top: 30px; 
+    margin-bottom: 20px; 
+    margin-left: 10px;
+    color: #444;
 }
 
 button {

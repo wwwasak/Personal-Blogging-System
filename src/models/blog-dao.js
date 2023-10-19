@@ -392,7 +392,11 @@ async function deleteArticleImage(articleid){
   const result = await db.run(SQL`update article set imagename = NULL where id = ${articleid}`);
   return result;
 }
-
+async function checkUserName(account){
+  const db = await dbPromise;
+  const result = await db.run(SQL`select count(*) from user where account = ${account}`);
+  return result;
+}
 module.exports = {
   searchUsersByAccount,
   searchArticlesByKeyword,
@@ -453,6 +457,7 @@ module.exports = {
   searchUserByArticleID,
   deleteNotification,
   deleteArticleImage,
-  notificationNum
+  notificationNum,
+  checkUserName
 };
 
