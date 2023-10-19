@@ -756,14 +756,19 @@ function formatCommentStr(string) {
 router.get('/article/:id', async (req, res) => {
 
     try {
+        const categories = await blogDao.getAllCategories();
+        res.locals.categories = categories;
+        res.locals.notificationNum = await blogDao.notificationNum(userid);
         const articleid = req.params.id;
         const articleInfo = await blogDao.searchArticleById(articleid);
         const articleTime = formatTimestamp(articleInfo.postdate);
         const authorInfo = await blogDao.searchUserById(articleInfo.userid);
         const categoryInfo = await blogDao.searchCategoryById(articleInfo.categoryid);
         const hasLiked = await blogDao.hasUserLikedArticle(userid, articleid);
+        
         const likeCount = await blogDao.countLikesForArticle(articleid);
         const likeUsers = await blogDao.getUsersWhoLikedArticle(articleid);
+        console.log(likeUsers)
         const article = {
             id: articleid,
             title: articleInfo.title,
@@ -772,6 +777,7 @@ router.get('/article/:id', async (req, res) => {
             dateTime: articleTime,
             categoryInfo: categoryInfo,
             content: articleInfo.content,
+            authorimage: authorInfo.userimage,
             imagename: articleInfo.imagename,
             hasLiked: hasLiked,
             likeColor: hasLiked ? 'red' : 'black',
@@ -788,6 +794,7 @@ router.get('/article/:id', async (req, res) => {
         res.locals.isSubscribed = await ifSubscribed(userid, article.authorid);
 
         res.locals.userid = userid;
+        res.locals.user = await blogDao.searchUserById(userid);
         res.locals.comment = processedComments;
         res.locals.article = article;
         res.render('articlereader');
@@ -831,6 +838,7 @@ async function processComments(article, articleid) {
         item.author = await blogDao.searchUserById(item.user_id);
         item.timeDate = formatTimestamp(item.timeDate);
         item.replyee = article.author;
+        item.replyeeimage = article.authorimage;
         item.replyeeid = article.authorid;
         const subcommentInfo = await blogDao.searchSubCommentByCommentID(item.id);
         const processedSubcomments = await Promise.all(subcommentInfo.map(async subitem => {

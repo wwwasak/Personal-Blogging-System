@@ -121,7 +121,11 @@
 
             {{#each articles}}
             <div class="box tilt">
-                <img src="https://code.5g-o.com/wp-content/uploads/2021/06/blog-img-1.jpg" alt="">
+                {{#if this.imagename}}
+                    <img src="{{this.imagename}}" alt="">
+                {{else}}
+                    <img src="https://code.5g-o.com/wp-content/uploads/2021/06/blog-img-1.jpg" alt="">
+                {{/if}}
                 <h3> {{title}} </h3>
                 <p>Posted in {{this.postdate}}</p>
                 <p> {{{truncate this.content}}} </p>
