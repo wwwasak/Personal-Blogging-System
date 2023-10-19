@@ -410,9 +410,13 @@ router.get('/category/:categoryName', async (req, res) => {
         const articles = await blogDao.searchArticlesByCategoryName(categoryName);
 
 
-        articles.forEach(article => {
+        articles.forEach(async article => {
             article.content = article.content.substring(0, 50) + '...';
+            article.timedate = formatTimestamp(article.postdate);
+            article.author = await blogDao.searchUserById(article.userid);
         });
+
+        console.log(articles)
 
         res.render('categoryPage', { articles, categoryName });
     } catch (error) {

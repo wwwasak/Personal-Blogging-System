@@ -5,16 +5,21 @@ body {
     margin: 0;
     font-size: 16px;
     line-height: 1.5;
-}
-
+    background: url(../images/rainy.gif) ;
+    background-repeat: no-repeat;
+    background-size: cover;}
+    
 .container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f4f4f4;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.7s ease forwards;
-}
+        width: 75vw;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.7s ease forwards;
+        
+    }
+    
+    
 
 @keyframes fadeIn {
     from {
@@ -93,4 +98,23 @@ body {
 #back-to-top:hover {
     opacity: 1;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+}
+.article-link {
+    position: relative;
+    color: inherit;
+    text-decoration: none;
+    padding: 10px 20px;
+}
+
+.meta-info {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.meta-author, .meta-time {
+    font-size: 12px; 
 }
