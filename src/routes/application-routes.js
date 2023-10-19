@@ -10,6 +10,7 @@ const multer = require("multer");
 const path = require('path');
 const upload = multer({ dest: path.join(__dirname, "public/images/articleimages") });
 const fs = require("fs");
+const { timeStamp } = require('console');
 
 
 let userid;
@@ -194,6 +195,7 @@ router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
         item.postdate = formatTimestamp(item.postdate);
     });
     res.locals.articles = userArticles;
+    res.locals.notificationNum = await blogDao.notificationNum(userid);
 
     //following lines are related to analytics function create by zliu442 10/16
     res.locals.followerNum = (await blogDao.followerNum(userInfo.id));
@@ -500,8 +502,9 @@ router.get('/likeArticle', async (req, res) => {
         const articleTitle = article.title;
         const user = await blogDao.searchUserById(userId);
         const userName = user.account;
-        const content = "Congratulation!" + userName + " has liked your Article " + articleTitle;
-        await blogDao.addNotification(userId, otherUserId, 'newLike', articleId, content)
+        const timeStamp = generateTimestamp();
+        const content = `<a href = '/article/${articleId}'>Congratulation! ${userName} has liked your Article <strong>${articleTitle}</strong></a>`;
+        await blogDao.addNotification(userId, otherUserId, 'newLike', articleId, content,timeStamp)
         res.json({ success: true });
     } catch (error) {
         console.error(error);
@@ -555,9 +558,11 @@ router.post('/addarticle', upload.single("imageFile"), async function (req, res)
         if ((userid != null)) {
             const result = await blogDao.addArticle(title, content, timeStamp, userid, categoryid, imagepath);
             articleId = result.lastID;
+            const author = await blogDao.searchUserById(userid); 
             const subscribers = await blogDao.subscribebyList(userid);
             subscribers.forEach(async subscriber => {
-                await blogDao.addNotification(userid, subscriber.id, 'newBlog', articleId, 'Your subscription has a new article!');
+                let notiContent = `<a href = '/article/${articleId}'>You subscriber ${author.account} post a new article: ${title}<a>`
+                await blogDao.addNotification(userid, subscriber.id, 'newBlog', articleId, notiContent, timeStamp);
             });
             res.redirect('/toDashboard');
         }
@@ -627,12 +632,16 @@ router.post('/addcomment', async function (req, res) {
         if ((articleid != null && userid != null)) {
             const result = await blogDao.addComment(userid, timeStamp, content, articleid);
             commentId = result.lastID;
-            const author = await blogDao.searchUserByArticleID(articleid);
+            const article = await blogDao.searchArticleById(articleid);
+            const author = await blogDao.searchUserById(article.userid);
+            const commenter = await blogDao.searchUserById(userid);
             const subscribers = await blogDao.subscribebyList(userid);
             subscribers.forEach(async subscriber => {
-                await blogDao.addNotification(userid, subscriber.id, 'newComment', commentId, 'Your subscription author has made a new comment!');
+                const notisubContent = `<a href='/article/${articleid}'>Your subscription author ${commenter.account} has made a new comment: ${content} to ${author.account}'s article ${article.title}!</a>`
+                await blogDao.addNotification(userid, subscriber.id, 'newComment', commentId, notisubContent, timeStamp);
             });
-            await blogDao.addNotification(userid,author[0].userid,'newComment',commentId,'Your aritcle has been made a new comment!')
+            const notiContent = `<a href='/article/${articleid}'> Your Article ${article.title} is commented by ${commenter.account} for "${content}" </a>`
+            await blogDao.addNotification(userid,author.id,'newComment',commentId, notiContent, timeStamp)
             res.redirect(`/article/${articleid}`);
         }
         else if (userid == null) {
@@ -664,17 +673,16 @@ router.post('/addsubcomment', async function (req, res) {
     const parentCommentContent = parentComment.content;
     const parentCommentAccount = (await blogDao.searchUserById(parentComment.user_id)).account;
     const parentCommentId = (await blogDao.searchUserById(parentComment.user_id)).id;
+    const commenter = await blogDao.searchUserById(userid);
     content = `<p>Reply to <a href='/othersProfile/${parentCommentId}'>${parentCommentAccount}</a> for "${parentCommentContent}" with <strong>${content}</strong> `
     const timeStamp = generateTimestamp();
 
     try {
         if ((commentid != null && userid != null)) {
-            await blogDao.addSubComment(userid, timeStamp, content, commentid);
-            const author = await blogDao.searchUserByArticleID(articleid);
-            const subscribers = await blogDao.subscribebyList(author[0].userid);
-            subscribers.forEach(async subscriber => {
-                await blogDao.addNotification(author[0].userid, subscriber.id, 'newComment', commentid, 'Your subscription article comment has a new reply!');
-            });
+            const result = await blogDao.addSubComment(userid, timeStamp, content, commentid);
+            const subcommentId = result.lastID;
+            const notifcontent = `<a href='/article/${articleid}'>You comment ${parentComment.content} in ${article.title} is replyed by ${commenter.account} as "${content}"</a>`;
+            await blogDao.addNotification(userid,parentComment.user_id, 'newComment', subcommentId , notifcontent, timeStamp);
             res.redirect(`/article/${articleid}`);
         }
         else if (userid == null) {
@@ -899,10 +907,11 @@ router.get('/subscribe', async (req, res) => {
         const user = await blogDao.searchUserById(userid);
         console.log(user)
         const otherUser = await blogDao.searchUserById(otheruserid);
+        const timeStamp = generateTimestamp();
         const userName = user.account;
         const otherUserName = otherUser.account;
-        const content = "Congratulation!" + otherUserName + "," + userName + " has subscribed to you!";
-        await blogDao.addNotification(userid, otheruserid, "newSubscriber", 0, content)
+        const content = `<a href = '/othersProfile/${otheruserid}'>Congratulation! ${otherUserName}, ${userName} has subscribed to you!</a>`;
+        await blogDao.addNotification(userid, otheruserid, "newSubscriber", 0, content, timeStamp)
         res.redirect(`othersProfile/${otheruserid}`);
     } catch (error) {
         console.error(error);
@@ -1026,6 +1035,9 @@ router.get('/notification/:userid', async (req, res) => {
     try {
         const userId = req.params.userid;
         const notifications = await blogDao.searchNotificationsByUserID(userId);
+        for (let item of notifications) {
+            item.time = formatTimestamp(item.created_at);
+        }
         res.locals.notifications = notifications;
         res.render('notification');
     } catch (error) {

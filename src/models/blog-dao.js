@@ -298,11 +298,18 @@ async function getSubscribers(userid) {
       SELECT * FROM subscribers WHERE userid = ${userid}
     `);
 }
-async function addNotification(sender_id, recipient_id, notification_type, related_object_id, content) {
+async function addNotification(sender_id, recipient_id, notification_type, related_object_id, content,time) {
   const db = await dbPromise;
-  const result = await db.run(SQL`insert into notifications (sender_id,recipient_id,notification_type,related_object_id,content) values
-    (${sender_id}, ${recipient_id}, ${notification_type}, ${related_object_id}, ${content})`);
+  const result = await db.run(SQL`insert into notifications (sender_id,recipient_id,notification_type,related_object_id,content, created_at) values
+    (${sender_id}, ${recipient_id}, ${notification_type}, ${related_object_id}, ${content}, ${time})`);
   return result;
+}
+
+//get notification number by zliu442
+async function notificationNum(userid) {
+  const db = await dbPromise;
+  const result = await db.get(SQL`SELECT COUNT(*) FROM notifications WHERE recipient_id = ${userid}`);
+  return result['COUNT(*)'];
 }
 
 //analytic functions create by zliu442
@@ -445,6 +452,7 @@ module.exports = {
   deleteCommentByArticleID,
   searchUserByArticleID,
   deleteNotification,
-  deleteArticleImage
+  deleteArticleImage,
+  notificationNum
 };
 
