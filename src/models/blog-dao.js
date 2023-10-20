@@ -372,8 +372,8 @@ async function searchAdminByAccount(userName, password) {
 //category admin functions --zliu442
 async function addCategory(name, des) {
   const db = await dbPromise;
-  const result = await db.run(SQL`insert into category (name, description, userid) values
-  (${name}, ${des}, 4)`);
+  const result = await db.run(SQL`insert into category (name, description) values
+  (${name}, ${des})`);
   return result;
 }
 

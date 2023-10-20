@@ -25,7 +25,7 @@
         <input class="inputZone" type="text" name="realname" placeholder="Your new real name" value='{{user.realname}}'>
         <input class="inputZone" type="password" name="password" placeholder="Your new password">
         <input class="inputZone" type="date" name="birthday" placeholder="Your birthday" value='{{user.birthday}}'>
-        <textarea class="inputZone" name="description" placeholder="Your new description" value='{{user.description}}'></textarea>
+        <textarea class="inputZone" name="description" placeholder="Your new description">{{user.description}}</textarea>
         <input type="submit" value="Submit" class="btn">
       </form>
     </div>
