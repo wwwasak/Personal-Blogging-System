@@ -18,9 +18,9 @@
 
         <div class="image">
             {{#if otheruser.userimage}}
-                <img class="tilt" src='/images/userimages/{{otheruser.userimage}}.png' alt="">
+            <img class="tilt" src='/images/userimages/{{otheruser.userimage}}.png' alt="">
             {{else}}
-                <img class="tilt" src="/images/userimages/default.png" alt="default">
+            <img class="tilt" src="/images/userimages/default.png" alt="default">
             {{/if}}
         </div>
 
@@ -42,25 +42,25 @@
 
             {{!-- for the subscribe button --}}
             {{#if userid}}
-                {{#if_eq userid otheruser.id}}
-                    <p>Cannot subscribe to yourself</p>
-                {{else}}
-                    {{#if isSubscribed}}
-                        <form id="unsubscribeform" method="get" action="/unsubscribe">
-                            <input type="hidden" name="userid" id="userid" value="{{userid}}">
-                            <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
-                            <button type="submit" class="btn">Unsubscribe</button>
-                        </form>
-                    {{else}}
-                        <form id="subscribeform" method="get" action="/subscribe">
-                            <input type="hidden" name="userid" id="userid" value="{{userid}}">
-                            <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
-                            <button type="submit" class="btn">Subscribe me</button>
-                        </form>
-                    {{/if}}
-                {{/if_eq}}
+            {{#if_eq userid otheruser.id}}
+            <p>Cannot subscribe to yourself</p>
             {{else}}
-                <a href="/login" class="btn">Please Login to subscribe to others</a>
+            {{#if isSubscribed}}
+            <form id="unsubscribeform" method="get" action="/unsubscribe">
+                <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
+                <button type="submit" class="btn">Unsubscribe</button>
+            </form>
+            {{else}}
+            <form id="subscribeform" method="get" action="/subscribe">
+                <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
+                <button type="submit" class="btn">Subscribe me</button>
+            </form>
+            {{/if}}
+            {{/if_eq}}
+            {{else}}
+            <a href="/login" class="btn">Please Login to subscribe to others</a>
             {{/if}}
 
         </div>
@@ -84,6 +84,3 @@
     </div>
 
 </section>
-
-
-

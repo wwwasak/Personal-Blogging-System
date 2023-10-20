@@ -1,70 +1,71 @@
 <head>
   <link rel="stylesheet" href="/css/updatearticle.css">
-  <script src="https://cdn.tiny.cloud/1/kindgwy6154gcl4sj7ok1lzziypb6p5k0ilsttw63g7anvj8/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <script src="https://cdn.tiny.cloud/1/kindgwy6154gcl4sj7ok1lzziypb6p5k0ilsttw63g7anvj8/tinymce/6/tinymce.min.js"
+    referrerpolicy="origin"></script>
 </head>
 
 <div class="container">
   <h1 class="section-title">Edit Article</h1>
   <a href="/toDashboard">Return</a>
   <form id="edit-article-form" method="post" action="/updateArticleRoutes" enctype="multipart/form-data">
-      <input type="hidden" name="userid" id="userid" value="{{userid}}">
-      <input type="hidden" name="articleId" id="articleId" value="{{articleId}}">
-      <input type="hidden" name="currentimage" id="articleimage" value="{{article.imagename}}">
+    <input type="hidden" name="userid" id="userid" value="{{userid}}">
+    <input type="hidden" name="articleId" id="articleId" value="{{articleId}}">
+    <input type="hidden" name="currentimage" id="articleimage" value="{{article.imagename}}">
 
-      <fieldset>
-        <legend>Article Title</legend>
-        <p>
-          <label for="name_id" class="addtitle">Title</label><br />
-          <input type="text" size="100" name="title" id="title_id" value="{{article.title}}"/>
-        </p>
-      </fieldset>
+    <fieldset>
+      <legend>Article Title</legend>
+      <p>
+        <label for="name_id" class="addtitle">Title</label><br />
+        <input type="text" size="100" name="title" id="title_id" value="{{article.title}}" />
+      </p>
+    </fieldset>
 
-      <fieldset>
-        <legend>Category</legend>
-        <p class="question">What is the category of the article:</p>
-        <p>You current category: {{article.category.name}}</p>
-        <p>
-          {{#each category}}
-          <input type="radio" name="categoryid" id="{{this.name}}" value={{this.id}} />
-          <label for="{{this.id}}">{{this.name}}</label>
-          {{/each}}
-        </p>
-      </fieldset>
-  
-      <fieldset>
-        <legend>Image</legend>
-        <p>You current image</p>
-        {{#if article.imagename}}
-          <img src="{{article.imagename}}" alt="{{article.imagename}}" width="300" height="180">
-          <a href="/deleteimage/{{article.id}}">delete image</a>
-        {{else}}
-          <p>No img for the article</p>
-        {{/if}}
-        <br>
-        <input id="inpFile" type="file" name="imageFile" accept =".png,.jpeg,.jpg,.bmp">
-      </fieldset>
-  
-      <fieldset>
-        <legend>Content</legend>
-          <textarea id="mytextarea" name="content"> {{{article.content}}}</textarea>
-      </fieldset>
+    <fieldset>
+      <legend>Category</legend>
+      <p class="question">What is the category of the article:</p>
+      <p>You current category: {{article.category.name}}</p>
+      <p>
+        {{#each category}}
+        <input type="radio" name="categoryid" id="{{this.name}}" value={{this.id}} />
+        <label for="{{this.id}}">{{this.name}}</label>
+        {{/each}}
+      </p>
+    </fieldset>
 
-      <button type="submit">Submit</button>
+    <fieldset>
+      <legend>Image</legend>
+      <p>You current image</p>
+      {{#if article.imagename}}
+      <img src="{{article.imagename}}" alt="{{article.imagename}}" width="300" height="180">
+      <a href="/deleteimage/{{article.id}}">delete image</a>
+      {{else}}
+      <p>No img for the article</p>
+      {{/if}}
+      <br>
+      <input id="inpFile" type="file" name="imageFile" accept=".png,.jpeg,.jpg,.bmp">
+    </fieldset>
+
+    <fieldset>
+      <legend>Content</legend>
+      <textarea id="mytextarea" name="content"> {{{article.content}}}</textarea>
+    </fieldset>
+
+    <button type="submit">Submit</button>
   </form>
 </div>
 
 {{!-- rich text editor --}}
 <script>
-    tinymce.init({
-      selector: 'textarea',
-      plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
-      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-      tinycomments_mode: 'embedded',
-      tinycomments_author: 'Author name',
-      mergetags_list: [
-        { value: 'First.Name', title: 'First Name' },
-        { value: 'Email', title: 'Email' },
-      ],
-      ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant"))
-    });
+  tinymce.init({
+    selector: 'textarea',
+    plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+    tinycomments_mode: 'embedded',
+    tinycomments_author: 'Author name',
+    mergetags_list: [
+      { value: 'First.Name', title: 'First Name' },
+      { value: 'Email', title: 'Email' },
+    ],
+    ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant"))
+  });
 </script>

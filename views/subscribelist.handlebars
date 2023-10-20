@@ -1,52 +1,55 @@
 {{!-- handlebar subscribe list create by zliu442 --}}
+
 <head>
     <link rel="stylesheet" href="/css/subscribelist.css">
 </head>
 
 <div id="container">
-        <h1 class="section-title">{{user.account}}'s subscribe relation list</h1><br>
-        <a class="return" href="/toDashboard">Return</a>
-        <div class="subscribe-list">
-            <div class="subscribeTo">
-                <h3>Subscribe to </h3>
-                {{#if subscriber}}
-                <ul>
-                    {{#each subscriber}}
-                    <li>
-                        {{#if this.userimage}}
-                            <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="30" height="30" class="userimage">
-                        {{else}}
-                            <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
-                        {{/if}}
-                        <a class="subscriber"  href = "/othersProfile/{{this.id}}">{{this.account}}</a>
-                    </li>
-                    {{/each}}
-                </ul>
-                {{else}}
-                    <p>You have don't subscribe to anyone one. Try to add one.</p>
-                {{/if}}
-            </div>
+    <h1 class="section-title">{{user.account}}'s subscribe relation list</h1><br>
+    <a class="return" href="/toDashboard">Return</a>
+    <div class="subscribe-list">
+        <div class="subscribeTo">
+            <h3>Subscribe to </h3>
+            {{#if subscriber}}
+            <ul>
+                {{#each subscriber}}
+                <li>
+                    {{#if this.userimage}}
+                    <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="30" height="30"
+                        class="userimage">
+                    {{else}}
+                    <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
+                    {{/if}}
+                    <a class="subscriber" href="/othersProfile/{{this.id}}">{{this.account}}</a>
+                </li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <p>You have don't subscribe to anyone one. Try to add one.</p>
+            {{/if}}
+        </div>
 
-            <div class="followedby">
-                <h3>Followed by </h3>
-                {{#if follower}}
-                <ul>
-                    {{#each follower}}
-                    <li>
-                        {{#if this.userimage}}
-                            <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="30" height="30" class="userimage">
-                        {{else}}
-                            <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
-                        {{/if}}
-                        <a href = "/othersProfile/{{this.id}}">{{this.account}}</a>
-                    </li>
-                    {{/each}}
-                </ul>
-                {{else}}
-                    <p>Opps! You are not followed by anyone now.</p>
-                {{/if}}
-            </div>
-            
+        <div class="followedby">
+            <h3>Followed by </h3>
+            {{#if follower}}
+            <ul>
+                {{#each follower}}
+                <li>
+                    {{#if this.userimage}}
+                    <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="30" height="30"
+                        class="userimage">
+                    {{else}}
+                    <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
+                    {{/if}}
+                    <a href="/othersProfile/{{this.id}}">{{this.account}}</a>
+                </li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <p>Opps! You are not followed by anyone now.</p>
+            {{/if}}
+        </div>
+
     </div>
 
     <div class="subscribeUsersArticle">
@@ -56,18 +59,18 @@
             {{#each subscribeArticle}}
             <li>
                 {{!-- reserve the link to add profile reader --}}
-                <a href = "/article/{{this.id}}">{{this.title}}</a>
+                <a href="/article/{{this.id}}">{{this.title}}</a>
                 <p>Posted by {{this.author.account}} in {{this.postdate}}</p>
                 {{#if this.imagename}}
-                    <img src="{{this.imagename}}" alt="{{this.imagename}}" width="200" height="150">
+                <img src="{{this.imagename}}" alt="{{this.imagename}}" width="200" height="150">
                 {{else}}
-                    <p>The article do not have image</p>
+                <p>The article do not have image</p>
                 {{/if}}
             </li>
             {{/each}}
         </ul>
         {{else}}
-            <p>Your subscribers' have not posted any article yet.</p>
+        <p>Your subscribers' have not posted any article yet.</p>
         {{/if}}
     </div>
 

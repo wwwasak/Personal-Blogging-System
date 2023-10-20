@@ -9,7 +9,7 @@ async function searchUsersByAccount(userName) {
 }
 
 //regis user function
-async function registerUser(account, realname,password, birthday,userImage, description) {
+async function registerUser(account, realname, password, birthday, userImage, description) {
   const db = await dbPromise;
   const result = await db.run(SQL`INSERT INTO user (account,realname,password,birthday,userimage,description) values (${account},${realname},${password},${birthday},${userImage},${description});`);
   return result;
@@ -66,20 +66,20 @@ async function updatePassword(userid, password) {
 // delete article and it's comments by articleid  ------txu470
 async function deleteArticleById(id) {
   const db = await dbPromise;
-  const result =await db.run(SQL`DELETE FROM article WHERE id = ${id}`);
+  const result = await db.run(SQL`DELETE FROM article WHERE id = ${id}`);
   await db.run(SQL`DELETE FROM comments WHERE article_id = ${id}`);
   return result;
 }
 
 //delete all comment for a article zliu442
-async function deleteCommentByArticleID(id){
+async function deleteCommentByArticleID(id) {
   const db = await dbPromise;
   const result = await db.run(SQL`delete from comments where article_id = ${id}`);
   return result;
 }
 
 //delete comment's subcomment
-async function deleteCommentByParentCommentID(id){
+async function deleteCommentByParentCommentID(id) {
   const db = await dbPromise;
   const result = await db.run(SQL`delete from comments where parentComment = ${id}`);
   return result;
@@ -343,7 +343,7 @@ async function getSubscribers(userid) {
 }
 
 //add notif
-async function addNotification(sender_id, recipient_id, notification_type, related_object_id, content,time) {
+async function addNotification(sender_id, recipient_id, notification_type, related_object_id, content, time) {
   const db = await dbPromise;
   const result = await db.run(SQL`insert into notifications (sender_id,recipient_id,notification_type,related_object_id,content, created_at) values
     (${sender_id}, ${recipient_id}, ${notification_type}, ${related_object_id}, ${content}, ${time})`);
@@ -410,7 +410,7 @@ async function updateCategory(id, updatename, updatedes) {
 }
 
 //count comment to one user in a day
-async function commentNumOnUserAday(userid, starttime, endtime){
+async function commentNumOnUserAday(userid, starttime, endtime) {
   const db = await dbPromise;
   const result = await db.get(SQL`SELECT COUNT(*) 
   FROM comments AS c
@@ -435,14 +435,14 @@ async function searchNotificationsByUserID(userid) {
 }
 
 //delete article image by zliu442
-async function deleteArticleImage(articleid){
+async function deleteArticleImage(articleid) {
   const db = await dbPromise;
   const result = await db.run(SQL`update article set imagename = NULL where id = ${articleid}`);
   return result;
 }
 
 //check if user account name exists
-async function checkUserName(account){
+async function checkUserName(account) {
   const db = await dbPromise;
   const result = await db.get(SQL`select count(*) from user where account = ${account}`);
   return result['count(*)'];

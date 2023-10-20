@@ -3,25 +3,25 @@
 </head>
 {{!-- create by zliu442 --}}
 <div id="commentModal" class="modal">
-        <img class="modal-gif" src="/images/giphy-2.gif" width="300" height="350">
+  <img class="modal-gif" src="/images/giphy-2.gif" width="300" height="350">
 
-    <div class="modal-content">
-      <form action="/addsubcomment" method="POST">
+  <div class="modal-content">
+    <form action="/addsubcomment" method="POST">
       <fieldset>
         <legend>SubComment Content</legend>
-        <input type="hidden" name="commentid" id="commentid" value= {{comment.id}}>
-        <input type="hidden" name="articleid" id="articleid" value= {{article.id}}>
+        <input type="hidden" name="commentid" id="commentid" value={{comment.id}}>
+        <input type="hidden" name="articleid" id="articleid" value={{article.id}}>
         <p>
           <label for="name_id" class="addcontent">Reply to {{comment.author.account}}</label><br />
-          <p>for "{{comment.content}}"</p>
-          <input type="text" size="250" name="content" id="content_id"/>
+        <p>for "{{comment.content}}"</p>
+        <input type="text" size="250" name="content" id="content_id" />
         </p>
-      </fieldset>   
+      </fieldset>
       <p>
         <input type="submit" name="submit_button" id="submit_id" value="Done!" />
         <input type="reset" name="reset_button" id="reset_id" value="Clear" />
       </p>
-      </form>
-      <a href='/article/{{article.id}}'>Close</a>
-    </div>
+    </form>
+    <a href='/article/{{article.id}}'>Close</a>
   </div>
+</div>

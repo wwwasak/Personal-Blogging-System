@@ -1,24 +1,24 @@
 <head>
   <link rel="stylesheet" href="/css/addComment.css">
 </head>
- 
+
 <div id="commentModal" class="modal">
-<img class="modal-gif" src="/images/giphy.gif">
-    <div class="modal-content">
-      <form action="/addcomment" method="POST">
+  <img class="modal-gif" src="/images/giphy.gif">
+  <div class="modal-content">
+    <form action="/addcomment" method="POST">
       <fieldset>
         <legend>Comment Content</legend>
-        <input type="hidden" name="articleid" id="articleid" value= {{article.id}}>
+        <input type="hidden" name="articleid" id="articleid" value={{article.id}}>
         <p>
           <label for="name_id" class="addcontent">Reply to {{article.author.account}}</label><br />
-          <input type="text" size="250" name="content" id="content_id"/>
+          <input type="text" size="250" name="content" id="content_id" />
         </p>
-      </fieldset>   
+      </fieldset>
       <p>
         <input type="submit" name="submit_button" id="submit_id" value="Done!" />
         <input type="reset" name="reset_button" id="reset_id" value="Clear" />
       </p>
-      </form>
-      <a href='/article/{{article.id}}'>Close</a>
-    </div>
+    </form>
+    <a href='/article/{{article.id}}'>Close</a>
   </div>
+</div>

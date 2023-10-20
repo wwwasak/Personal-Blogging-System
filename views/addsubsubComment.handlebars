@@ -4,26 +4,26 @@
 
 {{!-- create by zliu442 --}}
 <div id="commentModal" class="modal">
-          <img class="modal-gif" src="/images/200.webp" width="300" height="350">
-    <div class="modal-content">
-      <form action="/addsubsubcomment" method="POST">
+  <img class="modal-gif" src="/images/200.webp" width="300" height="350">
+  <div class="modal-content">
+    <form action="/addsubsubcomment" method="POST">
       <fieldset>
         <legend>SubComment Content</legend>
-        <input type="hidden" name="commentid" id="commentid" value= {{comment.id}}>
-        <input type="hidden" name="subcommentid" id="subcommentid" value= {{subcomment.id}}>
-        <input type="hidden" name="replytoid" id="replytoid" value= {{reply.id}}>
-        <input type="hidden" name="articleid" id="articleid" value= {{article.id}}>
+        <input type="hidden" name="commentid" id="commentid" value={{comment.id}}>
+        <input type="hidden" name="subcommentid" id="subcommentid" value={{subcomment.id}}>
+        <input type="hidden" name="replytoid" id="replytoid" value={{reply.id}}>
+        <input type="hidden" name="articleid" id="articleid" value={{article.id}}>
         <p>
           <label for="name_id" class="addcontent">Reply to {{replyto.account}}</label><br />
-          <p>for "{{subcomment.content}}"</p>
-          <input type="text" size="250" name="content" id="content_id"/>
+        <p>for "{{subcomment.content}}"</p>
+        <input type="text" size="250" name="content" id="content_id" />
         </p>
-      </fieldset>   
+      </fieldset>
       <p>
         <input type="submit" name="submit_button" id="submit_id" value="Done!" />
         <input type="reset" name="reset_button" id="reset_id" value="Clear" />
       </p>
-      </form>
-      <a href='/article/{{article.id}}'>Close</a>
-    </div>
+    </form>
+    <a href='/article/{{article.id}}'>Close</a>
   </div>
+</div>

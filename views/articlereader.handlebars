@@ -1,34 +1,34 @@
 <head>
-  <link rel="stylesheet" href="/css/articlereader.css">
-  <script src="/frontend-javascripts/likeFunctionality.js"></script>
+    <link rel="stylesheet" href="/css/articlereader.css">
+    <script src="/frontend-javascripts/likeFunctionality.js"></script>
 </head>
 
-    <nav class="navbar">
-        <div class="inner-width">
-            <a href="/" class="logo"></a>
-            <button class="menu-toggler">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <div class="navbar-menu">
-                <a href="/">Home</a>
-                {{#each categories}}
-                    <a href="/category/{{this.name}}" id="{{this.name}}">{{this.name}}</a>
-                {{/each}}
-                
-                {{#if userid}}
-                    <a href='/toDashboard' class="hiuser">Hi, {{user.account}}</a>
-                    <a></a>
-                {{else}}
-                    <a href='/login' class="hiuser">Login</a>
-                    <a></a>
-                {{/if}}
+<nav class="navbar">
+    <div class="inner-width">
+        <a href="/" class="logo"></a>
+        <button class="menu-toggler">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="navbar-menu">
+            <a href="/">Home</a>
+            {{#each categories}}
+            <a href="/category/{{this.name}}" id="{{this.name}}">{{this.name}}</a>
+            {{/each}}
 
-                        
-            </div>
+            {{#if userid}}
+            <a href='/toDashboard' class="hiuser">Hi, {{user.account}}</a>
+            <a></a>
+            {{else}}
+            <a href='/login' class="hiuser">Login</a>
+            <a></a>
+            {{/if}}
+
+
         </div>
-    </nav>
+    </div>
+</nav>
 
 <div class="container">
     {{#if article}}
@@ -36,65 +36,66 @@
         <h1>{{article.title}}</h1>
         <p>Category: {{article.categoryInfo.name}}</p>
         <div class="author-subscribe">
-            <div class = "authorall">
+            <div class="authorall">
                 <p>Author: </p>
                 <div class="authorcenter">
                     {{#if article.authorimage}}
-                        <img src="/images/userimages/{{article.authorimage}}.png" alt="{{article.authorimage}}" width="30" height="30" class="userimage">
+                    <img src="/images/userimages/{{article.authorimage}}.png" alt="{{article.authorimage}}" width="30"
+                        height="30" class="userimage">
                     {{else}}
-                        <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
+                    <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
                     {{/if}}
                     <a href="/othersProfile/{{article.authorid}}">{{article.author}}</a>
                 </div>
             </div>
-            
-            
+
+
 
             {{!-- Subscribe functionality moved here --}}
             {{#if userid}}
-                {{#if_eq userid article.authorid}}
-                    <p id="subscribetoright">Cannot subscribe to yourself</p>
-                {{else}}
-                    {{#if isSubscribed}}
-                        <form id="unsubscribeform" method="get" action="/unsubscribe">
-                            <input type="hidden" name="userid" id="userid" value="{{userid}}">
-                            <input type="hidden" name="otheruserid" id="otheruserid" value={{article.authorid}}>
-                            <button type="submit" id="subscribetoright">Unsubscribe</button>
-                        </form>
-                    {{else}}
-                        <form id="subscribeform" method="get" action="/subscribe">
-                            <input type="hidden" name="userid" id="userid" value="{{userid}}">
-                            <input type="hidden" name="otheruserid" id="otheruserid" value={{article.authorid}}>
-                            <button type="submit" id="subscribetoright">Subscribe</button>
-                        </form>
-                    {{/if}}
-                {{/if_eq}}
+            {{#if_eq userid article.authorid}}
+            <p id="subscribetoright">Cannot subscribe to yourself</p>
             {{else}}
-                <a href="/login" id="subscribetoright">Please Login to subscribe to others</a>
+            {{#if isSubscribed}}
+            <form id="unsubscribeform" method="get" action="/unsubscribe">
+                <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                <input type="hidden" name="otheruserid" id="otheruserid" value={{article.authorid}}>
+                <button type="submit" id="subscribetoright">Unsubscribe</button>
+            </form>
+            {{else}}
+            <form id="subscribeform" method="get" action="/subscribe">
+                <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                <input type="hidden" name="otheruserid" id="otheruserid" value={{article.authorid}}>
+                <button type="submit" id="subscribetoright">Subscribe</button>
+            </form>
+            {{/if}}
+            {{/if_eq}}
+            {{else}}
+            <a href="/login" id="subscribetoright">Please Login to subscribe to others</a>
             {{/if}}
         </div>
- 
+
         {{#if article.imagename}}
-          <img src="{{article.imagename}}" alt="{{article.imagename}}" width="500" height="300">
+        <img src="{{article.imagename}}" alt="{{article.imagename}}" width="500" height="300">
         {{/if}}
         <p>Posted on: {{article.dateTime}}</p>
         <div class="article-content">
-          <p> {{{article.content}}}</p>
+            <p> {{{article.content}}}</p>
         </div>
-            {{#if userid}}
-                <button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
-                     <span id="like-icon" >♥</span>
-                </button>
-            {{else}}
-                <a href="/login">Please Login to like to others</a>
-            {{/if}}
-        
+        {{#if userid}}
+        <button id="like-button" data-article-id="{{article.id}}" data-user-id="{{article.currentUser.id}}">
+            <span id="like-icon">♥</span>
+        </button>
+        {{else}}
+        <a href="/login">Please Login to like to others</a>
+        {{/if}}
+
         <p id="like-count">{{article.likeCount}} likes</p>
 
         {{#if userid}}
-            <button id="openModalBtn" onclick="addComment('{{article.id}}')">Comment</button>
+        <button id="openModalBtn" onclick="addComment('{{article.id}}')">Comment</button>
         {{else}}
-            <a href="/login">Please Login to comment to others</a>
+        <a href="/login">Please Login to comment to others</a>
         {{/if}}
 
         <hr>
@@ -104,9 +105,10 @@
             {{#each article.usersLiked}}
             <li>
                 {{#if this.userimage}}
-                    <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="20" height="20" class = "userimage">
+                <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="20" height="20"
+                    class="userimage">
                 {{else}}
-                    <img src="/images/userimages/default.png" alt="default" width="20" height="20" class="userimage">
+                <img src="/images/userimages/default.png" alt="default" width="20" height="20" class="userimage">
                 {{/if}}
                 <a href="/othersProfile/{{this.id}}">{{this.account}}</a>
             </li>
@@ -116,73 +118,80 @@
     </div>
     <div class="comment-section">
         {{#if comment}}
-            <ul>
+        <ul>
             {{#each comment}}
-                <li class="first-tier-comment">
-                    <p>
-                        {{#if this.author.userimage}}
-                            <img src="/images/userimages/{{this.author.userimage}}.png" alt="{{this.author.userimage}}" width="20" height="20" class = "userimage">
-                        {{else}}
-                            <img src="/images/userimages/default.png" alt="default" width="20" height="20" class="userimage">
-                        {{/if}}
-                        <a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> reply to 
-                        {{#if this.replyeeimage}}
-                            <img src="/images/userimages/{{this.replyeeimage}}.png" alt="{{this.replyeeimage}}" width="20" height="20" class = "userimage">
-                        {{else}}
-                            <img src="/images/userimages/default.png" alt="default" width="20" height="20" class="userimage">
-                        {{/if}}<a href="/othersProfile/{{this.replyeeid}}">{{this.replyee}}</a>
-                    </p>
-                    <p>Post date and time: {{this.timeDate}}</p>
-                    <p>Comment content: <strong>{{this.content}}</strong> </p>
-
-                    {{#if ../userid}}
-                        <a href="/subcomment/?commentid={{this.id}}&articleid={{../article.id}}" class="comment_a">Comment</a>
+            <li class="first-tier-comment">
+                <p>
+                    {{#if this.author.userimage}}
+                    <img src="/images/userimages/{{this.author.userimage}}.png" alt="{{this.author.userimage}}"
+                        width="20" height="20" class="userimage">
                     {{else}}
-                        <a href="/login">Please Login to comment to others</a>
+                    <img src="/images/userimages/default.png" alt="default" width="20" height="20" class="userimage">
                     {{/if}}
+                    <a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> reply to
+                    {{#if this.replyeeimage}}
+                    <img src="/images/userimages/{{this.replyeeimage}}.png" alt="{{this.replyeeimage}}" width="20"
+                        height="20" class="userimage">
+                    {{else}}
+                    <img src="/images/userimages/default.png" alt="default" width="20" height="20" class="userimage">
+                    {{/if}}<a href="/othersProfile/{{this.replyeeid}}">{{this.replyee}}</a>
+                </p>
+                <p>Post date and time: {{this.timeDate}}</p>
+                <p>Comment content: <strong>{{this.content}}</strong> </p>
 
-                    {{#if_any_eq ../userid this.author.id ../userid ../article.authorid}}
-                        <a href="/deletecomment/?commentid={{this.id}}&articleid={{../article.id}}" class="comment_a">Delete</a>
-                    {{/if_any_eq}}
-                    <p>{{userid}}</p>
-                    {{#if this.subcomment}}
-                    <ul>
-                        {{#each this.subcomment}}
-                        <li class="second-tier-comment">
-                            <p>{{#if this.author.userimage}}
-                                    <img src="/images/userimages/{{this.author.userimage}}.png" alt="{{this.author.userimage}}" width="20" height="20" class = "userimage">
-                                {{else}}
-                                    <img src="/images/userimages/default.png" alt="default" width="20" height="20" class="userimage">
-                                {{/if}}
-                                <a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> post in : {{this.timeDate}}
-                            </p>
-                            <p>{{{this.content}}} </p>
+                {{#if ../userid}}
+                <a href="/subcomment/?commentid={{this.id}}&articleid={{../article.id}}" class="comment_a">Comment</a>
+                {{else}}
+                <a href="/login">Please Login to comment to others</a>
+                {{/if}}
 
-                            {{#if ../../userid}}
-                                <a href="/subsubcomment/?articleid={{../../article.id}}&commentid={{../this.id}}&subcommentid={{this.id}}&replyto={{this.author.id}}" class="comment_a">Comment</a>
+                {{#if_any_eq ../userid this.author.id ../userid ../article.authorid}}
+                <a href="/deletecomment/?commentid={{this.id}}&articleid={{../article.id}}" class="comment_a">Delete</a>
+                {{/if_any_eq}}
+                <p>{{userid}}</p>
+                {{#if this.subcomment}}
+                <ul>
+                    {{#each this.subcomment}}
+                    <li class="second-tier-comment">
+                        <p>{{#if this.author.userimage}}
+                            <img src="/images/userimages/{{this.author.userimage}}.png" alt="{{this.author.userimage}}"
+                                width="20" height="20" class="userimage">
                             {{else}}
-                                <a href="/login">Please Login to comment to others</a>
+                            <img src="/images/userimages/default.png" alt="default" width="20" height="20"
+                                class="userimage">
                             {{/if}}
-                            
-                            {{#if_any_eq ../../userid this.author.id ../../userid ../../article.authorid}}
-                                <a href="/deletecomment/?commentid={{this.id}}&articleid={{../../article.id}}" class="comment_a">Delete</a>
-                            {{/if_any_eq}}
+                            <a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a> post in :
+                            {{this.timeDate}}
+                        </p>
+                        <p>{{{this.content}}} </p>
 
-                        </li>
-                        {{/each}}
-                    </ul>
-                    {{/if}}
-                </li>
+                        {{#if ../../userid}}
+                        <a href="/subsubcomment/?articleid={{../../article.id}}&commentid={{../this.id}}&subcommentid={{this.id}}&replyto={{this.author.id}}"
+                            class="comment_a">Comment</a>
+                        {{else}}
+                        <a href="/login">Please Login to comment to others</a>
+                        {{/if}}
+
+                        {{#if_any_eq ../../userid this.author.id ../../userid ../../article.authorid}}
+                        <a href="/deletecomment/?commentid={{this.id}}&articleid={{../../article.id}}"
+                            class="comment_a">Delete</a>
+                        {{/if_any_eq}}
+
+                    </li>
+                    {{/each}}
+                </ul>
+                {{/if}}
+            </li>
             {{/each}}
-            </ul>
+        </ul>
         {{else}}
-            <p>Too slient!</p>
+        <p>Too slient!</p>
         {{/if}}
     </div>
-  {{/if}}
+    {{/if}}
 
 </div>
-  
+
 <script>
     function addComment(articleID) {
         const commentUrl = `/comment/?articleId=${articleID}`;

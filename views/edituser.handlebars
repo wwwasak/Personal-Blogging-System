@@ -1,32 +1,32 @@
 <head>
-    <link rel='stylesheet' href='/css/edit.css' type='text/css' />
+  <link rel='stylesheet' href='/css/edit.css' type='text/css' />
 </head>
 
 <!-- Contact -->
-  <section id="contact">
-    <div class="inner-width">
-      <h1 class="section-title">Edit your Information</h1>
-      <div class="contact-info">
-        <div class="item">
-          <h3>Your curent user name:</h3>
-          {{user.account}}
-        </div>
-        <div class="item">
-          <h3>Your curent real name:</h3>
-          {{user.realname}}
-        </div>
-        <div class="item">
-          <h3>Your curent birthday date:</h3>
-          {{user.birthday}}
-        </div>
+<section id="contact">
+  <div class="inner-width">
+    <h1 class="section-title">Edit your Information</h1>
+    <div class="contact-info">
+      <div class="item">
+        <h3>Your curent user name:</h3>
+        {{user.account}}
       </div>
-      <form action="/updateUserInfo" method="POST" class="contact-form">
-        <input class="inputZone" type="text" name="account" placeholder="Your new user name" value='{{user.account}}'>
-        <input class="inputZone" type="text" name="realname" placeholder="Your new real name" value='{{user.realname}}'>
-        <input class="inputZone" type="password" name="password" placeholder="Your new password">
-        <input class="inputZone" type="date" name="birthday" placeholder="Your birthday" value='{{user.birthday}}'>
-        <textarea class="inputZone" name="description" placeholder="Your new description">{{user.description}}</textarea>
-        <input type="submit" value="Submit" class="btn">
-      </form>
+      <div class="item">
+        <h3>Your curent real name:</h3>
+        {{user.realname}}
+      </div>
+      <div class="item">
+        <h3>Your curent birthday date:</h3>
+        {{user.birthday}}
+      </div>
     </div>
-  </section>
+    <form action="/updateUserInfo" method="POST" class="contact-form">
+      <input class="inputZone" type="text" name="account" placeholder="Your new user name" value='{{user.account}}'>
+      <input class="inputZone" type="text" name="realname" placeholder="Your new real name" value='{{user.realname}}'>
+      <input class="inputZone" type="password" name="password" placeholder="Your new password">
+      <input class="inputZone" type="date" name="birthday" placeholder="Your birthday" value='{{user.birthday}}'>
+      <textarea class="inputZone" name="description" placeholder="Your new description">{{user.description}}</textarea>
+      <input type="submit" value="Submit" class="btn">
+    </form>
+  </div>
+</section>

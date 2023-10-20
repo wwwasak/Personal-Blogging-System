@@ -95,9 +95,9 @@ router.post('/userLogin', async function (req, res) {
 
 //update user information
 router.post('/updateUserInfo', async function (req, res) {
-    const {account, realname, password, birthday, description} = req.body;
-    await blogDao.updateUserInfo(userid,account,realname,birthday,description)
-    if (password){
+    const { account, realname, password, birthday, description } = req.body;
+    await blogDao.updateUserInfo(userid, account, realname, birthday, description)
+    if (password) {
         let hashedPassword = await bcrypt.hash(password, 8)
         await blogDao.updatePassword(userid, hashedPassword);
     }
@@ -317,7 +317,7 @@ router.post('/userRegister', async function (req, res) {
     try {
         let accountCheck = await blogDao.checkUserName(account);
         console.log(accountCheck)
-        if (accountCheck == 0){
+        if (accountCheck == 0) {
             if (password == repassword) {
                 let hashedPassword = await bcrypt.hash(password, 8)
                 await blogDao.registerUser(account, realname, hashedPassword, birthday, userImage, description)
