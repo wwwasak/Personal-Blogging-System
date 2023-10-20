@@ -304,9 +304,9 @@ router.post('/userRegister', async function (req, res) {
     let { account, realname, password, repassword, birthday, userImage, description } = req.body;
     try {
         let accountCheck = await blogDao.checkUserName(account);
-        if (accountCheck < 1) {
+        console.log(accountCheck)
+        if (accountCheck == 0){
             if (password == repassword) {
-
                 let hashedPassword = await bcrypt.hash(password, 8)
                 await blogDao.registerUser(account, realname, hashedPassword, birthday, userImage, description)
                 res.redirect("/login");
@@ -335,10 +335,6 @@ router.get('/userDelete', async function (req, res) {
     try {
         await blogDao.deleteUser(id);
         res.redirect("/login");
-        res.send({
-            code: 200,
-            msg: "Delete successful",
-        })
     } catch (error) {
         res.send({
             code: 500,
@@ -425,16 +421,6 @@ router.delete('/notification/:id', async function (req, res) {
         })
     }
 });
-//commenter delete comment by id  ------txu470
-// async function isCommentOwner(userid, commentId) {
-//     let result = await blogDao.searchCommentById(commentId);
-//     if (result) {
-//         if (result.user_id == userid) {
-//             return true;
-//         }
-//     }
-//     return false;
-// }
 
 //ArticleOwner delete comment by id  ------txu470
 async function isArticleOwner(userid, articleId) {
@@ -446,31 +432,6 @@ async function isArticleOwner(userid, articleId) {
     }
     return false;
 }
-
-
-// no use now -zliu442
-// router.delete('/article/:id/comment/:commentid', async function (req, res) {
-//     let id = req.params.id;
-//     let commentid = req.params.commentid;
-//     if (!await isArticleOwner(userid, id) && (!await isCommentOwner(userid, commentid))) {
-//         // If user is not the owner of the article and comment
-//         return res.status(403).send({ code: 403, msg: 'Forbidden' });
-//     }
-//     let result = await blogDao.deleteCommentById(commentid);
-//     if (result.changes > 0) {
-//         res.send({
-//             code: 200,
-//             msg: "Delete successful"
-//         })
-//     } else {
-//         res.send({
-//             code: 500,
-//             msg: "Delete failed"
-//         })
-//     }
-// });
-
-
 
 //search by zli178
 router.get('/search', async (req, res) => {

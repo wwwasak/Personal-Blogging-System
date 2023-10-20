@@ -18,6 +18,17 @@ async function deleteUser(id) {
   const result = await db.run(SQL`DELETE FROM user WHERE id = ${id};`);
   return result;
 }
+async function deleteUser(id) {
+  const db = await dbPromise;
+  await db.run(SQL`DELETE FROM article WHERE userid = ${id};`);
+  await db.run(SQL`DELETE FROM comments WHERE user_id = ${id};`);
+  await db.run(SQL`DELETE FROM subscribes WHERE subscribe_by_userid = ${id};`);
+  await db.run(SQL`DELETE FROM subscribes WHERE subscribe_to_userid = ${id};`);
+  await db.run(SQL`DELETE FROM notifications WHERE recipient_id = ${id};`);
+  await db.run(SQL`DELETE FROM notifications WHERE sender_id = ${id};`);
+  const result = await db.run(SQL`DELETE FROM user WHERE id = ${id};`);
+  return result;
+}
 async function updateToken(id, token) {
   const db = await dbPromise;
   const result = await db.run(SQL`UPDATE user SET token = ${token} WHERE id = ${id};`);
@@ -412,10 +423,11 @@ async function deleteArticleImage(articleid){
   const result = await db.run(SQL`update article set imagename = NULL where id = ${articleid}`);
   return result;
 }
+
 async function checkUserName(account){
   const db = await dbPromise;
-  const result = await db.run(SQL`select count(*) from user where account = ${account}`);
-  return result;
+  const result = await db.get(SQL`select count(*) from user where account = ${account}`);
+  return result['count(*)'];
 }
 module.exports = {
   searchUsersByAccount,
