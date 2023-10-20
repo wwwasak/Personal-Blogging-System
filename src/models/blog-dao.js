@@ -175,7 +175,7 @@ async function countLikesForArticle(articleId) {
   return result.likesCount;
 }
 
-/get all like given by one user
+//get all like given by one user
 async function getArticlesLikedByUser(userId) {
   const db = await dbPromise;
   const result = await db.all(SQL`SELECT article.* FROM article INNER JOIN userlike ON article.id = userlike.article_id WHERE userlike.user_id = ${userId}`);
