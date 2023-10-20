@@ -1,22 +1,22 @@
-*{
+* {
     margin: 0;
     padding: 0;
     text-decoration: none;
-    font-family: "Ubuntu",sans-serif;
+    font-family: "Ubuntu", sans-serif;
     box-sizing: border-box;
-    
-    
-      
-  }
+}
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 50px;
-    padding: 50px;
-    background-color: #f7f7f7;
     background: url(../images/istockphoto-1422642328-170667a.webp) no-repeat center;
     background-size: cover;
     background-attachment: fixed;
-    
+    background-color: #f7f7f7;
+}
+
+#contanier {
+    font-family: Arial, sans-serif;
+    margin: 50px;
+    padding: 50px;
 }
 
 #navbar {
@@ -24,36 +24,38 @@ body {
     overflow: hidden;
     border-bottom: 2px solid #e0e0e0;
 }
-.navbar{
+
+.navbar {
     position: fixed;
     background-color: #333;
-    width: 100%;
+    width: 100vw;
     padding: 30px 0;
     top: 0;
     z-index: 999;
     transition: .3s linear;
-  }
+    /* margin: 0 auto; */
+}
 
-  .inner-width{
+.inner-width {
     max-width: 1300px;
     margin: auto;
     padding: 0 40px;
-  }
-  
-  .navbar .inner-width{
+}
+
+.navbar .inner-width {
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-  
-  .logo{
+}
+
+.logo {
     width: 44px;
     height: 32px;
     background-image: url(../images/white-logo.png);
     background-size: contain;
-  }
-  
-  .menu-toggler{
+}
+
+.menu-toggler {
     background: none;
     width: 30px;
     border: none;
@@ -62,45 +64,46 @@ body {
     outline: none;
     z-index: 999;
     display: none;
-  }
-  
-  .menu-toggler span{
+}
+
+.menu-toggler span {
     display: block;
     height: 3px;
     background-color: #fff;
     margin: 6px 0;
     position: relative;
     transition: .3s linear;
-  }
-  
-  .navbar-menu a{
+}
+
+.navbar-menu a {
     color: #fff;
     font-size: 15px;
     font-weight: 500;
     margin-left: 30px;
     transition: .2s linear;
-  }
-  
-  .navbar-menu a:hover{
+}
+
+.navbar-menu a:hover {
     color: #48dbfb !important;
-  }
-  
-  .sticky{
+}
+
+.sticky {
     background-color: #fff;
     padding: 18px 0;
-  }
-  
-  .sticky .logo{
+}
+
+.sticky .logo {
     background-image: url(../images/black-logo.png);
-  }
-  
-  .sticky .navbar-menu a{
+}
+
+.sticky .navbar-menu a {
     color: #111;
-  }
-  
-  .sticky .menu-toggler span{
+}
+
+.sticky .menu-toggler span {
     background-color: #111;
-  }
+}
+
 .nav-item {
     float: left;
     display: block;
@@ -134,8 +137,8 @@ h1 {
 }
 
 h2 {
-    margin-top: 30px; 
-    margin-bottom: 20px; 
+    margin-top: 30px;
+    margin-bottom: 20px;
     margin-left: 10px;
     color: #444;
 }
@@ -147,9 +150,10 @@ h2 {
     margin: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-.article-item p{
-    margin-top: 30px; 
-    margin-bottom: 20px; 
+
+.article-item p {
+    margin-top: 30px;
+    margin-bottom: 20px;
     margin-left: 10px;
     color: #444;
 }
@@ -182,8 +186,11 @@ button:hover {
     color: #fff;
     text-decoration: none;
     border-radius: 4px;
-    font-size: 0.7em; 
-    margin-left: 10px;
+
+    font-size: 0.3em;
+    margin-left: 10px
+
+
 }
 
 #logout-btn:hover {
@@ -230,7 +237,8 @@ canvas {
     background-color: #fff;
 }
 
-#popular-articles-table th, #popular-articles-table td {
+#popular-articles-table th,
+#popular-articles-table td {
     border: 1px solid #ddd;
     padding: 8px 12px;
     text-align: left;
@@ -263,7 +271,8 @@ canvas {
     background-color: #fff;
 }
 
-#analytics-table th, #analytics-table td {
+#analytics-table th,
+#analytics-table td {
     border: 1px solid #ddd;
     padding: 8px 12px;
     text-align: left;
@@ -277,41 +286,45 @@ canvas {
     background-color: #f5f5f5;
 }
 
-.notificationbox{
+.notificationbox {
     position: fixed;
     top: 100px;
     right: 50px;
     width: 350px;
     height: 50px;
     overflow: hidden;
-    
 
-    box-shadow: 0,50px,50px,rgba(0, 0, 0, 0.2);
+
+    box-shadow: 0, 50px, 50px, rgba(0, 0, 0, 0.2);
     padding: 20px;
- 
+
     transition: height 0.5s ease-in-out;
     z-index: 999;
 }
 
-.notificationbox.active{
+.notificationbox.active {
     height: 600px;
     overflow-y: auto;
 
 }
-.notificationbutton{
+
+.notificationbutton {
     font-size: 1.6em;
     display: flex;
     align-items: center;
 }
-.notificationbutton :hover{
+
+.notificationbutton :hover {
     color: #0056b3;
 }
-.message{
+
+.message {
     position: relative;
     top: 25px;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     padding: 20px 0;
 }
+
 .messages li {
     list-style: none;
     margin: 15px 0;
