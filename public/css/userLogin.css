@@ -17,6 +17,7 @@ main{
     text-align: center;
     padding: 5px 40px;
     box-sizing: border-box;
+    margin: 0 auto;
 }
 
 p{
