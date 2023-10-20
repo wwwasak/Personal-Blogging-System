@@ -11,11 +11,9 @@
 
 </head>
 
-
 <section class="about" id="about">
 
     <h1 class="heading"> about <span>me</span> </h1>
-
     <div class="row">
 
         <div class="image">
@@ -29,6 +27,7 @@
         <div class="content">
             <h3> my name is <span> {{otheruser.account}} </span> </h3>
             <p class="info">{{otheruser.description}}</p>
+
             <div class="box-container">
                 <div class="box">
                     <p> <span> ID: </span> {{otheruser.id}} </p>
@@ -37,41 +36,42 @@
                     <p> <span> Birthday : </span> {{otheruser.birthday}} </p>
                 </div>
             </div>
+
             <a href="/toDashboard" class="btn">Return</a>
             <a href="/subscribelist/{{otheruser.id}}" class="btn">My subscribe</a>
+
+            {{!-- for the subscribe button --}}
             {{#if userid}}
-            {{#if_eq userid otheruser.id}}
-            <p>Cannot subscribe to yourself</p>
+                {{#if_eq userid otheruser.id}}
+                    <p>Cannot subscribe to yourself</p>
+                {{else}}
+                    {{#if isSubscribed}}
+                        <form id="unsubscribeform" method="get" action="/unsubscribe">
+                            <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                            <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
+                            <button type="submit" class="btn">Unsubscribe</button>
+                        </form>
+                    {{else}}
+                        <form id="subscribeform" method="get" action="/subscribe">
+                            <input type="hidden" name="userid" id="userid" value="{{userid}}">
+                            <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
+                            <button type="submit" class="btn">Subscribe me</button>
+                        </form>
+                    {{/if}}
+                {{/if_eq}}
             {{else}}
-            {{#if isSubscribed}}
-            <form id="unsubscribeform" method="get" action="/unsubscribe">
-                <input type="hidden" name="userid" id="userid" value="{{userid}}">
-                <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
-                <button type="submit" class="btn">Unsubscribe</button>
-            </form>
-            {{else}}
-            <form id="subscribeform" method="get" action="/subscribe">
-                <input type="hidden" name="userid" id="userid" value="{{userid}}">
-                <input type="hidden" name="otheruserid" id="otheruserid" value={{otheruser.id}}>
-                <button type="submit" class="btn">Subscribe me</button>
-            </form>
+                <a href="/login" class="btn">Please Login to subscribe to others</a>
             {{/if}}
-            {{/if_eq}}
-            {{else}}
-            <a href="/login" class="btn">Please Login to subscribe to others</a>
-            {{/if}}
+
         </div>
     </div>
 
 </section>
 
 <section class="blogs" id="blogs">
-
     <h1 class="heading"> <span> my </span> articles </h1>
 
     <div class="box-container">
-
-
         {{#each articles}}
         <div class="box tilt">
             <img src="https://code.5g-o.com/wp-content/uploads/2021/06/blog-img-1.jpg" alt="">
@@ -81,7 +81,6 @@
             <a href="/article/{{id}}" class="btn">learn more</a>
         </div>
         {{/each}}
-
     </div>
 
 </section>

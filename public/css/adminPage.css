@@ -31,17 +31,12 @@ body {
     padding: 20px;
     background-color: #3C3F41; 
     border-radius: 8px;
-
     border: 2px solid #FFFFFF;  
-
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
-
 }
 
 h1, h2 {
-
     color: white; 
-
     padding-bottom: 10px;
     border-bottom: 1px solid #464646;
     margin-bottom: 20px;
@@ -82,9 +77,7 @@ button:hover {
 
 input[type="text"] {
     padding: 5px;
-
     border: 2px solid #FFFFFF;  
-
     background-color: #3C3F41;  
     color: #A9B7C6;
     border-radius: 4px;
@@ -92,9 +85,7 @@ input[type="text"] {
 }
 
 input[type="text"]:focus {
-
     border-color: #FFC66D; 
-
 }
 
 label {
@@ -124,5 +115,15 @@ hr {
     border-radius: 8px;
     background-color: #323232; 
     margin-bottom: 20px; 
+}
+
+.hrefs{
+    padding-top: 20px;
+    display: flex;
+    flex-direction: row;
+    text-decoration: none;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
 }
 

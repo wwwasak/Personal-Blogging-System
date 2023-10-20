@@ -10,7 +10,6 @@ body {
     background-position: center center; 
 }
 
-
 #container {
     max-width: 800px;
     margin: 50px auto; 
@@ -124,23 +123,25 @@ ul.article-list {
     border: 1px solid #ddd;
     border-radius: 5px;
 }
+
 .subscribe-list{
     display: flex;
     align-items: flex-start;
     justify-content: center;
-   
 }
+
 .subscribeTo{
     margin: 0 auto;
 }
+
 .followedby{
     margin: 0 auto;
 }
+
 .subscribeUsersArticle{
     border: 2px solid #353b48;
     border-radius: 12px;
     margin: 0 auto; 
     text-align: center;
-
 }
 

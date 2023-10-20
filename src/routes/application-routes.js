@@ -17,6 +17,7 @@ let userid;
 
 router.use(express.static('public'));
 
+//for home page
 router.get('/', async (req, res) => {
     try {
         const categories = await blogDao.getAllCategories();
@@ -34,8 +35,7 @@ router.get('/', async (req, res) => {
 });
 
 
-// user router created, register, delete ----- yji413
-
+// user router created, register, delete, profile and edit ----- yji413
 router.get("/login", function (req, res) {
     res.render("userLogin");
 });
@@ -47,22 +47,26 @@ router.get("/toRegister", function (req, res) {
 router.get("/toDelete", function (req, res) {
     res.render("deleteuser");
 });
+
 router.get("/toAdd", async function (req, res) {
     let categories = await blogDao.getAllCategories()
     res.locals.category = categories;
     res.render("addarticle")
 });
+
 router.get("/toProfile", async function (req, res) {
     let userAccount = await blogDao.searchUserById(userid);
     res.locals.user = userAccount;
     res.render("profile")
 });
+
 router.get("/toEdit", async function (req, res) {
     let userAccount = await blogDao.searchUserById(userid);
     res.locals.user = userAccount;
     res.render("edituser")
 });
 
+//to login route
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
     try {
@@ -88,6 +92,8 @@ router.post('/userLogin', async function (req, res) {
         })
     }
 });
+
+//update user information
 router.post('/updateUserInfo', async function (req, res) {
     const {account, realname, password, birthday, description} = req.body;
     await blogDao.updateUserInfo(userid,account,realname,birthday,description)
@@ -97,6 +103,7 @@ router.post('/updateUserInfo', async function (req, res) {
     }
     res.redirect("/toProfile")
 })
+
 //admin login create by zliu442
 router.post('/adminLogin', async function (req, res) {
     let { admin_account, admin_password } = req.body;
@@ -116,6 +123,7 @@ router.post('/adminLogin', async function (req, res) {
     }
 });
 
+//the page admin page
 router.get('/adminpage', async function (req, res) {
     res.locals.category = await blogDao.getAllCategories();
 
@@ -178,6 +186,7 @@ router.get('/deletearticle', async (req, res) => {
 
 });
 
+//router for update category
 router.get('/updatecategory', async (req, res) => {
     try {
         const id = req.query.id;
@@ -191,13 +200,15 @@ router.get('/updatecategory', async (req, res) => {
     }
 });
 
-
+//router for logout
 router.get("/logout", function (req, res) {
     res.clearCookie("authToken");
     userid = ''
     res.setToastMessage("Successfully logged out!");
     res.redirect("/login");
 });
+
+//to dashboard page
 router.get("/toDashboard", verifyAuthenticated, async function (req, res) {
     let userInfo = await blogDao.searchUserById(userid);
     let userName = userInfo.account;
@@ -271,6 +282,7 @@ function getLastTenDays() {
     return dates;
 }
 
+//generate ten days time stamp for draw histogram
 function getTendayTimeStamp() {
     let today = new Date();
     today.setDate(today.getDate() - 9);
@@ -290,7 +302,6 @@ async function commentNumInTimeRanges(userid, timeRanges) {
         const [starttime, endtime] = range;
         return await blogDao.commentNumOnUserAday(userid, starttime, endtime);
     }));
-
     return results;
 }
 
@@ -300,6 +311,7 @@ function popularindex(commentNum, likeNum) {
     return popularNum;
 }
 
+//for regis user
 router.post('/userRegister', async function (req, res) {
     let { account, realname, password, repassword, birthday, userImage, description } = req.body;
     try {
@@ -310,7 +322,6 @@ router.post('/userRegister', async function (req, res) {
                 let hashedPassword = await bcrypt.hash(password, 8)
                 await blogDao.registerUser(account, realname, hashedPassword, birthday, userImage, description)
                 res.redirect("/login");
-
             } else {
                 res.send({
                     code: 400,
@@ -330,6 +341,8 @@ router.post('/userRegister', async function (req, res) {
         })
     }
 });
+
+//for delete user
 router.get('/userDelete', async function (req, res) {
     let id = req.query.userid;
     try {
@@ -343,6 +356,7 @@ router.get('/userDelete', async function (req, res) {
     }
 });
 
+//for update article router
 router.get('/updatearticle', async function (req, res) {
     const articleId = req.query.articleId;
     res.locals.userid = userid;
@@ -352,7 +366,8 @@ router.get('/updatearticle', async function (req, res) {
     article.category = await blogDao.searchCategoryById(article.categoryid);
     res.locals.article = article;
     res.render("updatearticle")
-})
+});
+
 // This is a router to get the request of update article from users, modify by zliu442
 router.post('/updateArticleRoutes', upload.single("imageFile"), async function (req, res) {
     try {
@@ -378,6 +393,8 @@ router.post('/updateArticleRoutes', upload.single("imageFile"), async function (
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+//for delete article router
 router.delete('/article/:id', async function (req, res) {
     let id = req.params.id;
     console.log(userid, id);
@@ -405,6 +422,7 @@ router.delete('/article/:id', async function (req, res) {
     }
 });
 
+//for delete notif router
 router.delete('/notification/:id', async function (req, res) {
     let id = req.params.id;
     console.log(userid, id);
@@ -458,11 +476,11 @@ router.get('/search', async (req, res) => {
     }
 });
 
+//print categroy articles
 router.get('/category/:categoryName', async (req, res) => {
     try {
         const categoryName = req.params.categoryName;
         const articles = await blogDao.searchArticlesByCategoryName(categoryName);
-
 
         articles.forEach(async article => {
             article.content = article.content.substring(0, 50) + '...';
@@ -479,15 +497,14 @@ router.get('/category/:categoryName', async (req, res) => {
     }
 });
 
-
-
+//check if user like the article
 router.get('/hasUserLikedArticle', async (req, res) => {
     const { userId, articleId } = req.query;
     const hasLiked = await blogDao.hasUserLikedArticle(userId, articleId);
     res.json(hasLiked);
 });
 
-
+//like an article
 router.get('/likeArticle', async (req, res) => {
     const { userId, articleId } = req.query;
     try {
@@ -508,6 +525,7 @@ router.get('/likeArticle', async (req, res) => {
     }
 });
 
+//unlike an article
 router.get('/unlikeArticle', async (req, res) => {
     const { userId, articleId } = req.query;
     try {
@@ -519,20 +537,19 @@ router.get('/unlikeArticle', async (req, res) => {
     }
 });
 
+//count the like number for an article
 router.get('/countLikesForArticle', async (req, res) => {
     const { articleId } = req.query;
     const count = await blogDao.countLikesForArticle(articleId);
     res.json({ count });
 });
 
+//print the list of who like the article
 router.get('/whoLikedArticle', async (req, res) => {
     const { articleId } = req.query;
     const users = await blogDao.getUsersWhoLikedArticle(articleId);
     res.json(users);
 });
-
-
-
 
 //route post.article create by zliu442
 //when add new article, will notify subscribers---txu470
@@ -702,6 +719,7 @@ router.post('/addsubcomment', async function (req, res) {
     }
 });
 
+//router for add subsub level comment
 router.post('/addsubsubcomment', async function (req, res) {
     let { content, commentid, subcommentid, replytoid, articleid } = req.body;
     const parentComment = await blogDao.searchCommentById(subcommentid);
@@ -737,6 +755,7 @@ router.post('/addsubsubcomment', async function (req, res) {
     }
 });
 
+//format the comment string in databse to simple string
 function formatCommentStr(string) {
     let regex = /<strong>(.+?)<\/strong>/;
     let match = string.match(regex);
@@ -748,9 +767,7 @@ function formatCommentStr(string) {
 }
 
 //add read article feature and add comments here by zliu442 2023/10/13
-
 router.get('/article/:id', async (req, res) => {
-
     try {
         const categories = await blogDao.getAllCategories();
         res.locals.categories = categories;
@@ -785,16 +802,13 @@ router.get('/article/:id', async (req, res) => {
         }
 
         const processedComments = await processComments(article, articleid);
-
         //check if subscribed
         res.locals.isSubscribed = await ifSubscribed(userid, article.authorid);
-
         res.locals.userid = userid;
         res.locals.user = await blogDao.searchUserById(userid);
         res.locals.comment = processedComments;
         res.locals.article = article;
         res.render('articlereader');
-
 
     } catch (error) {
         console.error(error);
@@ -802,6 +816,7 @@ router.get('/article/:id', async (req, res) => {
     }
 });
 
+//delete comment router
 router.get('/deletecomment', async (req, res) => {
     try {
         const commentid = req.query.commentid;
@@ -815,6 +830,7 @@ router.get('/deletecomment', async (req, res) => {
     }
 });
 
+//delete image route
 router.get('/deleteimage/:articleid', async (req, res) => {
     try {
         const articleid = req.params.articleid;
@@ -848,7 +864,6 @@ async function processComments(article, articleid) {
     return comment;
 }
 
-
 //subscribelist route create by zliu442
 router.get('/subscribelist/:userid', async (req, res) => {
     try {
@@ -875,12 +890,7 @@ router.get('/subscribelist/:userid', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-router.get('/article/:id', async (req, res) => {
 
-    const articleId = req.params.id;
-    const article = await blogDao.getArticleById(articleId);
-    res.render('articlePage', { article });
-});
 //to otherprofile router create by zliu442
 router.get('/othersProfile/:otheruserid', async (req, res) => {
     try {
@@ -923,6 +933,7 @@ router.get('/subscribe', async (req, res) => {
     }
 });
 
+//for unsubscribe fun
 router.get('/unsubscribe', async (req, res) => {
     try {
         const userid = req.query.userid;
@@ -934,6 +945,7 @@ router.get('/unsubscribe', async (req, res) => {
         res.status(500).send('delete subscribe error');
     }
 });
+
 //check if subscribe by zliu442
 async function ifSubscribed(userid, otherUserId) {
     //check if subscribed
@@ -963,10 +975,6 @@ function formatTimestamp(timestamp) {
     return `${year}/${month}/${day} ${hours}:${minutes}`;
 }
 
-
-
-
-
 //api create by zli178
 router.post('/api/login', async function (req, res) {
     let { account, password } = req.body;
@@ -986,8 +994,6 @@ router.post('/api/login', async function (req, res) {
         res.status(500).json({ message: "Login failed" });
     }
 });
-
-
 
 router.get("/api/logout", function (req, res) {
     res.clearCookie("authToken");
@@ -1025,28 +1031,10 @@ router.delete('/api/users/:id', async function (req, res) {
         }
 
         await blogDao.deleteUserAndRelatedData(userIdToDelete);
-
         res.status(204).end();
     } catch (error) {
         console.error("Error during user deletion:", error);
         res.status(500).json({ message: "Delete failed" });
-    }
-});
-
-
-
-router.get('/notification/:userid', async (req, res) => {
-    try {
-        const userId = req.params.userid;
-        const notifications = await blogDao.searchNotificationsByUserID(userId);
-        for (let item of notifications) {
-            item.time = formatTimestamp(item.created_at);
-        }
-        res.locals.notifications = notifications;
-        res.render('notification');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
     }
 });
 

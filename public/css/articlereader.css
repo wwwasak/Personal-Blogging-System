@@ -121,8 +121,6 @@ a:hover {
     border-bottom: none;
 }
 
-
-
 h1 {
     text-align: center;
     color: #333;
@@ -136,8 +134,7 @@ h2 {
 .article-content p {
     font-size: 1.2rem;
     color: #666;
-    line-height: 1.6;
-    
+    line-height: 1.6;    
 }
 
 .first-tier-comment, 
@@ -151,7 +148,6 @@ h2 {
 .second-tier-comment {
     margin-left: 20px;
 }
-
 
 button {
     background:#222;
@@ -201,7 +197,6 @@ button:hover {
         grid-template-rows: auto; 
         width: 90%;
     }
-
     .article-section{
         border-bottom: #ccc 2px solid;
     }
@@ -210,6 +205,5 @@ button:hover {
 @media (max-width: 500px) {
     .container {
         width: 100%;
-
     }
 }

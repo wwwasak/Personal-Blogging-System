@@ -11,17 +11,11 @@ const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
 const { cookieToaster } = require('./middleware/toaster-middleware');
-
-
 const PORT = 3000;
-
-
 
 async function startExpress() {
     const app = express();
    
-
-
     /**
      * Adding handlers to express app
      * Note the ordering of this is very important

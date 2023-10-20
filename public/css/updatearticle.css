@@ -27,7 +27,6 @@ body {
     font-size: 26px;
     padding-bottom: 20px;
     color: #111;
-    
 }
 
 .section-title::before {
@@ -80,8 +79,7 @@ textarea {
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
-    margin-top: 5px;
-    
+    margin-top: 5px;   
 }
 
 input[type="radio"] {
@@ -103,7 +101,6 @@ button[type="submit"]:hover {
     background-color: #3498db;
 }
 
-
 .question {
     font-size: 18px;
     margin-bottom: 15px;
@@ -116,30 +113,22 @@ label[for="inpFile"] {
     margin-bottom: 10px;
 }
 
-
 #mytextarea {
     min-height: 200px;
     resize: vertical;
     padding: 10px;
 }
 
-
 input[type="radio"] + label::before {
     font-size: 18px;
     margin-right: 5px;
     color: #48dbfb;
-
 }
 
 .tox-tinymce {
     border: 1px solid #ddd !important;
     border-radius: 4px;
 }
-
-/* 
-input[type="file"] {
-    display: none;
-} */
 
 label[for="inpFile"] {
     background-color: #48dbfb;
@@ -155,6 +144,7 @@ label[for="inpFile"] {
 label[for="inpFile"]:hover {
     background-color: #3498db;
 }
+
 a {
     color: #48dbfb;
     text-decoration: none;

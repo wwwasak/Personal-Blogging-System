@@ -2,50 +2,53 @@
 <head>
     <link rel="stylesheet" href="/css/subscribelist.css">
 </head>
+
 <div id="container">
         <h1 class="section-title">{{user.account}}'s subscribe relation list</h1><br>
         <a class="return" href="/toDashboard">Return</a>
-         <div class="subscribe-list">
-        <div class="subscribeTo">
-            <h3>Subscribe to </h3>
-            {{#if subscriber}}
-            <ul>
-                {{#each subscriber}}
-                <li>
-                    {{#if this.userimage}}
-                        <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="30" height="30" class="userimage">
-                    {{else}}
-                        <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
-                    {{/if}}
-                    <a class="subscriber"  href = "/othersProfile/{{this.id}}">{{this.account}}</a>
-                </li>
-                {{/each}}
-            </ul>
-            {{else}}
-                <p>You have don't subscribe to anyone one. Try to add one.</p>
-            {{/if}}
-        </div>
+        <div class="subscribe-list">
+            <div class="subscribeTo">
+                <h3>Subscribe to </h3>
+                {{#if subscriber}}
+                <ul>
+                    {{#each subscriber}}
+                    <li>
+                        {{#if this.userimage}}
+                            <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="30" height="30" class="userimage">
+                        {{else}}
+                            <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
+                        {{/if}}
+                        <a class="subscriber"  href = "/othersProfile/{{this.id}}">{{this.account}}</a>
+                    </li>
+                    {{/each}}
+                </ul>
+                {{else}}
+                    <p>You have don't subscribe to anyone one. Try to add one.</p>
+                {{/if}}
+            </div>
 
-        <div class="followedby">
-            <h3>Followed by </h3>
-            {{#if follower}}
-            <ul>
-                {{#each follower}}
-                <li>
-                    {{#if this.userimage}}
-                        <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="30" height="30" class="userimage">
-                    {{else}}
-                        <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
-                    {{/if}}
-                    <a href = "/othersProfile/{{this.id}}">{{this.account}}</a>
-                </li>
-                {{/each}}
-            </ul>
-            {{else}}
-                <p>Opps! You are not followed by anyone now.</p>
-            {{/if}}
-        </div>
+            <div class="followedby">
+                <h3>Followed by </h3>
+                {{#if follower}}
+                <ul>
+                    {{#each follower}}
+                    <li>
+                        {{#if this.userimage}}
+                            <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="30" height="30" class="userimage">
+                        {{else}}
+                            <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
+                        {{/if}}
+                        <a href = "/othersProfile/{{this.id}}">{{this.account}}</a>
+                    </li>
+                    {{/each}}
+                </ul>
+                {{else}}
+                    <p>Opps! You are not followed by anyone now.</p>
+                {{/if}}
+            </div>
+            
     </div>
+
     <div class="subscribeUsersArticle">
         <h3>Subscribe Users' Article</h3><br>
         {{#if subscribeArticle}}
@@ -67,4 +70,5 @@
             <p>Your subscribers' have not posted any article yet.</p>
         {{/if}}
     </div>
+
 </div>

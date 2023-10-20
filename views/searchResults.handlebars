@@ -10,10 +10,8 @@
     </a>
 <body>
    
-
     <div class="container">
       
-
         {{#if articles}}
             <p>Relative articles for keyword: {{keyword}}</p>
             {{#each articles}}
@@ -34,6 +32,7 @@
         {{else}}
             <p>No relative articles for keyword: {{keyword}}</p>
         {{/if}}
+        
     </div>
 
     <button id="back-to-top" onclick="window.scrollTo(0,0)">↑</button>

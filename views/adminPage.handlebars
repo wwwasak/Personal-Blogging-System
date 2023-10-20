@@ -1,7 +1,14 @@
-
- <head>
+<head>
   <link rel="stylesheet" href="/css/adminPage.css">
 </head>
+
+<div class = "hrefs">
+    <a href="#categoryposi">to Category</a>
+    <a href="#addcategoryposi">to AddCategory</a>
+    <a href="#articleposi">to Article</a>
+    <a href="#userposi">to User</a>
+    <a href="/login">Back to login</a>
+</div>
  
  <div class="container">
 
@@ -9,7 +16,7 @@
 
     <h1>This is admin page.</h1>
     <br>
-    <h2>Current Categories</h2>
+    <h2 id="categoryposi">Current Categories</h2>
     <ul>
         {{#each category}}  
         <li class="category-container">
@@ -45,11 +52,11 @@
     </ul>
         <div class="add-category-section">
 
-    <div class="add-category-section">
+    <div class="add-category-section" >
 
-    <form id="addCategory" method="get" action="/addcategory">
+    <form id="addCategory" method="get" action="/addcategory" >
         <fieldset>
-            <legend>Add Category</legend>
+            <legend id="addcategoryposi">Add Category</legend>
             <p>
                 <label for="addName" class="addname">Name</label><br />
                 <input type="text" size="30" name="name" id="name"/>
@@ -70,7 +77,7 @@
 
 
     <div class="articles-section">
-        <h1>Current Articles</h1>
+        <h1 id="articleposi">Current Articles</h1>
         <ul>
             {{#each article}}
             <h2>Title: <a href="article/{{this.id}}">{{this.title}}</a></h2>
@@ -93,7 +100,7 @@
     </div>
 
     <div class="users-section">
-        <h1>Current Users</h1>
+        <h1 id="userposi">Current Users</h1>
         <ul>
             {{#each user}}
             <h2>Name: <a href = "/othersProfile/{{this.id}}">{{this.account}}</a></h2>
