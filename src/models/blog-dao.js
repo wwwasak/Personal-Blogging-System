@@ -36,6 +36,17 @@ async function updateArticle(userid, articleId, title, content, categoryid, imag
   return result;
 }
 
+async function updateUserInfo(userid, account, realname, birthday, description) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`update user set account = ${account}, realname = ${realname}, birthday = ${birthday}, description = ${description} where id = ${userid}`);
+  return result;
+}
+
+async function updatePassword(userid, password) {
+  const db = await dbPromise;
+  const result = await db.run(SQL`update user set password = ${password} where id = ${userid}`);
+  return result;
+}
 // delete article and it's comments by articleid  ------txu470
 async function deleteArticleById(id) {
   const db = await dbPromise;
@@ -467,10 +478,9 @@ module.exports = {
   deleteNotification,
   deleteArticleImage,
   notificationNum,
-
+  updatePassword,
   checkUserName,
-
+  updateUserInfo,
   searchUsersByKeyword
-
 };
 
