@@ -1,22 +1,40 @@
-<a href = '/' id="link">Return</a>
-{{#if articles}}
-    <p>Relative articles for keyword: {{../keyword}}</p>
-    {{#each articles}}
-        <div>
-            <h2><a href='/article/{{id}}'>{{title}}</a></h2>
-                {{#if this.author.userimage}}
-                    <img src="/images/userimages/{{this.author.userimage}}.png" alt="{{this.author.userimage}}" width="30" height="30" class="userimage">
-                {{else}}
-                    <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
-                {{/if}}
-                <a href = "/othersProfile/{{this.author.id}}">{{this.author.account}}</a>
-            
-            <p>Post in {{timeDate}}</p>
-            <p>{{content}}</p>
-        </div>
-    {{/each}}
-{{else}}
-    <p>No relative articles for keyword: {{keyword}}</p>
-{{/if}}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{searchResult}} Articles</title>
+    <link rel="stylesheet" href="/css/categoryPage.css">
+</head>
 
+ <a href="/" class="logo">
+        <img src="/images/black-logo.png" width="50" height="50" alt="Logo Description">
+    </a>
+<body>
+   
 
+    <div class="container">
+      
+
+        {{#if articles}}
+            <p>Relative articles for keyword: {{keyword}}</p>
+            {{#each articles}}
+                <div class="article-item">
+                    <h2 class="article-title"><a href="/article/{{id}}" class="article-link">{{title}}</a></h2>
+                    <div class="meta-info">
+                        {{#if this.author.userimage}}
+                            <img src="/images/userimages/{{this.author.userimage}}.png" alt="{{this.author.userimage}}" width="30" height="30" class="userimage">
+                        {{else}}
+                            <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
+                        {{/if}}
+                        <a href="/othersProfile/{{this.author.id}}">{{this.author.account}}</a>
+                        <p class="meta-time">Post in {{timeDate}}</p>
+                    </div>
+                    <p class="article-content">{{content}}</p>
+                </div>
+            {{/each}}
+        {{else}}
+            <p>No relative articles for keyword: {{keyword}}</p>
+        {{/if}}
+    </div>
+
+    <button id="back-to-top" onclick="window.scrollTo(0,0)">↑</button>
+</body>
