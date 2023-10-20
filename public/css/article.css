@@ -152,9 +152,9 @@ input[type="radio"] + label::before {
 }
 
 
-input[type="file"] {
+/* input[type="file"] {
     display: none;
-}
+}  */
 
 label[for="inpFile"] {
     background-color: #48dbfb;

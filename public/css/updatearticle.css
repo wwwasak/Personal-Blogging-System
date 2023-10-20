@@ -136,10 +136,10 @@ input[type="radio"] + label::before {
     border-radius: 4px;
 }
 
-
+/* 
 input[type="file"] {
     display: none;
-}
+} */
 
 label[for="inpFile"] {
     background-color: #48dbfb;
