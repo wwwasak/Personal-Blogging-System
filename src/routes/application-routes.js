@@ -57,7 +57,11 @@ router.get("/toProfile", async function (req, res) {
     res.locals.user = userAccount;
     res.render("profile")
 });
-
+router.get("/toEdit", async function (req, res) {
+    let userAccount = await blogDao.searchUserById(userid);
+    res.locals.user = userAccount;
+    res.render("edituser")
+});
 
 router.post('/userLogin', async function (req, res) {
     let { account, password } = req.body;
@@ -84,7 +88,15 @@ router.post('/userLogin', async function (req, res) {
         })
     }
 });
-
+router.post('/updateUserInfo', async function (req, res) {
+    const {account, realname, password, birthday, description} = req.body;
+    await blogDao.updateUserInfo(userid,account,realname,birthday,description)
+    if (password){
+        let hashedPassword = await bcrypt.hash(password, 8)
+        await blogDao.updatePassword(userid, hashedPassword);
+    }
+    res.redirect("/toProfile")
+})
 //admin login create by zliu442
 router.post('/adminLogin', async function (req, res) {
     let { admin_account, admin_password } = req.body;
@@ -298,6 +310,7 @@ router.post('/userRegister', async function (req, res) {
                 let hashedPassword = await bcrypt.hash(password, 8)
                 await blogDao.registerUser(account, realname, hashedPassword, birthday, userImage, description)
                 res.redirect("/login");
+
             } else {
                 res.send({
                     code: 400,
@@ -426,11 +439,11 @@ router.get('/search', async (req, res) => {
         const keyword = req.query.keyword;
         const articles = await blogDao.searchArticlesByKeyword(keyword);
         const userSearched = await blogDao.searchUsersByKeyword(keyword);
-        for (let user of userSearched){
+        for (let user of userSearched) {
             const userArticles = await blogDao.searchArticlesByUserAccount(user.id);
             articles.push(...userArticles);
         }
-        
+
         for (let article of articles) {
             article.content = article.content.substring(0, 50) + '...';
             article.timeDate = formatTimestamp(article.postdate);
