@@ -102,7 +102,6 @@ a:hover {
 
 .article-section, 
 .comment-section {
-    border-bottom: 2px solid #ccc;
     margin-bottom: 20px;
     margin-right: 20px;
     padding-bottom: 20px;
@@ -121,6 +120,8 @@ a:hover {
 .comment-section:last-child {
     border-bottom: none;
 }
+
+
 
 h1 {
     text-align: center;
@@ -176,6 +177,23 @@ button:hover {
     margin-top: 10px;
 }
 
+.navbar-menu .hiuser{
+    color: gray;
+}
+
+.authorall{
+    display: flex;
+    flex-direction: row;
+}
+
+.authorcenter{
+    margin-left: 20px;
+}
+
+.userimage{
+    border-radius: 10px;
+}
+
 @media (max-width: 1000px) {
     .container {
         display: grid;
@@ -183,10 +201,15 @@ button:hover {
         grid-template-rows: auto; 
         width: 90%;
     }
+
+    .article-section{
+        border-bottom: #ccc 2px solid;
+    }
 }
 
 @media (max-width: 500px) {
     .container {
         width: 100%;
+
     }
 }

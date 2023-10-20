@@ -18,10 +18,13 @@
                 {{/each}}
                 
                 {{#if userid}}
-                    <a href='/toDashboard'>Hi, {{user.account}}</a>
+                    <a href='/toDashboard' class="hiuser">Hi, {{user.account}}</a>
+                    <a></a>
                 {{else}}
-                    <a href='/login'>Login</a>
+                    <a href='/login' class="hiuser">Login</a>
+                    <a></a>
                 {{/if}}
+
                         
             </div>
         </div>
@@ -33,13 +36,20 @@
         <h1>{{article.title}}</h1>
         <p>Category: {{article.categoryInfo.name}}</p>
         <div class="author-subscribe">
-            <p>Author: </p>
-            {{#if article.authorimage}}
-                <img src="/images/userimages/{{article.authorimage}}.png" alt="{{article.authorimage}}" width="30" height="30" class="userimage">
-            {{else}}
-                <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
-            {{/if}}
-            <a href="/othersProfile/{{article.authorid}}">{{article.author}}</a>
+            <div class = "authorall">
+                <p>Author: </p>
+                <div class="authorcenter">
+                    {{#if article.authorimage}}
+                        <img src="/images/userimages/{{article.authorimage}}.png" alt="{{article.authorimage}}" width="30" height="30" class="userimage">
+                    {{else}}
+                        <img src="/images/userimages/default.png" alt="default" width="30" height="30" class="userimage">
+                    {{/if}}
+                    <a href="/othersProfile/{{article.authorid}}">{{article.author}}</a>
+                </div>
+            </div>
+            
+            
+
             {{!-- Subscribe functionality moved here --}}
             {{#if userid}}
                 {{#if_eq userid article.authorid}}
@@ -87,6 +97,21 @@
             <a href="/login">Please Login to comment to others</a>
         {{/if}}
 
+        <hr>
+
+        <h2>Users who liked this article:</h2>
+        <ul id="users-liked-list">
+            {{#each article.usersLiked}}
+            <li>
+                {{#if this.userimage}}
+                    <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="20" height="20" class = "userimage">
+                {{else}}
+                    <img src="/images/userimages/default.png" alt="default" width="20" height="20" class="userimage">
+                {{/if}}
+                <a href="/othersProfile/{{this.id}}">{{this.account}}</a>
+            </li>
+            {{/each}}
+        </ul>
 
     </div>
     <div class="comment-section">
@@ -155,21 +180,9 @@
         {{/if}}
     </div>
   {{/if}}
-  <h2>Users who liked this article:</h2>
-  <ul id="users-liked-list">
-    {{#each article.usersLiked}}
-    <li>
-        {{#if this.userimage}}
-            <img src="/images/userimages/{{this.userimage}}.png" alt="{{this.userimage}}" width="20" height="20" class = "userimage">
-        {{else}}
-            <img src="/images/userimages/default.png" alt="default" width="20" height="20" class="userimage">
-        {{/if}}
-        <a href="/othersProfile/{{this.id}}">{{this.account}}</a>
-    </li>
-    {{/each}}
-  </ul>
-</div>
 
+</div>
+  
 <script>
     function addComment(articleID) {
         const commentUrl = `/comment/?articleId=${articleID}`;
