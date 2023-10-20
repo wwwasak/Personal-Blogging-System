@@ -272,7 +272,7 @@ section.dark .section-title::after{
   letter-spacing: .2rem;
 }
 
-.blogs .box-container{
+.box-container{
   display: flex;
   flex-wrap: wrap;
   gap:1rem;
