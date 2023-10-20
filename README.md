@@ -5,7 +5,7 @@
 ![image](https://github.com/UOA-PGCIT-FULLTIME/group-6-s2-23-v1/assets/82685227/0ee28524-6828-447a-a9ff-0cc1174b532d)
 
 
-This final project has been created by Yinlin Ji, Zipei Liu.
+This final project has been created by Yinlin Ji, Zipei Liu, Ricky Li, Guanzhuo Li and Tianya Xu.
 
 
 
@@ -13,6 +13,7 @@ This final project has been created by Yinlin Ji, Zipei Liu.
 
 The server should automatically initialize the database if it needs to (commented code provided in src/db/database.js).
 And the tables can be created by running the sql documents.
+
 We have also uploaded a database with articles which can be used to test the function.
 
 npm run dev to start in dev mode
@@ -56,5 +57,30 @@ They can also edit their articles by an editor after they add their first articl
 ![image](https://github.com/UOA-PGCIT-FULLTIME/group-6-s2-23-v1/assets/82685227/2d1c54d6-aa5a-4f8b-ac3c-1246fc9d0317)
 
 
+### Article
+
+Users can browse different categories and choose which kind of articles they like before they login.
+
+![image](https://github.com/UOA-PGCIT-FULLTIME/group-6-s2-23-v1/assets/82685227/b50b53dd-fba9-4623-8e49-9f38786e5053)
+
+They can read the article by click the bar.
+
+And in the article reader they can put a comment, reply others comments, press like and subscribe the author. But they need to login to use these functions.  
+
+![image](https://github.com/UOA-PGCIT-FULLTIME/group-6-s2-23-v1/assets/82685227/20b2a695-6342-48bc-870a-156247ed8940)
+
+They can also delete the comment from themselves, but they cannot delete others' comments.
+
+### Admin
+
+Normally users can only change their own articles, comments and other related things.
+
+But there is an admin account which can process all the things in this system.
+
+You can login the admin page by click "login" and use the login form besides the general users'.
+
+![image](https://github.com/UOA-PGCIT-FULLTIME/group-6-s2-23-v1/assets/82685227/965c9952-6132-4cb2-a896-bae1907f9f19)
+
+In the admin page, you can change all the users, categories and articles.
 
 
