@@ -1,35 +1,40 @@
 # Personal Blogging System 
 
-**Final project - Starter Template - PGCert Information Technology**
+**Final project - Blog Management System**
+![Screenshot 2023-10-20 200322](https://github.com/UOA-PGCIT-FULLTIME/group-6-s2-23-v1/assets/82685227/a8c44409-7e48-4dca-8466-f79475c7737e)
 
-This repository contains a starting point for your team's final project.
 
-Your team should update this README to include the information required, as presented in the project handout available on Canvas.
+This final project has been created by Yinlin Ji, Zipei Liu.
+
+
 
 ## Database init
 
-The server should automatically initialize the database if it needs to (commented code provided in [src/db/database.js](src/db/database.js)).
-It has been left up to your team to design a way to check if SQL tables need to be created.
+The server should automatically initialize the database if it needs to (commented code provided in src/db/database.js).
+And the tables can be created by running the sql documents.
+We have also uploaded a database with articles which can be used to test the function.
+
+npm run dev to start in dev mode
 
 ## Libraries & Technologies currently used
 
-You are welcome to remove npm package and replace them with ones more suitable to your usecase.
-The provided packages are a starting for packages you should consider researching and using.
-
-Your team should remove any packages that is not being used in the project `npm remove <package-name>`
+These Technologies have been used in this project:
 
 - HTTP Server:
   - express
   - morgan
   - express-handlebars
   - multer
-  - cookie-parser (consider replacing with express-session)
-  - uuid
-- Image Processing:
-  - Sharp (research how to use, or install & use `jimp` instead)
+  - cookie-parser 
+  - uuid 
 - Database:
   - sqlite
-  - sqlite-template-strings (consider removing and use built in sanitization in sqlite)
+  - sqlite-template-strings 
 - Development Tooling:
   - nodemon
-  - prettier
+
+## Functions
+
+### User
+
+Users can click "login" in the home page and enter their own dashboard.
