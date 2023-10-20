@@ -4,18 +4,22 @@
     text-decoration: none;
     font-family: "Ubuntu",sans-serif;
     box-sizing: border-box;
-    
-    
+
       
   }
-body {
-    font-family: Arial, sans-serif;
-    margin: 50px;
-    padding: 50px;
+
+body{
+    
     background-color: #f7f7f7;
     background: url(../images/istockphoto-1422642328-170667a.webp) no-repeat center;
     background-size: cover;
     background-attachment: fixed;
+}
+#container {
+    font-family: Arial, sans-serif;
+    margin: 50px;
+    padding: 50px;
+
     
 }
 
