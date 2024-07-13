@@ -1,13 +1,8 @@
-# Personal Blogging System 
+# Personal Blogging System(first project)
 
 **Final project - Blog Management System**
 
 ![image](https://github.com/UOA-PGCIT-FULLTIME/group-6-s2-23-v1/assets/82685227/0ee28524-6828-447a-a9ff-0cc1174b532d)
-
-
-This final project has been created by Yinlin Ji, Zipei Liu, Ricky Li, Guanzhuo Li and Tianya Xu.
-
-
 
 ## Database init
 
